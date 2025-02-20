@@ -1,0 +1,15 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>ModifyTeaming</title>
+</head>
+<body>
+<form th:action th:object="${teaming}" method="post">
+    <input type="text" th:field="*{title}"/>
+    <input type="text" th:field="*{content}"/>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Teaming</title>
+</head>
+<body>
+<div th:object="${teaming}">
+    <p th:text="*{title}">title</p>
+    <div>
+        <p th:text="*{teamName}">teamName</p>
+        <p th:text="*{teamInfo}">teamInfo</p>
+    </div>
+    <p th:text="*{content}">content</p>
+    <p th:text="*{status}">status</p>
+    <button th:if="*{isWriter()}" th:onclick="|location.href='@{/teaming/modify/{teamingId}(teamingId=*{id})}'|">수정</button>
+    <button th:if="*{isWriter()}" th:onclick="|location.href='@{/teaming/delete/{teamingId}(teamingId=*{id})}'|">삭제</button>
+    <button th:if="*{isWriter()}"
+            th:onclick="|location.href='@{/teaming/toggleStatus/{teamingId}(teamingId=*{id})}'|">
+        <span th:text="*{status} == 'RECRUITING' ? '모집 종료' : '모집 중'"></span>
+    </button>
+    <div sec:authorize="isAuthenticated()" th:if="*{!isMember()}">
+        <button id="joinButton" th:onclick="joinTeam([[*{teamId}]])" th:text="신청하기">신청하기</button>
+    </div>
+
+    <div id="joinModal" style="display:none; position: fixed; top: 30%; left: 40%; background: #fff; border: 1px solid #ccc; padding: 20px;">
+        <h3>팀 가입 신청</h3>
+        <form id="joinForm" th:action="@{/teaming/{teamingId}/applicationForm(teamingId=${teamingId})}" th:object="${applicationForm}" th:method="post">
+            <input type="text" th:field="*{title}" placeholder="제목을 입력하세요" /><br>
+            <textarea th:field="*{content}" placeholder="신청 메시지를 입력하세요" rows="4" cols="40"></textarea>
+            <br>
+            <button type="submit">신청 제출</button>
+            <button type="button" onclick="closeJoinModal()">닫기</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openJoinModal() {
+        document.getElementById("joinModal").style.display = "block";
+    }
+
+    function closeJoinModal() {
+        document.getElementById("joinModal").style.display = "none";
+    }
+</script>
+</body>
+</html>

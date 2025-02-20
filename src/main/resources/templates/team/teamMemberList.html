@@ -1,0 +1,37 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>TeamMemberList</title>
+</head>
+<body>
+<div th:each="teamMember : ${teamMemberPage}">
+    <div th:onclick="" style="border: 1px solid #cccccc;">
+        <div th:text="${teamMember.userId}"></div>
+        <div th:text="${teamMember.username}"></div>
+        <div>
+            <button th:text="추방" th:onclick="removeTeamMember([[${teamMember.teamId}]], [[${teamMember.userId}]])">추방</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function removeTeamMember(teamId, teamMemberUserId) {
+        if (confirm("추방하시겠습니까?")) {
+            fetch(`/team/${teamId}/removeTeamMember/${teamMemberUserId}`, {
+                method: "POST"
+            }).then((res) => {
+                if (res.redirected) {
+                    window.location.href = res.url;
+                } else {
+                    alert("잘못된 요청입니다.");
+                }
+            }).catch((err) => {
+                alert("오류가 발생하였습니다.");
+            })
+        }
+    }
+</script>
+</body>
+</html>

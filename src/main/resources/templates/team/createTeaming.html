@@ -1,0 +1,15 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>CreateTeaming</title>
+</head>
+<body>
+<form th:action th:object="${teaming}" method="post">
+    <input th:field="*{title}" type="text">
+    <input th:field="*{content}" type="text">
+    <button type="submit">저장</button>
+</form>
+</body>
+</html>

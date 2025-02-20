@@ -1,0 +1,116 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/common.css}">
+</head>
+
+<body>
+<div th:replace="content :: headerNav"></div>
+<div class="container" style="width: 1500px;height: 1250px;">
+    <div class="row justify-content-between" style="width: 100%;height: 100%;padding-top: 30px;">
+        <div class="col-md-2 d-flex flex-column" style="display: flex;">
+            <div th:replace="content :: leftBar"></div>
+        </div>
+        <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px;">
+            <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 750px;margin-bottom: 18px;">
+                <div class="card-body" style="padding: 0px;">
+                    <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">
+                        <a th:href="@{/}" class="d-block text-decoration-none text-dark">
+                            프로젝트
+                        </a>
+                    </h4>
+                    <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3" style="height: 450px;width: 100%;padding-right: 0px;padding-left: 0px;margin: 0px;">
+                        <div class="col" style="margin-top: 0px;padding-right: 6px;padding-left: 6px;height: 100%;padding-top: 12px;padding-bottom: 12px;" th:each="prject, stat : ${teamingPage}" th:if="${stat.index} < 3">
+                            <div class="card" style="height: 100%;" th:onclick="|location.href='@{/}'|">
+                                <img class="card-img-top w-100 d-block fit-cover" style="height: 200px;" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
+                                <div class="card-body" style="padding: 12px;">
+                                    <h4 class="card-title">Lorem libero donec</h4>
+                                    <p class="card-text">Nullam id dolor id nibh ultric</p>
+                                    <div class="d-flex">
+                                        <div>
+                                            <p class="fw-bold mb-0">John Smith</p>
+                                            <p class="text-muted mb-0">Erat netus</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="justify-content-between row mb-3" style="width: 750px;height: 350px;background: rgba(225,97,97,0);box-shadow: 0px 0px;border-radius: 10px;display: flex;margin-right: 0px;margin-left: 0px;">
+                <div class="col-12" style="width: 360px;height: 100%;background: #dc9191;box-shadow: 0px 0px;border-radius: 10px;padding: 0px;">
+                    <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                        <div class="card-body" style="padding: 0px;">
+                            <h4 class="card-title"
+                                style="margin-bottom: 2px; font-size: 21px; font-weight: bold; border-bottom: 0.5px solid #b4bbc3; padding: 8px;">
+                                <a th:href="@{/teaming/teamingList}" class="d-block text-decoration-none text-dark">
+                                    티밍
+                                </a>
+                            </h4>
+                            <div class="card-body" style="padding: 0px;">
+                                <ul class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action" th:each="teaming, stat : ${teamingPage}" th:if="${stat.index} < 6" th:text="${teaming.title}" th:href="@{/teaming/{teamingId}(teamingId=${teaming.teamingId})}">Item 1</a>
+                                    <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(teamingPage.getNumberOfElements()+1, 6)}">&nbsp;</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12" style="width: 360px;height: 100%;background: #dc9191;box-shadow: 0px 0px;border-radius: 10px;padding: 0px;">
+                    <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                        <div class="card-body" style="padding: 0px;">
+                            <h4 class="card-title"
+                            style="margin-bottom: 2px; font-size: 21px; font-weight: bold; border-bottom: 0.5px solid #b4bbc3; padding: 8px;">
+                            <a th:href="@{/teaming/teamingList}" class="d-block text-decoration-none text-dark">
+                                컨텐츠2
+                            </a>
+                        </h4>
+                            <div class="card-body" style="padding: 0px;">
+                                <ul class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action" th:each="teaming, stat : ${teamingPage}" th:if="${stat.index} < 6" th:text="${teaming.title}" th:href="@{/teaming/{teamingId}(teamingId=${teaming.teamingId})}">Item 1</a>
+                                    <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(teamingPage.getNumberOfElements()+1, 6)}">&nbsp;</li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="justify-content-between row mb-3" style="width: 750px;height: 350px;background: rgba(225,97,97,0);box-shadow: 0px 0px;border-radius: 10px;display: flex;margin-right: 0px;margin-left: 0px;">
+                <div class="col-12" style="width: 100%;min-height: 250px;background: #dc9191;box-shadow: 0px 0px;border-radius: 10px;padding: 0px;">
+                    <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                        <div class="card-body" style="padding: 0px;">
+                            <h4 class="card-title"
+                                style="margin-bottom: 2px; font-size: 21px; font-weight: bold; border-bottom: 0.5px solid #b4bbc3; padding: 8px;">
+                                <a th:href="@{/teaming/teamingList}" class="d-block text-decoration-none text-dark">
+                                    테스트
+                                </a>
+                            </h4>
+                            <div class="card-body" style="padding: 0px;">
+                                <ul class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action" th:each="teaming, stat : ${teamingPage}" th:if="${stat.index} < 10" th:text="${teaming.title}" th:href="@{/teaming/{teamingId}(teamingId=${teaming.teamingId})}">Item 1</a>
+                                    <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(teamingPage.getNumberOfElements()+1, 10)}">&nbsp;</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2" style="padding: 0px;">
+            <div th:replace="content :: rightBar"></div>
+        </div>
+    </div>
+</div>
+<script src="assets/bootstrap/js/bootstrap.min.js">
+
+</script>
+</body>
+</html>

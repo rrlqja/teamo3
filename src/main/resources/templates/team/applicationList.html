@@ -1,0 +1,32 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>ApplicationList</title>
+</head>
+<body>
+<div th:each="app : ${applicationPage}" style="border:1px solid black; margin:10px;">
+    <p th:text="*{app.title}">teamName</p>
+    <p th:text="*{app.status}">teamInfo</p>
+    <button th:text="승인" th:onclick="approveApplication([[${app.id}]])"></button>
+    <button th:text="거절" th:onclick="rejectApplication([[${app.id}]])"></button>
+</div>
+
+<script>
+    function approveApplication(applicationId) {
+        fetch(`/application/approve/${applicationId}`, {
+            method: "POST"
+        }).then((res) => {
+            if (res.ok) {
+                window.location.href = res.url;
+            } else {
+                alert("잘못된 요청입니다.");
+            }
+        }).catch((err) => {
+            alert("잘못된 요청입니다.");
+        })
+    }
+</script>
+</body>
+</html>

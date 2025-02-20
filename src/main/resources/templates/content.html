@@ -1,0 +1,70 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div th:fragment="headerNav">
+    <nav class="navbar navbar-expand-md py-3" style="border-bottom: 1px solid #dddbe1;font-family: 'Inter Tight', sans-serif;">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+                <span style="font-family: 'Inter Tight', sans-serif;font-weight: bold;color: #4d4657;">TEAMO</span>
+            </a>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/team/teamList}" style="color: #4d4657;">내팀</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{/}" style="color: #4d4657;">프로젝트</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/teaming/teamingList}" style="color: #4d4657;">모집</a></li>
+                </ul>
+                <div style="height: 40px;width: 200px;display: flex;justify-content: space-around;" sec:authorize="isAuthenticated()">
+                    <button class="btn btn-outline-secondary" type="button" style="width: 90px;" th:onclick="|location.href='@{/user/logout}'|">로그아웃</button>
+                </div>
+                <div style="height: 40px;width: 200px;display: flex;justify-content: space-around;" sec:authorize="isAnonymous()">
+                    <button class="btn btn-outline-primary" type="button" style="width: 90px;" th:onclick="|location.href='@{/user/signup}'|">회원가입</button>
+                    <button class="btn btn-outline-primary" type="button" style="width: 90px;" th:onclick="|location.href='@{/user/login}'|">로그인</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<div th:fragment="leftBar">
+    <div class="mb-3" style="width: 180px;height: 160px;box-shadow: 0px 0px;border-radius: 10px;">
+        <div style="height: 100%; background-color: #ffffff; box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;" sec:authorize="isAuthenticated()">
+            <div class="d-flex justify-content-between" style="padding: 10px;"><img class="rounded-circle flex-shrink-0 me-3 fit-cover" width="50" height="50" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
+                <div style="width: 100px;">
+                    <p class="fw-bold mb-0" style="height: 100%;line-height: 50px;" sec:authentication="name">username</p>
+                </div>
+            </div>
+            <div class="justify-content-around" style="height: 40px;display: flex;">
+                <button class="btn btn-outline-primary" type="button" style="height: 40px;width: 80px;" th:onclick="|location.href='@{/team/teamList}'|">내 팀</button>
+                <button class="btn btn-outline-secondary" type="button" style="height: 40px;width: 80px;" th:onclick="|location.href='@{/}'|">내정보</button>
+            </div>
+            <div style="height: 50px;padding: 5px;">
+                <button class="btn btn-outline-primary" type="button" style="width: 100%;" th:onclick="|location.href='@{/user/logout}'|">로그아웃</button>
+            </div>
+        </div>
+        <div style="height: 100%;" sec:authorize="isAnonymous()">
+            <button class="btn btn-outline-primary" type="button" style="width: 100%;" th:onclick="|location.href='@{/user/login}'|">로그인</button>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="rightBar">
+    <div class="col-12" style="width: 100%;min-height: 200px; height: 200px; background: #dc9191;box-shadow: 0px 0px;border-radius: 10px;padding: 0px;">
+        <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+            <div class="card-body" style="padding: 0px;">
+                <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">공지사항</h4>
+                <div class="card-body" style="padding: 8px;">
+<!--                    <ul class="list-group list-group-flush">-->
+<!--                        <a class="list-group-item list-group-item-action" th:each="teaming, stat : ${teamingPage}" th:if="${stat.index} < 6" th:text="${teaming.title}" th:href="@{/teaming/{teamingId}(teamingId=${teaming.teamingId})}">Item 1</a>-->
+<!--                        <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(teamingPage.getNumberOfElements()+1, 6)}">&nbsp;</li>-->
+<!--                    </ul>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
