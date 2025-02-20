@@ -2,18 +2,11 @@ package song.teamo3.domain.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import song.teamo3.domain.user.entity.User;
 
-@ToString
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class CreateUserDto {
 //    @Size(min = 8, max = 20, message = "8 ~ 20자 사이여야 합니다.")
     @NotBlank(message = "아이디는 필수값입니다.")
