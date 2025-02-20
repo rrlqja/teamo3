@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import song.teamo3.security.authentication.handler.LoginFailureHandler;
 import song.teamo3.security.authentication.handler.LoginSuccessHandler;
+import song.teamo3.security.authentication.userdetails.service.UserDetailsServiceImpl;
+import song.teamo3.security.filter.JwtFilter;
 import song.teamo3.security.filter.UsernamePasswordLoginFilter;
 
 @Slf4j
@@ -27,6 +29,7 @@ import song.teamo3.security.filter.UsernamePasswordLoginFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final ObjectMapper objectMapper;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration configuration) throws Exception {
@@ -53,6 +56,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new UsernamePasswordLoginFilter(authenticationManager(configuration), loginSuccessHandler(objectMapper), loginFailureHandler(objectMapper)), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(userDetailsService), UsernamePasswordLoginFilter.class)
         ;
 
         return http.build();
