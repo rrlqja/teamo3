@@ -1,0 +1,58 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>CreateStudy</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/common.css}">
+
+    <link rel="stylesheet" href="/ckeditor5/style.css">
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.2.1/ckeditor5.css" crossorigin>
+    <script src="https://cdn.ckeditor.com/ckeditor5/44.2.1/ckeditor5.umd.js" crossorigin></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/44.2.1/translations/ko.umd.js" crossorigin></script>
+    <script src="/ckeditor5/main.js"></script>
+</head>
+<body>
+<div th:replace="content :: headerNav"></div>
+
+<div class="container" style="width: 1500px;height: 1250px;">
+    <div class="row justify-content-between" style="width: 100%;height: 100%;padding-top: 30px;">
+        <div class="col-md-2 d-flex flex-column" style="display: flex;">
+            <div th:replace="content :: leftBar"></div>
+        </div>
+        <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px;">
+            <form th:action th:method="POST" onsubmit="return updateEditorContent();">
+                <div class="editor-container editor-container_classic-editor" id="editor-container">
+                    <div class="editor-container__editor">
+                        <textarea id="editor"></textarea>
+                    </div>
+                </div>
+                <input type="hidden" id="editorContent" name="editorContent">
+                <button type="submit" class="btn btn-outline-primary">저장</button>
+            </form>
+        </div>
+        <div class="col-md-2" style="padding: 0px;">
+            <div th:replace="content :: rightBar"></div>
+        </div>
+    </div>
+</div>
+
+<form th:action th:object="${study}" method="post">
+    <input th:field="*{title}" type="text">
+    <input th:field="*{description}" type="text">
+    <button type="submit">저장</button>
+</form>
+
+<script>
+    function updateEditorContent() {
+        // 에디터의 HTML 데이터를 숨은 필드에 설정
+        document.getElementById('editorContent').value = window.CKEDITOR.getData();
+        return true;
+    }
+</script>
+</body>
+</html>
