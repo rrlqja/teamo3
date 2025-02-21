@@ -43,8 +43,8 @@ public class SecurityConfig {
                         .usernameParameter("username")
                         .passwordParameter("password")
                         .loginPage("/user/login")
-                        .successHandler(loginSuccessHandler(objectMapper))
-                        .failureHandler(loginFailureHandler(objectMapper))
+//                        .successHandler(loginSuccessHandler(objectMapper))
+//                        .failureHandler(loginFailureHandler(objectMapper))
                 )
                 .logout(logout -> logout
                         .logoutUrl("/user/logout")
@@ -53,10 +53,10 @@ public class SecurityConfig {
                             response.sendRedirect(referer != null ? referer : "/");
                         })
                         .permitAll())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new UsernamePasswordLoginFilter(authenticationManager(configuration), loginSuccessHandler(objectMapper), loginFailureHandler(objectMapper)), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtFilter(userDetailsService), UsernamePasswordLoginFilter.class)
+//                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .addFilterBefore(new UsernamePasswordLoginFilter(authenticationManager(configuration), loginSuccessHandler(objectMapper), loginFailureHandler(objectMapper)), UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(new JwtFilter(userDetailsService), UsernamePasswordLoginFilter.class)
         ;
 
         return http.build();
