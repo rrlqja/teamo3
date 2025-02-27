@@ -7,9 +7,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import song.teamo3.domain.study.entity.Study;
 
+import java.util.Optional;
+
 @Repository
 public interface StudyJpaRepository extends JpaRepository<Study, Long> {
     @Query("select s " +
             " from Study s ")
     Page<Study> findStudyPage(Pageable pageable);
+
+    @Query("select s " +
+            " from Study s " +
+            " join fetch s.writer " +
+            "where s.id = :id ")
+    Optional<Study> findStudyById(Long id);
 }

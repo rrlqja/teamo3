@@ -6,7 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import song.teamo3.domain.common.exception.study.exceptions.StudyNotFoundException;
 import song.teamo3.domain.study.dto.CreateStudyDto;
+import song.teamo3.domain.study.dto.StudyDto;
 import song.teamo3.domain.study.entity.Study;
 import song.teamo3.domain.study.repository.StudyJpaRepository;
 import song.teamo3.domain.studymember.entity.StudyMember;
@@ -28,7 +30,7 @@ public class StudyService {
 
     @Transactional
     public Long createStudy(User user, CreateStudyDto createStudyDto) {
-        Study study = createStudyDto.toEntity();
+        Study study = createStudyDto.toEntity(user);
 
         Study createStudy = studyRepository.save(study);
 
@@ -36,5 +38,13 @@ public class StudyService {
 
         log.info("[Create Study] id: {}", createStudy.getId());
         return createStudy.getId();
+    }
+
+    @Transactional
+    public StudyDto getStudy(Long studyId) {
+        Study study = studyRepository.findStudyById(studyId)
+                .orElseThrow(StudyNotFoundException::new);
+
+        return new StudyDto(study);
     }
 }

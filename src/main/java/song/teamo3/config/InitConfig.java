@@ -37,8 +37,8 @@ public class InitConfig {
             User user2 = userRepository.save(User.create("2", passwordEncoder.encode("2"), "name 2"));
             User user3 = userRepository.save(User.create("3", passwordEncoder.encode("3"), "name 3"));
 
-            Study study1 = studyRepository.save(Study.create("t1", "d1"));
-            Study study2 = studyRepository.save(Study.create("t2", "d2"));
+            Study study1 = studyRepository.save(Study.create(user1, "t1", "d1"));
+            Study study2 = studyRepository.save(Study.create(user2, "t2", "d2"));
 
             StudyMember stMember1 = studyMemberRepository.save(StudyMember.create(user1, study1, StudyMemberRole.OWNER));
             StudyMember stMember2 = studyMemberRepository.save(StudyMember.create(user2, study2, StudyMemberRole.OWNER));
