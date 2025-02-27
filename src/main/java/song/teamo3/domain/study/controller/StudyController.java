@@ -50,10 +50,9 @@ public class StudyController {
     @ResponseBody
     @PostMapping("/create")
     public ResponseEntity<Object> postCreateStudy(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                  @RequestParam("editorContent") Object content) {
-        log.info("content: {}, size: {}", content, content.getClass());
-//        Long studyId = studyService.createStudy(userDetails.getUser(), createStudyDto);
+                                                  @ModelAttribute("study") CreateStudyDto createStudyDto) {
+        Long studyId = studyService.createStudy(userDetails.getUser(), createStudyDto);
 
-        return ResponseEntity.ok(Map.of("studyId", 1L));
+        return ResponseEntity.ok(Map.of("studyId", studyId));
     }
 }

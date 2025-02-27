@@ -17,9 +17,15 @@
 	font-family: 'Lato';
 	line-height: 1.6;
 	word-break: break-word;
+	height: 460px;
+	overflow-y: auto;
 }
 
 .editor-container_classic-editor .editor-container__editor {
 	min-width: 100%;
 	max-width: 100%;
+}
+
+.ck.ck-editor__editable > .ck-placeholder::before {
+	font-weight: bold;
 }

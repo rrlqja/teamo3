@@ -37,6 +37,9 @@ logging.level:
 #  org.hibernate.orm.jdbc.bind: trace
 #      web.cors.DefaultCorsProcessor: trace # cors log
 
+upload:
+  path: ENC(AQ66smiFH5UC4uJ3+q/8jtHDQDKfebdjkW161ME4+Fef+seAkMdw9Mq7Cj8Ju07Z)
+
 jasypt:
   encryptor:
     bean: jasyptStringEncryptor

@@ -22,13 +22,14 @@
             <div th:replace="content :: leftBar"></div>
         </div>
         <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px;">
-            <form th:action th:method="POST" onsubmit="return updateEditorContent();">
+            <form th:action th:method="POST" th:object="${study}" th:onsubmit="return submitForm()">
+                <input class="form-control" type="text" th:field="*{title}" placeholder="스터디 핵심 내용을 작성해보세요.">
                 <div class="editor-container editor-container_classic-editor" id="editor-container">
                     <div class="editor-container__editor">
-                        <textarea id="editor"></textarea>
+                        <div id="editor"></div>
                     </div>
                 </div>
-                <input type="hidden" id="editorContent" name="editorContent">
+                <input type="hidden" th:field="*{description}">
                 <button type="submit" class="btn btn-outline-primary">저장</button>
             </form>
         </div>
@@ -38,17 +39,21 @@
     </div>
 </div>
 
-<form th:action th:object="${study}" method="post">
-    <input th:field="*{title}" type="text">
-    <input th:field="*{description}" type="text">
-    <button type="submit">저장</button>
-</form>
-
 <script>
-    function updateEditorContent() {
-        // 에디터의 HTML 데이터를 숨은 필드에 설정
-        document.getElementById('editorContent').value = window.CKEDITOR.getData();
-        return true;
+    function submitForm() {
+        if (!editor) {
+            alert('에디터 오류');
+        } else {
+            const data = editor.getData().trim();
+            if (data === '') {
+                alert('에디터에 입력된 값이 없습니다.');
+            } else {
+                // alert(data);
+                document.getElementById('description').value = editor.getData();
+                return true;
+            }
+        }
+        return false;
     }
 </script>
 

@@ -5,7 +5,6 @@ const {
 	BlockQuote,
 	Bold,
 	Essentials,
-	GeneralHtmlSupport,
 	Heading,
 	ImageBlock,
 	ImageCaption,
@@ -62,7 +61,6 @@ const editorConfig = {
 		BlockQuote,
 		Bold,
 		Essentials,
-		GeneralHtmlSupport,
 		Heading,
 		ImageBlock,
 		ImageCaption,
@@ -89,6 +87,10 @@ const editorConfig = {
 		TableToolbar,
 		Underline
 	],
+	simpleUpload: {
+		uploadUrl: 'http://localhost:8080/image/upload',
+		withCredentials: true
+	},
 	heading: {
 		options: [
 			{
@@ -134,16 +136,6 @@ const editorConfig = {
 			}
 		]
 	},
-	htmlSupport: {
-		allow: [
-			{
-				name: /^.*$/,
-				styles: true,
-				attributes: true,
-				classes: true
-			}
-		]
-	},
 	image: {
 		toolbar: [
 			'toggleImageCaption',
@@ -157,7 +149,7 @@ const editorConfig = {
 		]
 	},
 	initialData:
-		'<p> text </p>\n',
+		'',
 	language: 'ko',
 	licenseKey: LICENSE_KEY,
 	link: {
@@ -173,10 +165,18 @@ const editorConfig = {
 			}
 		}
 	},
-	placeholder: 'Type or paste your content here!',
+	placeholder: '스터디 내용을 작성해주세요.',
 	table: {
 		contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
 	}
 };
 
-ClassicEditor.create(document.querySelector('#editor'), editorConfig);
+let editor;
+
+ClassicEditor.create(document.querySelector('#editor'), editorConfig)
+	.then(newEditor => {
+		editor = newEditor; 
+	})
+	.catch(error => {
+		console.error(error);
+	});
