@@ -6,12 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import song.teamo3.domain.common.exception.study.exceptions.StudyEditNotAllowedException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyNotFoundException;
 import song.teamo3.domain.study.dto.CreateStudyDto;
+import song.teamo3.domain.study.dto.EditStudyDto;
 import song.teamo3.domain.study.dto.StudyDto;
+import song.teamo3.domain.study.dto.StudyPageDto;
 import song.teamo3.domain.study.entity.Study;
 import song.teamo3.domain.study.repository.StudyJpaRepository;
-import song.teamo3.domain.studymember.entity.StudyMember;
 import song.teamo3.domain.studymember.entity.StudyMemberRole;
 import song.teamo3.domain.studymember.service.StudyMemberService;
 import song.teamo3.domain.user.entity.User;
@@ -24,8 +26,9 @@ public class StudyService {
     private final StudyJpaRepository studyRepository;
 
     @Transactional
-    public Page<Study> getStudyPage(Pageable pageable) {
-        return studyRepository.findStudyPage(pageable);
+    public Page<StudyPageDto> getStudyPage(Pageable pageable) {
+        return studyRepository.findStudyPage(pageable)
+                .map(StudyPageDto::new);
     }
 
     @Transactional
@@ -42,9 +45,41 @@ public class StudyService {
 
     @Transactional
     public StudyDto getStudy(Long studyId) {
-        Study study = studyRepository.findStudyById(studyId)
-                .orElseThrow(StudyNotFoundException::new);
+        Study study = findStudyById(studyId);
 
+        study.incrementViews();
+
+        log.info("[Get Study] id: {}", study.getId());
         return new StudyDto(study);
+    }
+
+    @Transactional
+    public StudyDto getStudy(User user, Long studyId) {
+        Study study = findStudyById(studyId);
+
+        study.incrementViews();
+
+        log.info("[Get Study] id: {}", study.getId());
+        return new StudyDto(study, user);
+    }
+
+    @Transactional
+    public Long editStudy(User user, Long studyId, EditStudyDto editStudyDto) {
+        Study study = findStudyById(studyId);
+
+        if (study.getWriter().getId() != user.getId()) {
+            throw new StudyEditNotAllowedException("수정할 수 없습니다.");
+        }
+
+        study.editPost(editStudyDto.getTitle(), editStudyDto.getDescription());
+        Study editStudy = studyRepository.save(study);
+
+        log.info("[Edit Study] id: {}", editStudy.getId());
+        return editStudy.getId();
+    }
+
+    private Study findStudyById(Long studyId) {
+        return studyRepository.findStudyById(studyId)
+                .orElseThrow(StudyNotFoundException::new);
     }
 }

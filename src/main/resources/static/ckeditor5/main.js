@@ -148,8 +148,8 @@ const editorConfig = {
 			'resizeImage'
 		]
 	},
-	initialData:
-		'',
+	// initialData:
+	// 	'',
 	language: 'ko',
 	licenseKey: LICENSE_KEY,
 	link: {

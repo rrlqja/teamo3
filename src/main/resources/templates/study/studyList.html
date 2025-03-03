@@ -72,7 +72,7 @@
                         <button class="btn btn-outline-primary" type="button" style="min-width: 80px;min-height: 100%;padding: 0px;">검색</button>
                     </div>
                     <div style="min-width: 80px;" sec:authorize="isAuthenticated()">
-                        <button class="btn btn-outline-secondary" type="button" style="min-width: 100%;min-height: 100%;">스터디 생성</button>
+                        <button class="btn btn-outline-secondary" type="button" th:onclick="|location.href='@{/study/create}'|" style="min-width: 100%;min-height: 100%;">스터디 생성</button>
                     </div>
                 </div>
                 <div class="justify-content-center" style="min-height: 40px; min-width: 100%; width: 100%; display: flex; margin-top: 10px;">

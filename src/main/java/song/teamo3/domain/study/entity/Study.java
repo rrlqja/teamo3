@@ -12,21 +12,19 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import song.teamo3.domain.common.entity.PostEntity;
 import song.teamo3.domain.user.entity.User;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Study {
+public class Study extends PostEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JoinColumn(name = "writer_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private User writer;
-
-    private String title;
-    private String description;
 
     @Enumerated(EnumType.STRING)
     private StudyStatus status;
@@ -36,9 +34,8 @@ public class Study {
     }
 
     private Study(User writer, String title, String description, StudyStatus status) {
+        super(title, description);
         this.writer = writer;
-        this.title = title;
-        this.description = description;
         this.status = status;
     }
 }

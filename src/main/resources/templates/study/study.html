@@ -18,15 +18,57 @@
         <div class="col-md-2 d-flex flex-column" style="display: flex;">
             <div th:replace="content :: leftBar"></div>
         </div>
-        <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px;">
-            <div th:object="${study}">
-                <p th:text="*{title}">title</p>
-                <p th:utext="*{description}">description</p>
-                <p th:text="*{writerName}">writer</p>
+        <div class="col-md-7" style="padding: 0px;margin-right: 0px;margin-left: 0px;display: flex; flex-direction: column">
+            <div style="width: 100%;min-height: 530px;margin-bottom: 30px;">
+                <div class="card" th:object="${study}" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                    <div class="card-body" style="padding: 0px;">
+                        <div style="width: 100%;height: 60px;padding: 0px;">
+                            <p th:text="*{title}" style="width: 100%;height: 100%;margin: 0px;line-height: 60px;margin-right: 0px;margin-left: 0px;padding-left: 12px;padding-right: 12px;font-weight: bold;font-size: 19px;">제목</p>
+                        </div>
+                        <div style="width: 100%;height: 60px;padding: 0px;border-bottom: 0.5px solid rgb(208,210,214) ;">
+                            <p th:text="*{writerName}" style="width: 100%;height: 50%;margin: 0px;line-height: 30px;margin-right: 0px;margin-left: 0px;padding-left: 12px;padding-right: 12px;font-weight: bold;font-size: 17px;">작성자</p>
+                            <div style="height: 50%;width: 100%;display: flex;">
+                                <p style="width: 100%;height: 100%;margin: 0px;line-height: 30px;margin-right: 0px;margin-left: 0px;font-size: 15px;">
+                                    <span th:text="'작성일 ' + *{createdDate}" style="padding-right: 12px;padding-left: 12px;">작성일</span>
+                                    <span th:text="'조회수 ' + *{views}" style="padding-right: 12px;padding-left: 12px;">조회수</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div style="width: 100%;padding: 0px;min-height: 350px; margin: 12px;">
+                            <p th:utext="*{description}" style="width: 100%;height: 100%;margin: 0px;line-height: 60px;margin-right: 0px;margin-left: 0px;padding-left: 12px;padding-right: 12px;font-weight: bold;font-size: 19px;">내용</p>
+                        </div>
+                        <div class="justify-content-end" style="width: 100%;height: 60px;display: flex;align-items: center;gap: 10px;padding-right: 12px;" th:if="*{isWriter()}">
+                            <button class="btn btn-outline-secondary" type="button" th:text="수정" th:onclick="|location.href='@{/study/modify/{studyId}(studyId=*{id})}'|" style="width: 60px;height: 40px;">수정</button>
+                            <button class="btn btn-outline-secondary" type="button" th:text="삭제" style="width: 60px;height: 40px;">삭제</button>
+                        </div>
+                        <div class="justify-content-center align-items-center" style="height: 60px;display: flex;">
+                            <button class="btn btn-outline-primary" type="button">스터디 신청</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 100%;min-height: 100px;margin-bottom: 30px;">
+                <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                    <div class="card-body" style="padding: 0px;">
+                        <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">댓글</h4>
+                        <div class="card-body" style="padding: 0px;">
+<!--                            <ul class="list-group list-group-flush">-->
+<!--                                <li class="list-group-item" th:each="post, stat : ${postPage}" th:if="${stat.index} <6" th:text="${post.title}" style="height: 40px;">Item 1-->
+<!--                                </li>-->
+<!--                                <li class="list-group-item" th:each="i : ${#numbers.sequence(postList.size()+1, 6)}">Item 1-->
+<!--                                </li>-->
+<!--                            </ul>-->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-md-2" style="padding: 0px;">
-            <div th:replace="content :: rightBar"></div>
+            <div style="width: 100%;height: 300px;display: flex;flex-direction: column;padding: 16px; gap: 16px;">
+                <button class="btn btn-primary" type="button" style="width: 100px;height: 40px;">Button 1</button>
+                <button class="btn btn-primary" type="button" style="width: 100px;height: 40px;">Button 1</button>
+                <button class="btn btn-primary" type="button" style="width: 100px;height: 40px;">Button 1</button>
+            </div>
         </div>
     </div>
 </div>
