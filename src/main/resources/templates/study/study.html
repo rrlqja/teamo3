@@ -19,6 +19,9 @@
             <div th:replace="content :: leftBar"></div>
         </div>
         <div class="col-md-7" style="padding: 0px;margin-right: 0px;margin-left: 0px;display: flex; flex-direction: column">
+            <div style="width: 100%; height: 40px; margin-bottom: 16px;">
+                <p th:onclick="|location.href='@{/study/studyList}'|" style="display: inline-block; max-width: 100%; height: 100%; line-height: 40px; font-weight: bold; font-size: 18px; cursor: pointer;">스터디</p>
+            </div>
             <div style="width: 100%;min-height: 530px;margin-bottom: 30px;">
                 <div class="card" th:object="${study}" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
                     <div class="card-body" style="padding: 0px;">
@@ -42,7 +45,7 @@
                             <button class="btn btn-outline-secondary" type="button" th:text="삭제" style="width: 60px;height: 40px;">삭제</button>
                         </div>
                         <div class="justify-content-center align-items-center" style="height: 60px;display: flex;">
-                            <button class="btn btn-outline-primary" type="button">스터디 신청</button>
+                            <button class="btn btn-outline-primary" type="button" th:onclick="|location.href='@{/study/apply/{studyId}(studyId=*{id})}'|">스터디 가입 신청</button>
                         </div>
                     </div>
                 </div>
@@ -64,8 +67,8 @@
             </div>
         </div>
         <div class="col-md-2" style="padding: 0px;">
-            <div style="width: 100%;height: 300px;display: flex;flex-direction: column;padding: 16px; gap: 16px;">
-                <button class="btn btn-primary" type="button" style="width: 100px;height: 40px;">Button 1</button>
+            <div th:object="${study}" style="width: 100%;height: 300px;display: flex;flex-direction: column;padding: 16px; gap: 16px; position: fixed;">
+                <button class="btn btn-outline-primary" type="button" th:if="*{isWriter()}" th:onclick="|location.href='@{/study/{studyId}/applicationList(studyId=*{id})}'|" style="width: 100px;height: 40px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">신청서 목록</button>
                 <button class="btn btn-primary" type="button" style="width: 100px;height: 40px;">Button 1</button>
                 <button class="btn btn-primary" type="button" style="width: 100px;height: 40px;">Button 1</button>
             </div>
@@ -73,33 +76,7 @@
     </div>
 </div>
 
-<div th:object="${study}">
-<!--    <p th:text="*{title}">title</p>-->
-<!--    <p th:utext="*{description}">description</p>-->
-<!--    <p th:text="*{writerName}">writer</p>-->
-<!--    <button th:if="*{isMember()}" th:onclick="'exitTeam(' + *{id} +')'">탈퇴</button>-->
-<!--    <button th:if="*{isAdmin()}" th:onclick="|location.href='@{/team/modify/{teamId}(teamId=*{id})}'|">수정</button>-->
-<!--    <button th:if="*{isAdmin()}" th:onclick="|location.href='@{/team/teaming/{teamId}(teamId=*{id})}'|">티밍 생성</button>-->
-<!--    <button th:if="*{isAdmin()}" th:onclick="|location.href='@{/team/applicationList/{teamId}(teamId=*{id})}'|">가입 신청서 확인</button>-->
-<!--    <button th:if="*{isAdmin()}" th:onclick="|location.href='@{/team/{teamId}/teamMemberList(teamId=*{id})}'|">멤버 관리</button>-->
-</div>
-
 <script>
-    function exitTeam(teamId) {
-        if (confirm("정말 탈퇴하시겠습니까?")) {
-            fetch(`/team/${teamId}/exitTeam`, {
-                method: "POST"
-            }).then((res) => {
-                if (res.redirected) {
-                    window.location.href = res.url;
-                } else {
-                    alert("잘못된 요청입니다.");
-                }
-            }).catch((err) => {
-                alert("잘못된 요청입니다.");
-            })
-        }
-    }
 </script>
 </body>
 </html>

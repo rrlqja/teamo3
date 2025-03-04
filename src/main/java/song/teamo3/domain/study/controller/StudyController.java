@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import song.teamo3.domain.study.dto.CreateStudyApplicationDto;
 import song.teamo3.domain.study.dto.CreateStudyDto;
 import song.teamo3.domain.study.dto.EditStudyDto;
 import song.teamo3.domain.study.dto.StudyDto;
 import song.teamo3.domain.study.dto.StudyPageDto;
 import song.teamo3.domain.study.service.StudyService;
+import song.teamo3.domain.studyapplication.dto.StudyApplicationPageDto;
 import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
 
 @Slf4j
@@ -92,5 +94,37 @@ public class StudyController {
         redirectAttributes.addAttribute("studyId", editStudyId);
 
         return "redirect:/study/{studyId}";
+    }
+
+    @GetMapping("/apply/{studyId}")
+    public String getStudyApplication(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                      @PathVariable("studyId") Long studyId,
+                                      @ModelAttribute("application") CreateStudyApplicationDto applicationDto) {
+
+        return "study/applyStudy";
+    }
+
+    @PostMapping("/apply/{studyId}")
+    public String postStudyApplication(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                       @PathVariable("studyId") Long studyId,
+                                       CreateStudyApplicationDto applicationDto,
+                                       RedirectAttributes redirectAttributes) {
+        Long appliedStudyId = studyService.applyStudy(userDetails.getUser(), studyId, applicationDto);
+
+        redirectAttributes.addAttribute("studyId", appliedStudyId);
+
+        return "redirect:/study/{studyId}";
+    }
+
+    @GetMapping("/{studyId}/applicationList")
+    public String getStudyApplicationList(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                          @PathVariable("studyId") Long studyId,
+                                          @PageableDefault(size = 10, page = 0) Pageable pageable,
+                                          Model model) {
+        Page<StudyApplicationPageDto> studyApplicationPage = studyService.getStudyApplicationPage(userDetails.getUser(), studyId, pageable);
+
+        model.addAttribute("studyApplicationPage", studyApplicationPage);
+
+        return "study/studyApplicationList";
     }
 }

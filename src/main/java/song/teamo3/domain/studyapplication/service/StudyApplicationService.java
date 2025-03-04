@@ -1,0 +1,65 @@
+package song.teamo3.domain.studyapplication.service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import song.teamo3.domain.common.exception.studyapplication.exceptions.StudyApplicationAccessDeniedException;
+import song.teamo3.domain.common.exception.studyapplication.exceptions.StudyApplicationNotFoundException;
+import song.teamo3.domain.common.exception.studymember.exceptions.DuplicateStudyMemberException;
+import song.teamo3.domain.study.dto.CreateStudyApplicationDto;
+import song.teamo3.domain.study.entity.Study;
+import song.teamo3.domain.studyapplication.dto.StudyApplicationDto;
+import song.teamo3.domain.studyapplication.dto.StudyApplicationPageDto;
+import song.teamo3.domain.studyapplication.entity.StudyApplication;
+import song.teamo3.domain.studyapplication.repository.StudyApplicationJpaRepository;
+import song.teamo3.domain.user.entity.User;
+
+import static song.teamo3.domain.studyapplication.entity.StudyApplicationStatus.*;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class StudyApplicationService {
+    private final StudyApplicationJpaRepository studyApplicationRepository;
+
+    @Transactional
+    public Long createStudyApplication(User user, Study study, CreateStudyApplicationDto applicationDto) {
+        checkDuplicateStudyApplication(user, study);
+
+        StudyApplication studyApplication = applicationDto.toEntity(user, study);
+
+        StudyApplication saveStudyApplication = studyApplicationRepository.save(studyApplication);
+        log.info("[Create Study Application] id: {}", saveStudyApplication.getId());
+
+        return saveStudyApplication.getId();
+    }
+
+    @Transactional
+    public void checkDuplicateStudyApplication(User user, Study study) {
+        studyApplicationRepository.findStudyApplicationByUserAndStudy(user, study)
+                .ifPresent(sa -> {
+                    throw new DuplicateStudyMemberException("이미 신청하였습니다.");
+                });
+    }
+
+    @Transactional
+    public Page<StudyApplicationPageDto> getPendingStudyApplicationPage(Study study, Pageable pageable) {
+        return studyApplicationRepository.findPendingStudyApplicationsByStudy(study, PENDING, pageable)
+                .map(StudyApplicationPageDto::new);
+    }
+
+    @Transactional
+    public StudyApplicationDto getStudyApplication(User user, Long studyApplicationId) {
+        StudyApplication studyApplication = studyApplicationRepository.findById(studyApplicationId)
+                .orElseThrow(StudyApplicationNotFoundException::new);
+
+        if (!studyApplication.getStudy().getWriter().getId().equals(user.getId())) {
+            throw new StudyApplicationAccessDeniedException("잘못된 요청입니다.");
+        }
+
+        return new StudyApplicationDto(studyApplication);
+    }
+}

@@ -11,6 +11,8 @@ import song.teamo3.domain.studymember.entity.StudyMemberRole;
 import song.teamo3.domain.studymember.repository.StudyMemberJpaRepository;
 import song.teamo3.domain.user.entity.User;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -19,7 +21,7 @@ public class StudyMemberService {
 
     @Transactional
     public Long createStudyMember(User user, Study study, StudyMemberRole role) {
-        studyMemberRepository.findStudyMemberByUserAndStudy(user, study)
+        findStudyMemberByUserAndStudy(user, study)
                 .ifPresent(studyMember -> {
                     throw new DuplicateStudyMemberException("이미 가입된 사용자입니다.");
                 });
@@ -28,5 +30,17 @@ public class StudyMemberService {
 
         log.info("[Create StudyMember] id: {}", createStudyMember.getId());
         return createStudyMember.getId();
+    }
+
+    @Transactional
+    public void checkDuplicateStudyMember(User user, Study study) {
+        findStudyMemberByUserAndStudy(user, study)
+                .ifPresent(studyMember -> {
+                    throw new DuplicateStudyMemberException("이미 가입한 스터디입니다.");
+                });
+    }
+
+    private Optional<StudyMember> findStudyMemberByUserAndStudy(User user, Study study) {
+        return studyMemberRepository.findStudyMemberByUserAndStudy(user, study);
     }
 }
