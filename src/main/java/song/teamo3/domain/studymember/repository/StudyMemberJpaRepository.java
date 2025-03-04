@@ -1,5 +1,7 @@
 package song.teamo3.domain.studymember.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +20,12 @@ public interface StudyMemberJpaRepository extends JpaRepository<StudyMember, Lon
             "  and sm.study = :study ")
     Optional<StudyMember> findStudyMemberByUserAndStudy(@Param("user") User user,
                                                         @Param("study") Study study);
+
+    @Query("select sm " +
+            " from StudyMember sm " +
+            " join fetch sm.user " +
+            " join fetch sm.study " +
+            "where sm.user = :user ")
+    Page<StudyMember> findStudyMembersByUser(@Param("user") User user,
+                                             Pageable pageable);
 }

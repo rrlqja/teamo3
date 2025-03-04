@@ -2,10 +2,13 @@ package song.teamo3.domain.studymember.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import song.teamo3.domain.common.exception.studymember.exceptions.DuplicateStudyMemberException;
 import song.teamo3.domain.study.entity.Study;
+import song.teamo3.domain.studymember.dto.StudyMemberPageDto;
 import song.teamo3.domain.studymember.entity.StudyMember;
 import song.teamo3.domain.studymember.entity.StudyMemberRole;
 import song.teamo3.domain.studymember.repository.StudyMemberJpaRepository;
@@ -38,6 +41,12 @@ public class StudyMemberService {
                 .ifPresent(studyMember -> {
                     throw new DuplicateStudyMemberException("이미 가입한 스터디입니다.");
                 });
+    }
+
+    @Transactional
+    public Page<StudyMemberPageDto> getStudyMemberPage(User user, Pageable pageable) {
+        return studyMemberRepository.findStudyMembersByUser(user, pageable)
+                .map(StudyMemberPageDto::new);
     }
 
     private Optional<StudyMember> findStudyMemberByUserAndStudy(User user, Study study) {

@@ -44,4 +44,8 @@ public class StudyApplication extends PostEntity {
         this.study = study;
         this.status = StudyApplicationStatus.PENDING;
     }
+
+    public void approve() {
+        this.status = StudyApplicationStatus.APPROVED;
+    }
 }
