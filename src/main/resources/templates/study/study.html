@@ -47,6 +47,9 @@
                         <div class="justify-content-center align-items-center" style="height: 60px;display: flex;">
                             <button class="btn btn-outline-primary" type="button" th:onclick="|location.href='@{/study/apply/{studyId}(studyId=*{id})}'|">스터디 가입 신청</button>
                         </div>
+                        <div class="justify-content-end" style="width: 100%;height: 60px;display: flex;align-items: center;gap: 10px;padding-right: 12px;" th:if="*{isMember()}">
+                            <button class="btn btn-outline-danger" type="button" th:text="탈퇴" th:onclick="exitStudy([[*{id}]])" style="width: 60px;height: 40px;">수정</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -77,6 +80,23 @@
 </div>
 
 <script>
+    function exitStudy(studyId) {
+        fetch(`/study/exit/${studyId}`, {
+            method: 'POST'
+        })
+            .then(response => {
+                if (response.redirected) {
+                    alert("탈퇴하였습니다.");
+                    window.location.href = response.url;
+                }
+                else {
+                    throw new Error('탈퇴 요청 실패');
+                }
+            })
+            .catch(error => {
+                alert("탈퇴 에러");
+            });
+    }
 </script>
 </body>
 </html>

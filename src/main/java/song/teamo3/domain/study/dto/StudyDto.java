@@ -18,8 +18,9 @@ public class StudyDto {
     private String writerName;
 
     private boolean isWriter;
+    private boolean isMember;
 
-    public StudyDto(Study study, User user) {
+    public StudyDto(Study study, User user, boolean isMember) {
         this.id = study.getId();
         this.title = study.getTitle();
         this.description = study.getDescription();
@@ -29,6 +30,7 @@ public class StudyDto {
         this.writerName = study.getWriter().getUsername();
 
         this.isWriter = (user != null && user.getId().equals(study.getWriter().getId()));
+        this.isMember = isMember;
     }
 
     public StudyDto(Study study) {
@@ -41,5 +43,6 @@ public class StudyDto {
         this.writerName = study.getWriter().getUsername();
 
         this.isWriter = false;
+        this.isMember = false;
     }
 }

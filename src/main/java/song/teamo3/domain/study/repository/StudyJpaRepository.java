@@ -3,6 +3,7 @@ package song.teamo3.domain.study.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,10 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long> {
             " join fetch s.writer " +
             "where s.id = :id ")
     Optional<Study> findStudyById(@Param("id") Long id);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("delete " +
+            " from Study s " +
+            "where s = :study")
+    Integer deleteStudy(@Param("study") Study study);
 }

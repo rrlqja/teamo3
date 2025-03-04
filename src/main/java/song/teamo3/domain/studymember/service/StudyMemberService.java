@@ -7,7 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import song.teamo3.domain.common.exception.studymember.exceptions.DuplicateStudyMemberException;
+import song.teamo3.domain.common.exception.studymember.exceptions.StudyMemberNotFoundException;
 import song.teamo3.domain.study.entity.Study;
+import song.teamo3.domain.study.repository.StudyJpaRepository;
+import song.teamo3.domain.studyapplication.repository.StudyApplicationJpaRepository;
 import song.teamo3.domain.studymember.dto.StudyMemberPageDto;
 import song.teamo3.domain.studymember.entity.StudyMember;
 import song.teamo3.domain.studymember.entity.StudyMemberRole;
@@ -21,6 +24,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StudyMemberService {
     private final StudyMemberJpaRepository studyMemberRepository;
+    private final StudyApplicationJpaRepository studyApplicationRepository;
+    private final StudyJpaRepository studyRepository;
 
     @Transactional
     public Long createStudyMember(User user, Study study, StudyMemberRole role) {
@@ -44,9 +49,32 @@ public class StudyMemberService {
     }
 
     @Transactional
+    public void exitStudyMember(User user, Study study) {
+        StudyMember studyMember = findStudyMemberByUserAndStudy(user, study)
+                .orElseThrow(StudyMemberNotFoundException::new);
+
+        if (studyMember.getRole().equals(StudyMemberRole.OWNER)) {
+            Integer deleteStudyMembersByStudy = studyMemberRepository.deleteStudyMembersByStudy(study);
+            studyApplicationRepository.deleteStudyApplicationsByStudy(study);
+            studyRepository.delete(study);
+            log.info("[Exit StudyMember] id: {}, members: {}", study.getId(), deleteStudyMembersByStudy);
+
+            return;
+        }
+
+        studyMemberRepository.delete(studyMember);
+        log.info("[Exit StudyMember] id: {}", studyMember.getId());
+    }
+
+    @Transactional
     public Page<StudyMemberPageDto> getStudyMemberPage(User user, Pageable pageable) {
         return studyMemberRepository.findStudyMembersByUser(user, pageable)
                 .map(StudyMemberPageDto::new);
+    }
+
+    @Transactional
+    public boolean isMember(User user, Study study) {
+        return findStudyMemberByUserAndStudy(user, study).isPresent();
     }
 
     private Optional<StudyMember> findStudyMemberByUserAndStudy(User user, Study study) {

@@ -3,6 +3,7 @@ package song.teamo3.domain.studyapplication.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -18,9 +19,11 @@ public interface StudyApplicationJpaRepository extends JpaRepository<StudyApplic
     @Query("select sa " +
             " from StudyApplication sa " +
             "where sa.user = :user " +
-            "  and sa.study = :study")
+            "  and sa.study = :study " +
+            "  and sa.status = :status")
     Optional<StudyApplication> findStudyApplicationByUserAndStudy(@Param("user") User user,
-                                                                  @Param("study") Study study);
+                                                                  @Param("study") Study study,
+                                                                  @Param("status") StudyApplicationStatus status);
 
     @Query("select sa " +
             " from StudyApplication sa " +
@@ -36,4 +39,10 @@ public interface StudyApplicationJpaRepository extends JpaRepository<StudyApplic
             " join fetch sa.study " +
             "where sa.id = :id")
     Optional<StudyApplication> findById(@Param("id") Long id);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("delete " +
+            " from StudyApplication sa " +
+            "where sa.study = :study")
+    Integer deleteStudyApplicationsByStudy(@Param("study") Study study);
 }

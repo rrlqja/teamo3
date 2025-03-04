@@ -64,8 +64,10 @@ public class StudyService {
 
         study.incrementViews();
 
+        boolean isMember = studyMemberService.isMember(user, study);
+
         log.info("[Get Study] id: {}", study.getId());
-        return new StudyDto(study, user);
+        return new StudyDto(study, user, isMember);
     }
 
     @Transactional
@@ -90,6 +92,15 @@ public class StudyService {
         studyMemberService.checkDuplicateStudyMember(user, study);
 
         studyApplicationService.createStudyApplication(user, study, applicationDto);
+
+        return study.getId();
+    }
+
+    @Transactional
+    public Long exitStudy(User user, Long studyId) {
+        Study study = findStudyById(studyId);
+
+        studyMemberService.exitStudyMember(user, study);
 
         return study.getId();
     }

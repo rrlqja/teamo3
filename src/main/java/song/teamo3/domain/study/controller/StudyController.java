@@ -116,6 +116,14 @@ public class StudyController {
         return "redirect:/study/{studyId}";
     }
 
+    @PostMapping("/exit/{studyId}")
+    public String postExitStudy(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                @PathVariable("studyId") Long studyId) {
+        studyService.exitStudy(userDetails.getUser(), studyId);
+
+        return "redirect:/study/studyList";
+    }
+
     @GetMapping("/{studyId}/applicationList")
     public String getStudyApplicationList(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                           @PathVariable("studyId") Long studyId,

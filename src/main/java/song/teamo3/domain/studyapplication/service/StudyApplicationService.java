@@ -43,7 +43,7 @@ public class StudyApplicationService {
 
     @Transactional
     public void checkDuplicateStudyApplication(User user, Study study) {
-        studyApplicationRepository.findStudyApplicationByUserAndStudy(user, study)
+        studyApplicationRepository.findStudyApplicationByUserAndStudy(user, study, PENDING)
                 .ifPresent(sa -> {
                     throw new DuplicateStudyMemberException("이미 신청하였습니다.");
                 });
