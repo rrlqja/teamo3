@@ -18,9 +18,12 @@ import song.teamo3.domain.study.entity.Study;
 import song.teamo3.domain.study.repository.StudyJpaRepository;
 import song.teamo3.domain.studyapplication.dto.StudyApplicationPageDto;
 import song.teamo3.domain.studyapplication.service.StudyApplicationService;
+import song.teamo3.domain.studymember.dto.StudyMemberListDto;
 import song.teamo3.domain.studymember.entity.StudyMemberRole;
 import song.teamo3.domain.studymember.service.StudyMemberService;
 import song.teamo3.domain.user.entity.User;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -52,22 +55,26 @@ public class StudyService {
     public StudyDto getStudy(Long studyId) {
         Study study = findStudyById(studyId);
 
-        study.incrementViews();
+        List<StudyMemberListDto> studyMemberList = studyMemberService.getStudyMemberList(study);
+
+        incrementViews(study);
 
         log.info("[Get Study] id: {}", study.getId());
-        return new StudyDto(study);
+        return new StudyDto(study, studyMemberList);
     }
 
     @Transactional
     public StudyDto getStudy(User user, Long studyId) {
         Study study = findStudyById(studyId);
 
-        study.incrementViews();
+        List<StudyMemberListDto> studyMemberList = studyMemberService.getStudyMemberList(study);
+
+        incrementViews(study);
 
         boolean isMember = studyMemberService.isMember(user, study);
 
         log.info("[Get Study] id: {}", study.getId());
-        return new StudyDto(study, user, isMember);
+        return new StudyDto(study, user, studyMemberList, isMember);
     }
 
     @Transactional
@@ -83,6 +90,12 @@ public class StudyService {
 
         log.info("[Edit Study] id: {}", editStudy.getId());
         return editStudy.getId();
+    }
+
+    @Transactional
+    public void deleteStudy(User user, Long studyId) {
+        Study study = findStudyById(studyId);
+
     }
 
     @Transactional
@@ -119,5 +132,9 @@ public class StudyService {
     private Study findStudyById(Long studyId) {
         return studyRepository.findStudyById(studyId)
                 .orElseThrow(StudyNotFoundException::new);
+    }
+
+    private void incrementViews(Study study) {
+        study.incrementViews();
     }
 }

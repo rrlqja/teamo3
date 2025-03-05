@@ -11,6 +11,7 @@ import song.teamo3.domain.study.entity.Study;
 import song.teamo3.domain.studymember.entity.StudyMember;
 import song.teamo3.domain.user.entity.User;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -29,6 +30,12 @@ public interface StudyMemberJpaRepository extends JpaRepository<StudyMember, Lon
             "where sm.user = :user ")
     Page<StudyMember> findStudyMembersByUser(@Param("user") User user,
                                              Pageable pageable);
+
+    @Query("select sm " +
+            " from StudyMember sm " +
+            " join fetch sm.user " +
+            "where sm.study = :study")
+    List<StudyMember> findStudyMembersByStudy(@Param("study") Study study);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("delete " +

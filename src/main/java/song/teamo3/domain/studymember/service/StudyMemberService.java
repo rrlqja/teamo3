@@ -11,12 +11,14 @@ import song.teamo3.domain.common.exception.studymember.exceptions.StudyMemberNot
 import song.teamo3.domain.study.entity.Study;
 import song.teamo3.domain.study.repository.StudyJpaRepository;
 import song.teamo3.domain.studyapplication.repository.StudyApplicationJpaRepository;
+import song.teamo3.domain.studymember.dto.StudyMemberListDto;
 import song.teamo3.domain.studymember.dto.StudyMemberPageDto;
 import song.teamo3.domain.studymember.entity.StudyMember;
 import song.teamo3.domain.studymember.entity.StudyMemberRole;
 import song.teamo3.domain.studymember.repository.StudyMemberJpaRepository;
 import song.teamo3.domain.user.entity.User;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -70,6 +72,13 @@ public class StudyMemberService {
     public Page<StudyMemberPageDto> getStudyMemberPage(User user, Pageable pageable) {
         return studyMemberRepository.findStudyMembersByUser(user, pageable)
                 .map(StudyMemberPageDto::new);
+    }
+
+    @Transactional
+    public List<StudyMemberListDto> getStudyMemberList(Study study) {
+        return studyMemberRepository.findStudyMembersByStudy(study).stream()
+                .map(StudyMemberListDto::new)
+                .toList();
     }
 
     @Transactional

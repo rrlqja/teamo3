@@ -96,6 +96,14 @@ public class StudyController {
         return "redirect:/study/{studyId}";
     }
 
+    @PostMapping("/delete/{studyId}")
+    public String postDelete(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                             @PathVariable("studyId") Long studyId) {
+        studyService.deleteStudy(userDetails.getUser(), studyId);
+
+        return "text";
+    }
+
     @GetMapping("/apply/{studyId}")
     public String getStudyApplication(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                       @PathVariable("studyId") Long studyId,

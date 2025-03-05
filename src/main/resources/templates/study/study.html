@@ -28,12 +28,19 @@
                         <div style="width: 100%;height: 60px;padding: 0px;">
                             <p th:text="*{title}" style="width: 100%;height: 100%;margin: 0px;line-height: 60px;margin-right: 0px;margin-left: 0px;padding-left: 12px;padding-right: 12px;font-weight: bold;font-size: 19px;">제목</p>
                         </div>
-                        <div style="width: 100%;height: 60px;padding: 0px;border-bottom: 0.5px solid rgb(208,210,214) ;">
-                            <p th:text="*{writerName}" style="width: 100%;height: 50%;margin: 0px;line-height: 30px;margin-right: 0px;margin-left: 0px;padding-left: 12px;padding-right: 12px;font-weight: bold;font-size: 17px;">작성자</p>
-                            <div style="height: 50%;width: 100%;display: flex;">
+                        <div style="width: 100%;height: 90px;padding: 0px;border-bottom: 0.5px solid rgb(208,210,214) ;">
+                            <p th:text="*{writerName}" style="width: 100%;height: 30%;margin: 0px;line-height: 30px;margin-right: 0px;margin-left: 0px;padding-left: 12px;padding-right: 12px;font-weight: bold;font-size: 17px;">작성자</p>
+                            <div style="height: 30%;width: 100%;display: flex;">
                                 <p style="width: 100%;height: 100%;margin: 0px;line-height: 30px;margin-right: 0px;margin-left: 0px;font-size: 15px;">
                                     <span th:text="'작성일 ' + *{createdDate}" style="padding-right: 12px;padding-left: 12px;">작성일</span>
                                     <span th:text="'조회수 ' + *{views}" style="padding-right: 12px;padding-left: 12px;">조회수</span>
+                                </p>
+                            </div>
+                            <div style="height: 50%;width: 100%;display: flex;">
+                                <p style="width: 100%;height: 100%;margin: 0px;line-height: 30px;margin-right: 0px;margin-left: 0px;font-size: 15px;">
+                                    <span th:text="'멤버 ' " style="padding-right: 12px;padding-left: 12px;">작성일</span>
+                                    <span th:each="member, iterStat : ${study.studyMemberList}"
+                                          th:text="${member.username + (iterStat.last ? '' : ' ')}"></span>
                                 </p>
                             </div>
                         </div>
@@ -42,10 +49,10 @@
                         </div>
                         <div class="justify-content-end" style="width: 100%;height: 60px;display: flex;align-items: center;gap: 10px;padding-right: 12px;" th:if="*{isWriter()}">
                             <button class="btn btn-outline-secondary" type="button" th:text="수정" th:onclick="|location.href='@{/study/modify/{studyId}(studyId=*{id})}'|" style="width: 60px;height: 40px;">수정</button>
-                            <button class="btn btn-outline-secondary" type="button" th:text="삭제" style="width: 60px;height: 40px;">삭제</button>
+                            <button class="btn btn-outline-secondary" type="button" th:text="삭제" th:onclick="confirmDelete([[*{id}]])" style="width: 60px;height: 40px;">삭제</button>
                         </div>
                         <div class="justify-content-center align-items-center" style="height: 60px;display: flex;">
-                            <button class="btn btn-outline-primary" type="button" th:onclick="|location.href='@{/study/apply/{studyId}(studyId=*{id})}'|">스터디 가입 신청</button>
+                            <button class="btn btn-outline-primary" type="button" th:onclick="|openPopup('@{/study/apply/{studyId}(studyId=*{id})}')|">스터디 가입 신청</button>
                         </div>
                         <div class="justify-content-end" style="width: 100%;height: 60px;display: flex;align-items: center;gap: 10px;padding-right: 12px;" th:if="*{isMember()}">
                             <button class="btn btn-outline-danger" type="button" th:text="탈퇴" th:onclick="exitStudy([[*{id}]])" style="width: 60px;height: 40px;">수정</button>
@@ -72,14 +79,38 @@
         <div class="col-md-2" style="padding: 0px;">
             <div th:object="${study}" style="width: 100%;height: 300px;display: flex;flex-direction: column;padding: 16px; gap: 16px; position: fixed;">
                 <button class="btn btn-outline-primary" type="button" th:if="*{isWriter()}" th:onclick="|location.href='@{/study/{studyId}/applicationList(studyId=*{id})}'|" style="width: 100px;height: 40px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">신청서 목록</button>
-                <button class="btn btn-primary" type="button" style="width: 100px;height: 40px;">Button 1</button>
-                <button class="btn btn-primary" type="button" style="width: 100px;height: 40px;">Button 1</button>
+                <button class="btn btn-outline-primary" type="button" th:if="*{isWriter()}" style="padding-left: 0px; padding-right: 0px; width: 100px;height: 40px; font-size: 13px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">프로젝트 생성</button>
+                <button class="btn btn-outline-secondary" type="button" th:onclick="" style="width: 100px; height: 40px;">
+                    <img th:src="@{/imgs/blank_heart.png}" style="width: 24px;height: 24px;">
+                    <span th:text="0"></span>
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    function openPopup(url) {
+        window.open(url, 'applyPopup', 'width=600,height=700');
+    }
+
+    function confirmDelete(studyId) {
+        // alert(studyId);
+        if (confirm("정말 삭제하시겠습니까?")) {
+            fetch(`/study/${studyId}/exitTeam`, {
+                method: "POST"
+            }).then((res) => {
+                if (res.redirected) {
+                    window.location.href = res.url;
+                } else {
+                    alert("잘못된 요청입니다.");
+                }
+            }).catch((err) => {
+                alert("잘못된 요청입니다.");
+            })
+        }
+    }
+
     function exitStudy(studyId) {
         fetch(`/study/exit/${studyId}`, {
             method: 'POST'
