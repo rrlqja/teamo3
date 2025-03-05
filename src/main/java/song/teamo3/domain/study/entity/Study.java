@@ -29,6 +29,12 @@ public class Study extends PostEntity {
     @Enumerated(EnumType.STRING)
     private StudyStatus status;
 
+    public StudyStatus changeStatus() {
+        this.status = this.status.changeStatus();
+
+        return this.status;
+    }
+
     public static Study create(User writer, String title, String description) {
         return new Study(writer, title, description, StudyStatus.RECRUITING);
     }

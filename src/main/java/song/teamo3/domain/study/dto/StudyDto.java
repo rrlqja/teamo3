@@ -16,6 +16,7 @@ public class StudyDto {
     private String description;
     private String createdDate;
     private Long views;
+    private String status;
 
     private List<StudyMemberListDto> studyMemberList = new ArrayList<>();
 
@@ -31,6 +32,7 @@ public class StudyDto {
         this.description = study.getDescription();
         this.createdDate = study.getCreateDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
         this.views = study.getViews();
+        this.status = study.getStatus().name();
 
         this.studyMemberList = studymemberList;
 
@@ -46,6 +48,7 @@ public class StudyDto {
         this.description = study.getDescription();
         this.createdDate = study.getCreateDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
         this.views = study.getViews();
+        this.status = study.getStatus().name();
 
         this.studyMemberList = studyMemberList;
 

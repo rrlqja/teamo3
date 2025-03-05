@@ -51,7 +51,7 @@
                             <button class="btn btn-outline-secondary" type="button" th:text="수정" th:onclick="|location.href='@{/study/modify/{studyId}(studyId=*{id})}'|" style="width: 60px;height: 40px;">수정</button>
                             <button class="btn btn-outline-secondary" type="button" th:text="삭제" th:onclick="confirmDelete([[*{id}]])" style="width: 60px;height: 40px;">삭제</button>
                         </div>
-                        <div class="justify-content-center align-items-center" style="height: 60px;display: flex;">
+                        <div class="justify-content-center align-items-center" th:if="*{status == 'RECRUITING'}" style="height: 60px;display: flex;">
                             <button class="btn btn-outline-primary" type="button" th:onclick="|openPopup('@{/study/apply/{studyId}(studyId=*{id})}')|">스터디 가입 신청</button>
                         </div>
                         <div class="justify-content-end" style="width: 100%;height: 60px;display: flex;align-items: center;gap: 10px;padding-right: 12px;" th:if="*{isMember()}">
@@ -77,9 +77,14 @@
             </div>
         </div>
         <div class="col-md-2" style="padding: 0px;">
-            <div th:object="${study}" style="width: 100%;height: 300px;display: flex;flex-direction: column;padding: 16px; gap: 16px; position: fixed;">
+            <div th:object="${study}" style="width: 100%;height: 600px;display: flex;flex-direction: column;padding: 16px; gap: 16px; position: fixed;">
                 <button class="btn btn-outline-primary" type="button" th:if="*{isWriter()}" th:onclick="|location.href='@{/study/{studyId}/applicationList(studyId=*{id})}'|" style="width: 100px;height: 40px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">신청서 목록</button>
                 <button class="btn btn-outline-primary" type="button" th:if="*{isWriter()}" style="padding-left: 0px; padding-right: 0px; width: 100px;height: 40px; font-size: 13px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">프로젝트 생성</button>
+                <button type="button" id="studyStatusButton" style="padding-left: 0px; padding-right: 0px; width: 100px;height: 40px; font-size: 13px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                        th:class="*{status == 'RECRUITING'} ? 'btn btn-outline-primary' : 'btn btn-outline-secondary'"
+                        th:onclick="changeStudyStatus([[*{id}]])">
+                    <span id="studyStatus" th:text="*{status == 'RECRUITING'} ? '모집중' : '모집완료'"/>
+                </button>
                 <button class="btn btn-outline-secondary" type="button" th:onclick="" style="width: 100px; height: 40px;">
                     <img th:src="@{/imgs/blank_heart.png}" style="width: 24px;height: 24px;">
                     <span th:text="0"></span>
@@ -127,6 +132,21 @@
             .catch(error => {
                 alert("탈퇴 에러");
             });
+    }
+
+    function changeStudyStatus(studyId) {
+        fetch(`/study/changeStatus/${studyId}`, {
+            method: 'POST'
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                alert("잘못된 요청입니다.");
+            }
+        }).catch(error => {
+            console.log(error);
+            alert("오류가 발생하였습니다.");
+        });
     }
 </script>
 </body>

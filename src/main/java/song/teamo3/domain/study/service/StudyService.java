@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import song.teamo3.domain.common.exception.study.exceptions.ClosedStudyException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyAccessDeniedException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyEditNotAllowedException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyNotFoundException;
@@ -15,6 +16,7 @@ import song.teamo3.domain.study.dto.EditStudyDto;
 import song.teamo3.domain.study.dto.StudyDto;
 import song.teamo3.domain.study.dto.StudyPageDto;
 import song.teamo3.domain.study.entity.Study;
+import song.teamo3.domain.study.entity.StudyStatus;
 import song.teamo3.domain.study.repository.StudyJpaRepository;
 import song.teamo3.domain.studyapplication.dto.StudyApplicationPageDto;
 import song.teamo3.domain.studyapplication.service.StudyApplicationService;
@@ -102,6 +104,10 @@ public class StudyService {
     public Long applyStudy(User user, Long studyId, CreateStudyApplicationDto applicationDto) {
         Study study = findStudyById(studyId);
 
+        if (study.getStatus() != StudyStatus.RECRUITING) {
+            throw new ClosedStudyException("모집중이지 않은 스터디 입니다.");
+        }
+
         studyMemberService.checkDuplicateStudyMember(user, study);
 
         studyApplicationService.createStudyApplication(user, study, applicationDto);
@@ -127,6 +133,19 @@ public class StudyService {
         }
 
         return studyApplicationService.getPendingStudyApplicationPage(study, pageable);
+    }
+
+    @Transactional
+    public Long changeStatus(User user, Long studyId) {
+        Study study = findStudyById(studyId);
+
+        if (study.getWriter().getId() != user.getId()) {
+            throw new StudyAccessDeniedException("권한이 없습니다.");
+        }
+
+        StudyStatus studyStatus = study.changeStatus();
+        log.info("[Change Study Status] id: {}, status: {}", study.getId(), studyStatus.name());
+        return study.getId();
     }
 
     private Study findStudyById(Long studyId) {
