@@ -20,6 +20,8 @@ import song.teamo3.domain.studymember.entity.StudyMemberRole;
 import song.teamo3.domain.studymember.service.StudyMemberService;
 import song.teamo3.domain.user.entity.User;
 
+import java.util.List;
+
 import static song.teamo3.domain.studyapplication.entity.StudyApplicationStatus.*;
 
 @Slf4j
@@ -50,9 +52,10 @@ public class StudyApplicationService {
     }
 
     @Transactional
-    public Page<StudyApplicationPageDto> getPendingStudyApplicationPage(Study study, Pageable pageable) {
-        return studyApplicationRepository.findPendingStudyApplicationsByStudy(study, PENDING, pageable)
-                .map(StudyApplicationPageDto::new);
+    public List<StudyApplicationPageDto> getPendingStudyApplicationPage(Study study) {
+        return studyApplicationRepository.findPendingStudyApplicationsByStudy(study, PENDING).stream()
+                .map(StudyApplicationPageDto::new)
+                .toList();
     }
 
     @Transactional

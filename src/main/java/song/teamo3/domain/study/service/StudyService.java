@@ -125,14 +125,14 @@ public class StudyService {
     }
 
     @Transactional
-    public Page<StudyApplicationPageDto> getStudyApplicationPage(User user, Long studyId, Pageable pageable) {
+    public List<StudyApplicationPageDto> getStudyApplicationPage(User user, Long studyId) {
         Study study = findStudyById(studyId);
 
         if (study.getWriter().getId() != user.getId()) {
             throw new StudyAccessDeniedException("권한이 없습니다.");
         }
 
-        return studyApplicationService.getPendingStudyApplicationPage(study, pageable);
+        return studyApplicationService.getPendingStudyApplicationPage(study);
     }
 
     @Transactional

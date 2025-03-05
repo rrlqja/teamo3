@@ -19,13 +19,13 @@
         </div>
         <div class="col-md-10" style="padding-left: 20px; padding-right: 20px; margin-right: 0px;margin-left: 0px;display: flex;flex-direction: column;">
             <div class="row" style="width: 100%;height: 740px;display: flex; box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;">
-                <div class="col-md-3" style="height: 100%;padding: 0px;overflow-y: auto;border-right: 0.5px solid rgb(155,159,163) ;">
+                <div class="col-md-3" style="height: 100%;padding: 0px;overflow-y: auto;border-right: 0.5px solid rgb(155,159,163);">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item" style="height: 70px;line-height: 50px;font-size: 18px; border-bottom: 0.5px solid rgb(155,159,163) ;"
                             th:each="studyApplication, stat : ${studyApplicationPage}"
                             th:text="${studyApplication.title}"
                             th:onclick="showDetails([[${studyApplication.id}]])">
-                            Item 1
+                            study application
                         </li>
                     </ul>
                 </div>

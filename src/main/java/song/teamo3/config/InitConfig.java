@@ -47,8 +47,8 @@ public class InitConfig {
             StudyMember stMember2 = studyMemberRepository.save(StudyMember.create(user2, study2, StudyMemberRole.OWNER));
             StudyMember stMember3 = studyMemberRepository.save(StudyMember.create(user3, study2, StudyMemberRole.MEMBER));
 
-            StudyApplication studyApplication1 = studyApplicationRepository.save(StudyApplication.create(user2, study1, "신청서 1", "<p>c1</p><p>c2</p><p>c3</p><p>c4</p><p>c5</p>"));
-            StudyApplication studyApplication2 = studyApplicationRepository.save(StudyApplication.create(user3, study1, "신청서 2", "<p>c1</p><p>c2</p><p>c3</p><p>c4</p><p>c5</p>"));
+            StudyApplication studyApplication1 = studyApplicationRepository.save(StudyApplication.create(user2, study1, "신청서 1", "<p>p1</p><p>p2</p><p>p3</p><p>p4</p><p>p5</p>"));
+            StudyApplication studyApplication2 = studyApplicationRepository.save(StudyApplication.create(user3, study1, "신청서 2", "<p>p1</p><p>p2</p><p>p3</p><p>p4</p><p>p5</p><p>p6</p><p>p7</p><p>p8</p>"));
         }
     }
 }

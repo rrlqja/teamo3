@@ -1,7 +1,5 @@
 package song.teamo3.domain.studyapplication.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +10,7 @@ import song.teamo3.domain.studyapplication.entity.StudyApplication;
 import song.teamo3.domain.studyapplication.entity.StudyApplicationStatus;
 import song.teamo3.domain.user.entity.User;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -29,9 +28,8 @@ public interface StudyApplicationJpaRepository extends JpaRepository<StudyApplic
             " from StudyApplication sa " +
             "where sa.study = :study " +
             "  and sa.status = :status")
-    Page<StudyApplication> findPendingStudyApplicationsByStudy(@Param("study") Study study,
-                                                               @Param("status") StudyApplicationStatus status,
-                                                               Pageable pageable);
+    List<StudyApplication> findPendingStudyApplicationsByStudy(@Param("study") Study study,
+                                                               @Param("status") StudyApplicationStatus status);
 
     @Query("select sa " +
             " from StudyApplication sa " +

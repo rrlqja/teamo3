@@ -25,6 +25,7 @@ import song.teamo3.domain.study.service.StudyService;
 import song.teamo3.domain.studyapplication.dto.StudyApplicationPageDto;
 import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -139,9 +140,8 @@ public class StudyController {
     @GetMapping("/{studyId}/applicationList")
     public String getStudyApplicationList(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                           @PathVariable("studyId") Long studyId,
-                                          @PageableDefault(size = 10, page = 0) Pageable pageable,
                                           Model model) {
-        Page<StudyApplicationPageDto> studyApplicationPage = studyService.getStudyApplicationPage(userDetails.getUser(), studyId, pageable);
+        List<StudyApplicationPageDto> studyApplicationPage = studyService.getStudyApplicationPage(userDetails.getUser(), studyId);
 
         model.addAttribute("studyApplicationPage", studyApplicationPage);
 
