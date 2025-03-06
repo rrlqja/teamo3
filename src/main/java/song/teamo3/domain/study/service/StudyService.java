@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import song.teamo3.domain.comment.dto.CommentPageDto;
 import song.teamo3.domain.comment.dto.CreateCommentDto;
 import song.teamo3.domain.comment.service.CommentService;
+import song.teamo3.domain.common.exception.study.exceptions.BumpUpNotAllowedException;
 import song.teamo3.domain.common.exception.study.exceptions.ClosedStudyException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyAccessDeniedException;
 import song.teamo3.domain.common.exception.study.exceptions.AlreadyDeletedStudyException;
@@ -30,6 +31,7 @@ import song.teamo3.domain.studymember.entity.StudyMemberRole;
 import song.teamo3.domain.studymember.service.StudyMemberService;
 import song.teamo3.domain.user.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -158,12 +160,29 @@ public class StudyService {
     public Long changeStatus(User user, Long studyId) {
         Study study = findStudyById(studyId);
 
-        if (study.getWriter().getId() != user.getId()) {
+        if (!study.getWriter().getId().equals(user.getId())) {
             throw new StudyAccessDeniedException("권한이 없습니다.");
         }
 
         StudyStatus studyStatus = study.changeStatus();
         log.info("[Change Study Status] id: {}, status: {}", study.getId(), studyStatus.name());
+        return study.getId();
+    }
+
+    @Transactional
+    public Long bumpUp(User user, Long studyId) {
+        Study study = findStudyById(studyId);
+
+        if (!study.getWriter().getId().equals(user.getId())) {
+            throw new StudyAccessDeniedException("권한이 없습니다.");
+        }
+
+        if (!study.getBumpUpDate().plusDays(1).isBefore(LocalDateTime.now())) {
+            throw new BumpUpNotAllowedException("끌어올릴 수 없습니다.");
+        }
+
+        study.bumpUp();
+
         return study.getId();
     }
 

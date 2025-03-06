@@ -12,8 +12,11 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import song.teamo3.domain.common.entity.PostEntity;
 import song.teamo3.domain.user.entity.User;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -30,6 +33,8 @@ public class Study extends PostEntity {
     private StudyStatus status;
 
     private boolean deleteFlag;
+    @CreatedDate
+    private LocalDateTime bumpUpDate;
 
     public StudyStatus changeStatus() {
         this.status = this.status.changeStatus();
@@ -39,6 +44,10 @@ public class Study extends PostEntity {
 
     public void delete() {
         this.deleteFlag = true;
+    }
+
+    public void bumpUp() {
+        bumpUpDate = LocalDateTime.now();
     }
 
     public static Study create(User writer, String title, String description) {

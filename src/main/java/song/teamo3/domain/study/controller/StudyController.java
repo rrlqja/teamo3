@@ -159,6 +159,17 @@ public class StudyController {
         return "redirect:/study/{studyId}";
     }
 
+    @PostMapping("/bumpUp/{studyId}")
+    public String postBumpUp(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                             @PathVariable("studyId") Long studyId,
+                             RedirectAttributes redirectAttributes) {
+        Long bumpUpStudyId = studyService.bumpUp(userDetails.getUser(), studyId);
+
+        redirectAttributes.addAttribute("studyId", bumpUpStudyId);
+
+        return "redirect:/study/{studyId}";
+    }
+
     @PostMapping("/{studyId}/createComment")
     public String postCreateComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                     @PathVariable("studyId") Long studyId,

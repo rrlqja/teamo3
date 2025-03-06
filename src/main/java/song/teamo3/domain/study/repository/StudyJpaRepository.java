@@ -14,7 +14,8 @@ import java.util.Optional;
 public interface StudyJpaRepository extends JpaRepository<Study, Long> {
     @Query("select s " +
             " from Study s " +
-            "where s.deleteFlag = false ")
+            "where s.deleteFlag = false " +
+            "order by s.bumpUpDate desc")
     Page<Study> findStudyPage(Pageable pageable);
 
     @Query("select s " +

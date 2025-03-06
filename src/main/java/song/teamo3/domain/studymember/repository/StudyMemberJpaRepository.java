@@ -27,6 +27,7 @@ public interface StudyMemberJpaRepository extends JpaRepository<StudyMember, Lon
             " from StudyMember sm " +
             " join fetch sm.user " +
             " join fetch sm.study sms " +
+            " join fetch sms.writer " +
             "where sm.user = :user " +
             "  and sms.deleteFlag = false")
     Page<StudyMember> findStudyMembersByUser(@Param("user") User user,

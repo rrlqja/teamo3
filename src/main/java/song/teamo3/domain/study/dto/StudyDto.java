@@ -16,7 +16,7 @@ public class StudyDto {
     private Long id;
     private String title;
     private String description;
-    private String createdDate;
+    private String bumpUpDate;
     private Long views;
     private String status;
 
@@ -34,7 +34,7 @@ public class StudyDto {
         this.id = study.getId();
         this.title = study.getTitle();
         this.description = study.getDescription();
-        this.createdDate = study.getCreateDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
+        this.bumpUpDate = study.getBumpUpDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
         this.views = study.getViews();
         this.status = study.getStatus().name();
 
@@ -42,7 +42,7 @@ public class StudyDto {
 
         this.commentPage = commentPage;
 
-        this.writerName = study.getWriter().getUsername();
+        this.writerName = study.getWriter().getName();
 
         this.isWriter = (user != null && user.getId().equals(study.getWriter().getId()));
         this.isMember = isMember;
@@ -52,7 +52,7 @@ public class StudyDto {
         this.id = study.getId();
         this.title = study.getTitle();
         this.description = study.getDescription();
-        this.createdDate = study.getCreateDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
+        this.bumpUpDate = study.getBumpUpDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
         this.views = study.getViews();
         this.status = study.getStatus().name();
 
@@ -60,7 +60,7 @@ public class StudyDto {
 
         this.commentPage = commentPage;
 
-        this.writerName = study.getWriter().getUsername();
+        this.writerName = study.getWriter().getName();
 
         this.isWriter = false;
         this.isMember = false;
