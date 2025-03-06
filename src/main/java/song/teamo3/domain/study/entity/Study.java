@@ -29,10 +29,16 @@ public class Study extends PostEntity {
     @Enumerated(EnumType.STRING)
     private StudyStatus status;
 
+    private boolean deleteFlag;
+
     public StudyStatus changeStatus() {
         this.status = this.status.changeStatus();
 
         return this.status;
+    }
+
+    public void delete() {
+        this.deleteFlag = true;
     }
 
     public static Study create(User writer, String title, String description) {
@@ -43,5 +49,6 @@ public class Study extends PostEntity {
         super(title, description);
         this.writer = writer;
         this.status = status;
+        this.deleteFlag = false;
     }
 }

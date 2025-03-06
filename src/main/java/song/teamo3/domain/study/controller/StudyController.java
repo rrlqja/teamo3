@@ -27,7 +27,6 @@ import song.teamo3.domain.studyapplication.dto.StudyApplicationPageDto;
 import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -107,7 +106,7 @@ public class StudyController {
                              @PathVariable("studyId") Long studyId) {
         studyService.deleteStudy(userDetails.getUser(), studyId);
 
-        return "text";
+        return "redirect:/study/studyList";
     }
 
     @GetMapping("/apply/{studyId}")

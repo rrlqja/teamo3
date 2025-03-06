@@ -12,6 +12,7 @@ import song.teamo3.domain.comment.dto.CreateCommentDto;
 import song.teamo3.domain.comment.service.CommentService;
 import song.teamo3.domain.common.exception.study.exceptions.ClosedStudyException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyAccessDeniedException;
+import song.teamo3.domain.common.exception.study.exceptions.AlreadyDeletedStudyException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyEditNotAllowedException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyNotFoundException;
 import song.teamo3.domain.study.dto.CreateStudyApplicationDto;
@@ -62,8 +63,9 @@ public class StudyService {
     public StudyDto getStudy(Long studyId) {
         Study study = findStudyById(studyId);
 
-        List<StudyMemberListDto> studyMemberList = studyMemberService.getStudyMemberList(study);
+        checkDeleted(study);
 
+        List<StudyMemberListDto> studyMemberList = studyMemberService.getStudyMemberList(study);
         Page<CommentPageDto> commentPage = commentService.getCommentPage(study, PageRequest.of(0, 10));
 
         incrementViews(study);
@@ -76,8 +78,9 @@ public class StudyService {
     public StudyDto getStudy(User user, Long studyId) {
         Study study = findStudyById(studyId);
 
-        List<StudyMemberListDto> studyMemberList = studyMemberService.getStudyMemberList(study);
+        checkDeleted(study);
 
+        List<StudyMemberListDto> studyMemberList = studyMemberService.getStudyMemberList(study);
         Page<CommentPageDto> commentPage = commentService.getCommentPage(study, PageRequest.of(0, 10));
 
         incrementViews(study);
@@ -96,6 +99,8 @@ public class StudyService {
             throw new StudyEditNotAllowedException("수정할 수 없습니다.");
         }
 
+        checkDeleted(study);
+
         study.editPost(editStudyDto.getTitle(), editStudyDto.getDescription());
         Study editStudy = studyRepository.save(study);
 
@@ -107,6 +112,11 @@ public class StudyService {
     public void deleteStudy(User user, Long studyId) {
         Study study = findStudyById(studyId);
 
+        if (!study.getWriter().getId().equals(user.getId())) {
+            throw new StudyAccessDeniedException("권한이 없습니다.");
+        }
+
+        study.delete();
     }
 
     @Transactional
@@ -116,9 +126,9 @@ public class StudyService {
         if (study.getStatus() != StudyStatus.RECRUITING) {
             throw new ClosedStudyException("모집중이지 않은 스터디 입니다.");
         }
+        checkDeleted(study);
 
         studyMemberService.checkDuplicateStudyMember(user, study);
-
         studyApplicationService.createStudyApplication(user, study, applicationDto);
 
         return study.getId();
@@ -173,5 +183,11 @@ public class StudyService {
 
     private void incrementViews(Study study) {
         study.incrementViews();
+    }
+
+    private void checkDeleted(Study study) {
+        if (study.isDeleteFlag()) {
+            throw new AlreadyDeletedStudyException("삭제된 스터디 입니다.");
+        }
     }
 }

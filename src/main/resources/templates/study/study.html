@@ -128,7 +128,7 @@
     function confirmDelete(studyId) {
         // alert(studyId);
         if (confirm("정말 삭제하시겠습니까?")) {
-            fetch(`/study/${studyId}/exitTeam`, {
+            fetch(`/study/delete/${studyId}`, {
                 method: "POST"
             }).then((res) => {
                 if (res.redirected) {
