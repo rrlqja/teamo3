@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import song.teamo3.domain.comment.dto.CreateCommentDto;
 import song.teamo3.domain.study.dto.CreateStudyApplicationDto;
 import song.teamo3.domain.study.dto.CreateStudyDto;
 import song.teamo3.domain.study.dto.EditStudyDto;
@@ -155,6 +156,18 @@ public class StudyController {
         Long changeStudyId = studyService.changeStatus(userDetails.getUser(), studyId);
 
         redirectAttributes.addAttribute("studyId", changeStudyId);
+
+        return "redirect:/study/{studyId}";
+    }
+
+    @PostMapping("/{studyId}/createComment")
+    public String postCreateComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                    @PathVariable("studyId") Long studyId,
+                                    @ModelAttribute CreateCommentDto commentDto,
+                                    RedirectAttributes redirectAttributes) {
+        Long commentStudyId = studyService.createComment(userDetails.getUser(), studyId, commentDto);
+
+        redirectAttributes.addAttribute("studyId", commentStudyId);
 
         return "redirect:/study/{studyId}";
     }

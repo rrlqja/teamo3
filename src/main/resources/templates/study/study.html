@@ -64,13 +64,39 @@
                 <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
                     <div class="card-body" style="padding: 0px;">
                         <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">댓글</h4>
-                        <div class="card-body" style="padding: 0px;">
-<!--                            <ul class="list-group list-group-flush">-->
-<!--                                <li class="list-group-item" th:each="post, stat : ${postPage}" th:if="${stat.index} <6" th:text="${post.title}" style="height: 40px;">Item 1-->
-<!--                                </li>-->
-<!--                                <li class="list-group-item" th:each="i : ${#numbers.sequence(postList.size()+1, 6)}">Item 1-->
-<!--                                </li>-->
-<!--                            </ul>-->
+                        <div class="card-body" style="padding: 0px;" th:object="${study}">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item" th:each="comment, stat : ${study.commentPage}" th:if="${stat.index} < 10"style="min-height: 60px;">
+                                    <input type="hidden" class="comment-id" th:value="${comment.id}">
+                                    <div class="d-flex justify-content-between align-items-end" style="">
+                                        <div>
+                                            <span th:text="${comment.writerName}" style="margin-right: 10px; font-weight: bold;">작성자</span>
+                                            <span th:text="${comment.createDate}" style="font-size: 14px;">작성일</span>
+                                        </div>
+                                        <div sec:authorize="isAuthenticated()" th:if="${(#authentication.name == comment.writerUsername) && (!comment.isDeleted())}">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm edit-button" style="margin-right: 5px;">수정</button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm" th:onclick="commentDelete([[${comment.id}]])">삭제</button>
+                                        </div>
+                                    </div>
+                                    <div class="comment-display">
+                                        <p th:text="${comment.text}">댓글 내용</p>
+                                    </div>
+                                    <div class="comment-edit" style="display: none;">
+                                        <textarea class="form-control edit-textarea" rows="3" th:text="${comment.text}" style="resize: none; width: 100%; margin: 6px;"></textarea>
+                                        <div class="d-flex justify-content-end" style="margin-top: 5px;">
+                                            <button type="button" class="btn btn-primary btn-sm save-button" style="margin-right: 5px;">저장</button>
+                                            <button type="button" class="btn btn-secondary btn-sm cancel-button">취소</button>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div style="width: 100%;height: 60px;padding: 0px; display: flex; flex-direction: row; align-items: center;">
+                            <form th:action="@{/study/{id}/createComment(id=${study.id})}" th:method="POST" style="display: flex; align-items: center; width: 100%;">
+                                <input class="form-control" type="text" id="text" name="text" placeholder="댓글을 작성해보세요." style="flex: 1; margin-right: 10px; margin-left: 10px;">
+                                <input type="hidden" name="id"  th:value="${study.id}">
+                                <button type="submit" class="btn btn-outline-primary" style="width: 100px; margin-right: 10px;">저장</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -148,6 +174,77 @@
             alert("오류가 발생하였습니다.");
         });
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.edit-button').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var commentItem = this.closest('li');
+                commentItem.querySelector('.comment-display').style.display = 'none';
+                commentItem.querySelector('.comment-edit').style.display = 'block';
+            });
+        });
+
+        document.querySelectorAll('.cancel-button').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var commentItem = this.closest('li');
+                commentItem.querySelector('.comment-edit').style.display = 'none';
+                commentItem.querySelector('.comment-display').style.display = 'block';
+            });
+        });
+
+        document.querySelectorAll('.save-button').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var commentItem = this.closest('li');
+                var newText = commentItem.querySelector('.edit-textarea').value;
+                var commentId = commentItem.querySelector('.comment-id').value;
+
+                fetch('/comment/modify/' + commentId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: newText })
+                })
+                    .then(function(response) {
+                        if (response.redirected) {
+                            window.location.href = response.url;
+                        } else {
+                            alert("잘못된 요청입니다.");
+                        }
+                    })
+                    .then(function(data) {
+                        commentItem.querySelector('.comment-display p').textContent = newText;
+                        commentItem.querySelector('.comment-edit').style.display = 'none';
+                        commentItem.querySelector('.comment-display').style.display = 'block';
+                    })
+                    .catch(function(error) {
+                        console.error('Error:', error);
+                        alert(error.message);
+                    });
+            });
+        });
+    });
+
+    function commentDelete(commentId) {
+        // alert(commentId);
+        if (confirm("정말 삭제하시겠습니까?")) {
+            fetch(`/comment/delete/${commentId}`, {
+                method: "POST"
+            }).then((res) => {
+                if (res.redirected) {
+                    window.location.href = res.url;
+                } else {
+                    alert("잘못된 요청입니다.");
+                }
+            }).catch((err) => {
+                alert("잘못된 요청입니다.");
+            })
+        }
+    }
 </script>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/44.2.1/ckeditor5.umd.js" crossorigin></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/44.2.1/translations/ko.umd.js" crossorigin></script>
+<script src="/ckeditor5/main.js"></script>
 </body>
 </html>

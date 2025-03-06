@@ -3,9 +3,13 @@ package song.teamo3.domain.study.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import song.teamo3.domain.comment.dto.CommentPageDto;
+import song.teamo3.domain.comment.dto.CreateCommentDto;
+import song.teamo3.domain.comment.service.CommentService;
 import song.teamo3.domain.common.exception.study.exceptions.ClosedStudyException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyAccessDeniedException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyEditNotAllowedException;
@@ -31,6 +35,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StudyService {
+    private final CommentService commentService;
     private final StudyMemberService studyMemberService;
     private final StudyApplicationService studyApplicationService;
     private final StudyJpaRepository studyRepository;
@@ -59,10 +64,12 @@ public class StudyService {
 
         List<StudyMemberListDto> studyMemberList = studyMemberService.getStudyMemberList(study);
 
+        Page<CommentPageDto> commentPage = commentService.getCommentPage(study, PageRequest.of(0, 10));
+
         incrementViews(study);
 
         log.info("[Get Study] id: {}", study.getId());
-        return new StudyDto(study, studyMemberList);
+        return new StudyDto(study, studyMemberList, commentPage);
     }
 
     @Transactional
@@ -71,12 +78,14 @@ public class StudyService {
 
         List<StudyMemberListDto> studyMemberList = studyMemberService.getStudyMemberList(study);
 
+        Page<CommentPageDto> commentPage = commentService.getCommentPage(study, PageRequest.of(0, 10));
+
         incrementViews(study);
 
         boolean isMember = studyMemberService.isMember(user, study);
 
         log.info("[Get Study] id: {}", study.getId());
-        return new StudyDto(study, user, studyMemberList, isMember);
+        return new StudyDto(study, user, studyMemberList, commentPage, isMember);
     }
 
     @Transactional
@@ -145,6 +154,15 @@ public class StudyService {
 
         StudyStatus studyStatus = study.changeStatus();
         log.info("[Change Study Status] id: {}, status: {}", study.getId(), studyStatus.name());
+        return study.getId();
+    }
+
+    @Transactional
+    public Long createComment(User user, Long studyId, CreateCommentDto commentDto) {
+        Study study = findStudyById(studyId);
+
+        Long commentId = commentService.saveComment(user, study, commentDto);
+
         return study.getId();
     }
 

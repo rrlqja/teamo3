@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import song.teamo3.domain.comment.entity.Comment;
+import song.teamo3.domain.comment.repository.CommentJpaRepository;
 import song.teamo3.domain.study.entity.Study;
 import song.teamo3.domain.study.repository.StudyJpaRepository;
 import song.teamo3.domain.studyapplication.entity.StudyApplication;
@@ -34,6 +36,7 @@ public class InitConfig {
         private final StudyJpaRepository studyRepository;
         private final StudyMemberJpaRepository studyMemberRepository;
         private final StudyApplicationJpaRepository studyApplicationRepository;
+        private final CommentJpaRepository commentRepository;
 
         public void init() {
             User user1 = userRepository.save(User.create("1", passwordEncoder.encode("1"), "name 1"));
@@ -49,6 +52,10 @@ public class InitConfig {
 
             StudyApplication studyApplication1 = studyApplicationRepository.save(StudyApplication.create(user2, study1, "신청서 1", "<p>p1</p><p>p2</p><p>p3</p><p>p4</p><p>p5</p>"));
             StudyApplication studyApplication2 = studyApplicationRepository.save(StudyApplication.create(user3, study1, "신청서 2", "<p>p1</p><p>p2</p><p>p3</p><p>p4</p><p>p5</p><p>p6</p><p>p7</p><p>p8</p>"));
+
+            Comment comment1 = commentRepository.save(Comment.create(user1, study1, "test comment 1"));
+            Comment comment2 = commentRepository.save(Comment.create(user1, study1, "test comment 2 =============================================================================================================="));
+            Comment comment3 = commentRepository.save(Comment.create(user1, study1, "test comment 3"));
         }
     }
 }
