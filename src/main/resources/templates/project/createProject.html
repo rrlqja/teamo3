@@ -114,24 +114,21 @@
         return false;
     }
 
-    // 업로드된 이미지 정보를 관리할 배열
     let uploadedImagesList = [];
 
-    // 기존 carousel 이미지 및 인디케이터, 업로드 정보 초기화 함수
     function clearCarousel() {
         const carouselInner = document.querySelector('#carousel-1 .carousel-inner');
-        carouselInner.innerHTML = ''; // 모든 carousel-item 삭제
+        carouselInner.innerHTML = '';
 
         const carouselIndicators = document.querySelector('#carousel-1 .carousel-indicators');
-        carouselIndicators.innerHTML = ''; // 인디케이터 초기화
+        carouselIndicators.innerHTML = '';
 
-        uploadedImagesList = []; // 업로드 정보 초기화
+        uploadedImagesList = [];
         document.getElementById('uploadedImages').value = '';
     }
 
     document.getElementById('formFileMultiple').addEventListener('change', function(e) {
         const files = e.target.files;
-        // 새 이미지 업로드 시 기존 이미지 삭제
         clearCarousel();
 
         const formData = new FormData();
@@ -145,7 +142,6 @@
         })
             .then(response => response.json())
             .then(result => {
-                // 서버 응답 예시: [{ url: '/uploads/image1.png' }, { url: '/uploads/image2.png' }, ...]
                 result.forEach((fileData) => {
                     addImageToCarousel(fileData.url);
                     updateHiddenInput(fileData);
@@ -158,7 +154,6 @@
         const carouselInner = document.querySelector('#carousel-1 .carousel-inner');
         const carouselItem = document.createElement('div');
 
-        // 첫 번째 이미지인 경우 active 클래스를 추가
         carouselItem.className = (carouselInner.children.length === 0)
             ? 'carousel-item active'
             : 'carousel-item';
@@ -179,10 +174,9 @@
         updateCarouselIndicators();
     }
 
-    // carousel 인디케이터를 새로 생성하는 함수
     function updateCarouselIndicators() {
         const carouselIndicators = document.querySelector('#carousel-1 .carousel-indicators');
-        carouselIndicators.innerHTML = ''; // 기존 인디케이터 삭제
+        carouselIndicators.innerHTML = '';
 
         const carouselItems = document.querySelectorAll('#carousel-1 .carousel-item');
         carouselItems.forEach((item, index) => {
@@ -212,7 +206,6 @@
         }
     }
 
-    // 숨겨진 input에 업로드된 이미지 정보를 저장하는 함수
     function updateHiddenInput(fileData) {
         uploadedImagesList.push(fileData);
         document.getElementById('uploadedImages').value = JSON.stringify(uploadedImagesList);
@@ -221,15 +214,10 @@
     document.getElementById('saveProjectBtn').addEventListener('click', function(event) {
         event.preventDefault();
 
-        // 폼 데이터 수집
         const title = document.getElementById('title').value;
         const url = document.getElementById('url').value;
-        // CKEditor5의 데이터를 가져오는 방법 (에디터 인스턴스에 따라 다름)
         const description = editor.getData();
 
-        // 참여인원은 히든 필드나 별도 변수로 관리되었다고 가정
-        // 예를 들어, 모든 참여인원의 id를 담은 hidden input들이 있다면,
-        // 이를 JavaScript로 수집할 수 있습니다.
         const memberInputs = document.getElementsByName('projectMembers');
         let projectMemberList = [];
         for (let input of memberInputs) {
@@ -239,14 +227,10 @@
             });
         }
 
-        // 업로드된 이미지 URL 리스트 (전역변수 또는 hidden input에서 가져오기)
-        // 예: 전역 변수 uploadedImagesList가 [{url: "/uploads/img1.png"}, ...] 형태라고 가정
         let imgList = uploadedImagesList.map(imageObj => imageObj.url);
 
-        // studyId는 URL 경로에 포함되어 있으므로 이를 URL에 포함해서 요청합니다.
-        const studyId = document.getElementById("studyId").value; /* 스터디 ID 값을 어디선가 가져옴, 예를 들어 data-study-id attribute 등 */;
+        const studyId = document.getElementById("studyId").value;
 
-        // JSON 객체 구성 (CreateProjectDto와 매핑)
         const projectDto = {
             studyId: studyId,
             title: title,
@@ -258,7 +242,6 @@
 
         console.log(projectDto);
 
-        // fetch API로 POST 요청 보내기
         fetch('/project/create', {
             method: 'POST',
             headers: {
@@ -268,11 +251,9 @@
         })
             .then(response => {
                 if (response.redirected) {
-                    // 요청 성공 시, 원하는 페이지로 이동하거나 알림 표시
                     alert("프로젝트가 생성되었습니다.");
                     window.location.href = response.url;
                 } else {
-                    // 오류 처리
                     console.error('프로젝트 생성 실패');
                 }
             })
