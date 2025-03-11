@@ -41,6 +41,7 @@ public class Project extends PostEntity {
     private List<String> imgList = new ArrayList<>();
 
     private String url;
+    private boolean deleteFlag = false;
 
     public static Project create(User user, Study study, String title, String description, List<String> imgList, String url) {
         return new Project(user, study, title, description, imgList, url);

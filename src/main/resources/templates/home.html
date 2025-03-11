@@ -27,19 +27,23 @@
                             프로젝트
                         </a>
                     </h4>
-                    <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3" style="height: 450px;width: 100%;padding-right: 0px;padding-left: 0px;margin: 0px;">
-                        <div class="col" style="margin-top: 0px;padding-right: 6px;padding-left: 6px;height: 100%;padding-top: 12px;padding-bottom: 12px;" th:each="prject, stat : ${teamingPage}" th:if="${stat.index} < 3">
-                            <div class="card" style="height: 100%;" th:onclick="|location.href='@{/}'|">
-                                <img class="card-img-top w-100 d-block fit-cover" style="height: 200px;" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3" style="height: 450px; width: 100%; padding: 0; margin: 0;">
+                        <div class="col"
+                             style="padding: 12px 6px; height: 100%;"
+                             th:each="project, stat : ${projectPage}"
+                             th:if="${stat.index} < 3">
+                            <div class="card" style="height: 100%;"
+                                 th:onclick="|location.href='@{/project/{id}(id=${project.id})}'|">
+                                <img class="card-img-top w-100 d-block fit-cover"
+                                     style="height: 180px; object-fit: contain;"
+                                     th:src="@{${project.imgUrl == null ? 'https://cdn.bootstrapstudio.io/placeholders/1400x800.png' : project.imgUrl}}"
+                                     alt="Project Image">
                                 <div class="card-body" style="padding: 12px;">
-                                    <h4 class="card-title">Lorem libero donec</h4>
-                                    <p class="card-text">Nullam id dolor id nibh ultric</p>
-                                    <div class="d-flex">
-                                        <div>
-                                            <p class="fw-bold mb-0">John Smith</p>
-                                            <p class="text-muted mb-0">Erat netus</p>
-                                        </div>
+                                    <h4 class="card-title" th:text="${project.title}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Project Title</h4>
+                                    <div class="d-flex" style=" height:120px; border-bottom: 1px solid rgb(200,200,200);">
+                                        <p class="fw-bold mb-0" th:utext="${project.description}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">description</p>
                                     </div>
+                                    <div class="card-text" th:text="${project.writerName}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Project Writer</div>
                                 </div>
                             </div>
                         </div>

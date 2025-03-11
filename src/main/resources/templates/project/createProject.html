@@ -70,7 +70,9 @@
                                           style="display: inline-block; margin-right: 8px;"></span>
                                 </div>
                                 <div th:each="member : ${project.projectMemberList}">
-                                    <input type="hidden" name="projectMembers" th:value="${member.memberId}" />
+                                    <input type="hidden" name="projectMembers"
+                                           th:value="${member.memberId}"
+                                           th:attr="data-member-name=${member.memberName}" />
                                 </div>
                             </div>
                         </div>
@@ -231,8 +233,10 @@
         const memberInputs = document.getElementsByName('projectMembers');
         let projectMemberList = [];
         for (let input of memberInputs) {
-            // 각 input value를 이용하여 간단한 객체를 생성하거나, id만 리스트에 추가할 수 있습니다.
-            projectMemberList.push({ memberId: input.value });
+            projectMemberList.push({
+                memberId: input.value,
+                memberName: input.getAttribute('data-member-name')
+            });
         }
 
         // 업로드된 이미지 URL 리스트 (전역변수 또는 hidden input에서 가져오기)

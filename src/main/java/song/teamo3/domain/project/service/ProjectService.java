@@ -2,6 +2,8 @@ package song.teamo3.domain.project.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import song.teamo3.domain.common.exception.project.exceptions.ProjectNotFoundException;
@@ -10,6 +12,7 @@ import song.teamo3.domain.common.exception.study.exceptions.StudyNotFoundExcepti
 import song.teamo3.domain.project.dto.CreateProjectDto;
 import song.teamo3.domain.project.dto.CreateProjectMemberListDto;
 import song.teamo3.domain.project.dto.ProjectDto;
+import song.teamo3.domain.project.dto.ProjectPageDto;
 import song.teamo3.domain.project.entity.Project;
 import song.teamo3.domain.project.entity.ProjectMember;
 import song.teamo3.domain.project.repository.ProjectJpaRepository;
@@ -33,6 +36,12 @@ public class ProjectService {
     private final StudyJpaRepository studyRepository;
     private final UserJpaRepository userJpaRepository;
 
+    @Transactional
+    public Page<ProjectPageDto> getProjectPage(Pageable pageable) {
+        Page<Project> projectPage = projectRepository.findAll(pageable);
+
+        return projectPage.map(ProjectPageDto::new);
+    }
 
     @Transactional
     public CreateProjectDto getCreateProject(User user, Long studyId) {
@@ -55,14 +64,12 @@ public class ProjectService {
                 .orElseThrow(StudyNotFoundException::new);
 
         Project project = projectDto.toEntity(user, study);
-
         Project saveProject = projectRepository.save(project);
 
-        List<User> studyMemberList = userJpaRepository.findUsersByIdIn(
-                projectDto.getProjectMemberList().stream().map(CreateProjectMemberListDto::getMemberId).toList());
+        List<Long> studyMemberIdList = studyMemberService.getStudyMemberList(study).stream().map(StudyMemberListDto::getUserId).toList();
+        List<User> studyMemberUserList = userJpaRepository.findUsersByIdIn(studyMemberIdList);
 
-        List<ProjectMember> projectMemberList = ProjectMember.create(studyMemberList, saveProject);
-
+        List<ProjectMember> projectMemberList = ProjectMember.create(studyMemberUserList, saveProject);
         List<ProjectMember> saveProjectMemberList = projectMemberRepository.saveAll(projectMemberList);
 
         log.info("[Create Project] id: {}", saveProject.getId());
