@@ -17,7 +17,7 @@
 <body style="background: #fcfeff; display: flex; align-items: center; justify-content: center; margin: 0 auto; margin-top: 50px;">
 
 <div class="" style="width: 500px;height: 500px; padding: 16px;">
-    <form th:action th:method="POST" th:object="${application}" th:onsubmit="return submitForm()" style="display: flex; flex-direction: column; gap: 10px;">
+    <form th:action th:method="POST" th:object="${application}" style="display: flex; flex-direction: column; gap: 10px;">
         <input class="form-control" type="text" th:field="*{title}" placeholder="신청서 제목을 입력해주세요.">
         <div class="editor-container editor-container_classic-editor" id="editor-container">
             <div class="editor-container__editor">
@@ -30,7 +30,7 @@
             </div>
         </div>
         <input type="hidden" th:field="*{description}">
-        <button type="submit" class="btn btn-outline-primary" style="width: 150px; align-self: center;">신청하기</button>
+        <button type="button" class="btn btn-outline-primary" th:onclick="submitForm()" style="width: 150px; align-self: center;">신청하기</button>
     </form>
 </div>
 
@@ -38,16 +38,38 @@
     function submitForm() {
         if (!editor) {
             alert('에디터 오류');
-        } else {
-            const data = editor.getData().trim();
-            if (data === '') {
-                alert('에디터에 입력된 값이 없습니다.');
-            } else {
-                // alert(data);
-                document.getElementById('description').value = editor.getData();
-                return true;
-            }
+            return false;
         }
+
+        const data = editor.getData().trim();
+        if (data === '') {
+            alert('에디터에 입력된 값이 없습니다.');
+            return false;
+        }
+
+        document.getElementById('description').value = data;
+
+        const form = document.querySelector('form');
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: form.method,
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("신청하였습니다.");
+                    window.opener.location.reload();
+                    window.close();
+                } else {
+                    alert('신청 처리 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('요청 오류:', error);
+                alert('신청 처리 중 오류가 발생했습니다.');
+            });
+
         return false;
     }
 </script>

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import song.teamo3.domain.comment.dto.CreateCommentDto;
 import song.teamo3.domain.project.dto.CreateProjectDto;
@@ -119,15 +121,12 @@ public class StudyController {
     }
 
     @PostMapping("/apply/{studyId}")
-    public String postStudyApplication(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<Void> postStudyApplication(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                        @PathVariable("studyId") Long studyId,
-                                       CreateStudyApplicationDto applicationDto,
-                                       RedirectAttributes redirectAttributes) {
+                                       CreateStudyApplicationDto applicationDto) {
         Long appliedStudyId = studyService.applyStudy(userDetails.getUser(), studyId, applicationDto);
 
-        redirectAttributes.addAttribute("studyId", appliedStudyId);
-
-        return "redirect:/study/{studyId}";
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/exit/{studyId}")
