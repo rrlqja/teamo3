@@ -1,0 +1,101 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/common.css}">
+    <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
+
+    <link rel="stylesheet" href="/ckeditor5/style.css">
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.2.1/ckeditor5.css" crossorigin>
+</head>
+<body>
+<div th:replace="content :: headerNav"></div>
+
+<div class="container" style="width: 1500px;height: 1250px;">
+    <div class="row justify-content-between" style="width: 100%;height: 100%;padding-top: 30px;">
+        <div class="col-md-2 d-flex flex-column" style="display: flex;">
+            <div th:replace="content :: leftBar"></div>
+        </div>
+        <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px; background-color: white;">
+            <div style="width: 100%;height: 1050px; box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;" th:object="${project}">
+                <div style="width: 100%;height: 500px;">
+                    <div style="width: 100%;height: 160px; padding: 12px;">
+                        <div class="mb-3" style="width: 100%; height: 50px;">
+                            <p class="lead" type="text" id="title" th:text="*{title}"></p>
+                        </div>
+                        <div class="mb-3" style="width: 100%; height: 50px;">
+                            <p id="url">
+                                <small style="font-size: 13px; margin-right: 5px;">참조 주소</small><br/>
+                                <span th:text="*{url}"></span>
+                            </p>
+                        </div>
+                        <div class="mb-3" style="width: 100%; height: 50px; ">
+                            <p id="projectMember">
+                                <small style="font-size: 13px; margin-right: 5px;">참여 멤버</small><br/>
+                                <span th:each="member, iterStat : *{memberNameList}">
+                                    <span th:text="${member}"></span><span th:text="${iterStat.last ? '' : ', '}"></span>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <div style="width: 100%; height: 340px; padding: 12px; display: flex; flex-direction: column; gap: 30px; align-items: center; position: relative;">
+                        <div class="carousel slide" data-bs-ride="false" id="carousel-1" style="width: 60%; height: 100%;">
+                            <div class="carousel-inner">
+                                <div th:if="${#lists.isEmpty(project.imgList)}" class="carousel-item active">
+                                    <img class="w-100 d-block" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png" alt="Default Slide"
+                                         style="height: 300px; border-radius: 10px; object-fit: contain;">
+                                </div>
+                                <div th:each="img, iterStat : ${project.imgList}"
+                                     th:classappend="${iterStat.index == 0} ? ' active'"
+                                     class="carousel-item">
+                                    <img class="w-100 d-block" th:src="@{${img}}" alt="Slide Image" style="height: 300px; border-radius: 10px; object-fit: contain;">
+                                </div>
+                            </div>
+                            <div th:if="${#lists.size(project.imgList) > 1}">
+                                <a class="carousel-control-prev" href="#carousel-1" role="button" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" style="background-color: #a19b9b;"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carousel-1" role="button" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" style="background-color: #a19b9b;"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </a>
+                            </div>
+                            <div class="carousel-indicators" th:if="${#lists.size(project.imgList) > 1}">
+                                <button type="button" th:each="img, iterStat : ${project.imgList}"
+                                        th:attr="data-bs-target='#carousel-1', data-bs-slide-to=${iterStat.index}, aria-label='Slide ' + (${iterStat.index} + 1)"
+                                        th:classappend="${iterStat.index == 0} ? ' active'"></button>
+                            </div>
+                        </div>
+                        <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 95%; border-bottom: 1px solid rgb(200,200,200);"></div>
+                    </div>
+                </div>
+                <div style="width: 100%;height: 460px; padding: 14px; overflow-y: auto;">
+                    <div th:utext="*{description}"></div>
+                </div>
+                <div class="justify-content-end" style="width: 100%;height: 100px;display: flex;align-items: center;gap: 10px;padding-right: 12px;">
+                    <button class="btn btn-outline-primary" type="button" id="saveProjectBtn" th:text="수정" style="width: 60px;height: 40px;">수정</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2" style="padding: 0px;">
+            <div th:replace="content :: rightBar"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+
+<!--<script src="https://cdn.ckeditor.com/ckeditor5/44.2.1/ckeditor5.umd.js" crossorigin></script>-->
+<!--<script src="https://cdn.ckeditor.com/ckeditor5/44.2.1/translations/ko.umd.js" crossorigin></script>-->
+<!--<script src="/ckeditor5/main.js"></script>-->
+</body>
+</html>

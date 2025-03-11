@@ -1,0 +1,283 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>CreateProject</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/common.css}">
+    <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
+
+    <link rel="stylesheet" href="/ckeditor5/style.css">
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.2.1/ckeditor5.css" crossorigin>
+</head>
+<body>
+<div th:replace="content :: headerNav"></div>
+
+<div class="container" style="width: 1500px;height: 1250px;">
+    <div class="row justify-content-between" style="width: 100%;height: 100%;padding-top: 30px;">
+        <div class="col-md-2 d-flex flex-column" style="display: flex;">
+            <div th:replace="content :: leftBar"></div>
+        </div>
+        <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px;">
+            <div style="width: 100%;height: 960px; box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;">
+                <form th:action method="post" th:object="${project}">
+                    <input type="hidden" id="studyId" name="studyId" th:value="*{studyId}">
+                    <div style="width: 100%;height: 320px;display: flex;">
+                        <div style="width: 50%; height: 100%; padding: 12px; display: flex; flex-direction: column; gap: 30px; align-items: center;">
+                            <div class="carousel slide" data-bs-ride="false" id="carousel-1" style="width: 100%;">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img class="w-100 d-block" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png" alt="Default Slide" style="height: 200px; border-radius: 10px;">
+                                    </div>
+                                </div>
+                                <div>
+                                    <a class="carousel-control-prev" href="#carousel-1" role="button" data-bs-slide="prev" style="display: none;">
+                                        <span class="carousel-control-prev-icon" style="background-color: #a19b9b;"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#carousel-1" role="button" data-bs-slide="next" style="display: none;">
+                                        <span class="carousel-control-next-icon" style="background-color: #a19b9b;"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </a>
+                                </div>
+                                <div class="carousel-indicators" style="display: none;">
+                                    <button type="button" data-bs-target="#carousel-1" data-bs-slide-to="0" class="active"></button>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <input class="form-control-sm" type="file" id="formFileMultiple" multiple>
+                            </div>
+                            <input type="hidden" id="uploadedImages" name="uploadedImages" />
+                        </div>
+                        <div style="width: 50%;height: 100%; padding: 12px;">
+                            <div class="mb-3" style="width: 100%; ">
+                                <label for="title" class="form-label">프로젝트 제목</label>
+                                <input class="form-control" type="text" id="title" name="title" placeholder="Title" required>
+                            </div>
+                            <div class="mb-3" style="width: 100%; ">
+                                <label for="url" class="form-label">url</label>
+                                <input class="form-control" type="text" id="url" name="url" placeholder="URL" required>
+                            </div>
+                            <div class="mb-3" style="width: 100%; ">
+                                <label class="form-label">참여 인원</label>
+                                <div class="form-control" style="width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    <span th:each="member, iterStat : ${project.projectMemberList}"
+                                          th:text="${member.memberName + (iterStat.last ? '' : ', ')}"
+                                          style="display: inline-block; margin-right: 8px;"></span>
+                                </div>
+                                <div th:each="member : ${project.projectMemberList}">
+                                    <input type="hidden" name="projectMembers" th:value="${member.memberId}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 100%;height: 460px; padding: 12px;">
+                        <div class="editor-container editor-container_classic-editor" id="editor-container">
+                            <div class="editor-container__editor">
+                                <div id="editor"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="justify-content-end" style="width: 100%;height: 200px;display: flex;align-items: center;gap: 10px;padding-right: 12px;">
+                        <button class="btn btn-outline-secondary" type="button" th:text="취소" th:onclick="|window.history.back()|" style="width: 60px;height: 40px;">취소</button>
+                        <button class="btn btn-outline-primary" type="button" id="saveProjectBtn" th:text="저장" style="width: 60px;height: 40px;">저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-2" style="padding: 0px;">
+            <div th:replace="content :: rightBar"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function submitForm() {
+        if (!editor) {
+            alert('에디터 오류');
+        } else {
+            const data = editor.getData().trim();
+            if (data === '') {
+                alert('에디터에 입력된 값이 없습니다.');
+            } else {
+                // alert(data);
+                document.getElementById('description').value = editor.getData();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 업로드된 이미지 정보를 관리할 배열
+    let uploadedImagesList = [];
+
+    // 기존 carousel 이미지 및 인디케이터, 업로드 정보 초기화 함수
+    function clearCarousel() {
+        const carouselInner = document.querySelector('#carousel-1 .carousel-inner');
+        carouselInner.innerHTML = ''; // 모든 carousel-item 삭제
+
+        const carouselIndicators = document.querySelector('#carousel-1 .carousel-indicators');
+        carouselIndicators.innerHTML = ''; // 인디케이터 초기화
+
+        uploadedImagesList = []; // 업로드 정보 초기화
+        document.getElementById('uploadedImages').value = '';
+    }
+
+    document.getElementById('formFileMultiple').addEventListener('change', function(e) {
+        const files = e.target.files;
+        // 새 이미지 업로드 시 기존 이미지 삭제
+        clearCarousel();
+
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append('upload', files[i]);
+        }
+
+        fetch('/image/uploadMultiple', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(result => {
+                // 서버 응답 예시: [{ url: '/uploads/image1.png' }, { url: '/uploads/image2.png' }, ...]
+                result.forEach((fileData) => {
+                    addImageToCarousel(fileData.url);
+                    updateHiddenInput(fileData);
+                });
+            })
+            .catch(error => console.error('파일 업로드 에러:', error));
+    });
+
+    function addImageToCarousel(imageUrl) {
+        const carouselInner = document.querySelector('#carousel-1 .carousel-inner');
+        const carouselItem = document.createElement('div');
+
+        // 첫 번째 이미지인 경우 active 클래스를 추가
+        carouselItem.className = (carouselInner.children.length === 0)
+            ? 'carousel-item active'
+            : 'carousel-item';
+
+        const imgElement = document.createElement('img');
+        imgElement.className = 'w-100 d-block';
+        imgElement.src = imageUrl;
+        imgElement.alt = 'Slide Image';
+
+        imgElement.style.width = '100%';
+        imgElement.style.height = '200px';
+        imgElement.style.objectFit = 'contain';
+        imgElement.style.borderRadius = '10px';
+
+        carouselItem.appendChild(imgElement);
+        carouselInner.appendChild(carouselItem);
+
+        updateCarouselIndicators();
+    }
+
+    // carousel 인디케이터를 새로 생성하는 함수
+    function updateCarouselIndicators() {
+        const carouselIndicators = document.querySelector('#carousel-1 .carousel-indicators');
+        carouselIndicators.innerHTML = ''; // 기존 인디케이터 삭제
+
+        const carouselItems = document.querySelectorAll('#carousel-1 .carousel-item');
+        carouselItems.forEach((item, index) => {
+            const indicator = document.createElement('button');
+            indicator.type = 'button';
+            indicator.setAttribute('data-bs-target', '#carousel-1');
+            indicator.setAttribute('data-bs-slide-to', index);
+            indicator.setAttribute('aria-label', 'Slide ' + (index + 1));
+
+            if (index === 0) {
+                indicator.className = 'active';
+                indicator.setAttribute('aria-current', 'true');
+            }
+            carouselIndicators.appendChild(indicator);
+        });
+
+        const prevBtn = document.querySelector('#carousel-1 .carousel-control-prev');
+        const nextBtn = document.querySelector('#carousel-1 .carousel-control-next');
+        if (carouselItems.length < 2) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            carouselIndicators.style.display = 'none';
+        } else {
+            prevBtn.style.display = '';
+            nextBtn.style.display = '';
+            carouselIndicators.style.display = '';
+        }
+    }
+
+    // 숨겨진 input에 업로드된 이미지 정보를 저장하는 함수
+    function updateHiddenInput(fileData) {
+        uploadedImagesList.push(fileData);
+        document.getElementById('uploadedImages').value = JSON.stringify(uploadedImagesList);
+    }
+
+    document.getElementById('saveProjectBtn').addEventListener('click', function(event) {
+        event.preventDefault();
+
+        // 폼 데이터 수집
+        const title = document.getElementById('title').value;
+        const url = document.getElementById('url').value;
+        // CKEditor5의 데이터를 가져오는 방법 (에디터 인스턴스에 따라 다름)
+        const description = editor.getData();
+
+        // 참여인원은 히든 필드나 별도 변수로 관리되었다고 가정
+        // 예를 들어, 모든 참여인원의 id를 담은 hidden input들이 있다면,
+        // 이를 JavaScript로 수집할 수 있습니다.
+        const memberInputs = document.getElementsByName('projectMembers');
+        let projectMemberList = [];
+        for (let input of memberInputs) {
+            // 각 input value를 이용하여 간단한 객체를 생성하거나, id만 리스트에 추가할 수 있습니다.
+            projectMemberList.push({ memberId: input.value });
+        }
+
+        // 업로드된 이미지 URL 리스트 (전역변수 또는 hidden input에서 가져오기)
+        // 예: 전역 변수 uploadedImagesList가 [{url: "/uploads/img1.png"}, ...] 형태라고 가정
+        let imgList = uploadedImagesList.map(imageObj => imageObj.url);
+
+        // studyId는 URL 경로에 포함되어 있으므로 이를 URL에 포함해서 요청합니다.
+        const studyId = document.getElementById("studyId").value; /* 스터디 ID 값을 어디선가 가져옴, 예를 들어 data-study-id attribute 등 */;
+
+        // JSON 객체 구성 (CreateProjectDto와 매핑)
+        const projectDto = {
+            studyId: studyId,
+            title: title,
+            description: description,
+            url: url,
+            projectMemberList: projectMemberList,
+            imgList: imgList
+        };
+
+        console.log(projectDto);
+
+        // fetch API로 POST 요청 보내기
+        fetch('/project/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(projectDto)
+        })
+            .then(response => {
+                if (response.redirected) {
+                    // 요청 성공 시, 원하는 페이지로 이동하거나 알림 표시
+                    alert("프로젝트가 생성되었습니다.");
+                    window.location.href = response.url;
+                } else {
+                    // 오류 처리
+                    console.error('프로젝트 생성 실패');
+                }
+            })
+            .catch(error => console.error('요청 오류:', error));
+    });
+</script>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/44.2.1/ckeditor5.umd.js" crossorigin></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/44.2.1/translations/ko.umd.js" crossorigin></script>
+<script src="/ckeditor5/main.js"></script>
+</body>
+</html>

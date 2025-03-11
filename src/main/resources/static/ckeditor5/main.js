@@ -33,7 +33,7 @@ const {
 } = window.CKEDITOR;
 
 const LICENSE_KEY =
-	'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NDEzOTE5OTksImp0aSI6ImQ1YzIzOWVmLTc2YzktNGRmYS04OTViLTNhYTY5NzQwNGIyMiIsInVzYWdlRW5kcG9pbnQiOiJodHRwczovL3Byb3h5LWV2ZW50LmNrZWRpdG9yLmNvbSIsImRpc3RyaWJ1dGlvbkNoYW5uZWwiOlsiY2xvdWQiLCJkcnVwYWwiLCJzaCJdLCJ3aGl0ZUxhYmVsIjp0cnVlLCJsaWNlbnNlVHlwZSI6InRyaWFsIiwiZmVhdHVyZXMiOlsiKiJdLCJ2YyI6IjM4Zjc2NWIyIn0.80h3qQHWspTQthjqlrFm_6enuCatiULuaQODqDjuZTuQCRmGPK1YV0Ebf8b-sSYCNmAwnSBx7QQvHfgotOAnuQ';
+	'eyJhbGciOiJFUzI1NiJ9.eyJleHAiOjE3NzE3MTgzOTksImp0aSI6IjFmMjc5NzQyLThjN2YtNGNkNS04MjgxLTdhNTFjY2RmNmM2MyIsImxpY2Vuc2VkSG9zdHMiOlsiMTI3LjAuMC4xIiwibG9jYWxob3N0IiwiMTkyLjE2OC4qLioiLCIxMC4qLiouKiIsIjE3Mi4qLiouKiIsIioudGVzdCIsIioubG9jYWxob3N0IiwiKi5sb2NhbCJdLCJ1c2FnZUVuZHBvaW50IjoiaHR0cHM6Ly9wcm94eS1ldmVudC5ja2VkaXRvci5jb20iLCJkaXN0cmlidXRpb25DaGFubmVsIjpbImNsb3VkIiwiZHJ1cGFsIl0sImxpY2Vuc2VUeXBlIjoiZGV2ZWxvcG1lbnQiLCJmZWF0dXJlcyI6WyJEUlVQIl0sInZjIjoiODg4NzhmYTUifQ.3Igq8xFfjCGfP50zKZROaBqtuEu6U-v0aRDpkWp02kILHYzGqIoc5rXppsoy0DmHp0D_2GL0DYwF50JjImUyqQ';
 
 const editorConfig = {
 	toolbar: {
@@ -165,7 +165,7 @@ const editorConfig = {
 			}
 		}
 	},
-	placeholder: '스터디 내용을 작성해주세요.',
+	placeholder: '내용을 작성해주세요.',
 	table: {
 		contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
 	}

@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import song.teamo3.domain.common.service.FileService;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -31,6 +33,16 @@ public class ImageController {
         String uploadUrl = fileService.upload(upload);
 
         return ResponseEntity.ok().body(Map.of("url", DOWNLOAD_PATH + uploadUrl));
+    }
+
+    @PostMapping("/uploadMultiple")
+    public ResponseEntity<List<Map<String, String>>> postUpload(@RequestParam("upload") MultipartFile[] uploads) throws IOException {
+        List<Map<String, String>> results = new ArrayList<>();
+        for (MultipartFile file : uploads) {
+            String uploadUrl = fileService.upload(file);
+            results.add(Map.of("url", DOWNLOAD_PATH + uploadUrl));
+        }
+        return ResponseEntity.ok().body(results);
     }
 
     @GetMapping("/download/{uploadName}")

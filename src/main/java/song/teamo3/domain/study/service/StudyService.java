@@ -195,6 +195,17 @@ public class StudyService {
         return study.getId();
     }
 
+    @Transactional
+    public List<StudyMemberListDto> getCreateProjectMember(User user, Long studyId) {
+        Study study = findStudyById(studyId);
+
+        if (!study.getWriter().getId().equals(user.getId())) {
+            throw new StudyAccessDeniedException("권한이 없습니다.");
+        }
+
+        return studyMemberService.getStudyMemberList(study);
+    }
+
     private Study findStudyById(Long studyId) {
         return studyRepository.findStudyById(studyId)
                 .orElseThrow(StudyNotFoundException::new);

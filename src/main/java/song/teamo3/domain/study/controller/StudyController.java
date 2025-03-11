@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import song.teamo3.domain.comment.dto.CreateCommentDto;
+import song.teamo3.domain.project.dto.CreateProjectDto;
 import song.teamo3.domain.study.dto.CreateStudyApplicationDto;
 import song.teamo3.domain.study.dto.CreateStudyDto;
 import song.teamo3.domain.study.dto.EditStudyDto;
