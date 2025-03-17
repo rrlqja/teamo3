@@ -54,4 +54,11 @@ public class Project extends PostEntity {
         this.imgList = imgList;
         this.url = url;
     }
+
+    public void modify(String title, String description, List<String> imgList, String url) {
+        super.setTitle(title);
+        super.setDescription(description);
+        this.imgList = imgList;
+        this.url = url;
+    }
 }

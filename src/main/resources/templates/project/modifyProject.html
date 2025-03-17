@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
-    <title>CreateProject</title>
+    <title>ModifyProject</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
@@ -25,28 +25,23 @@
         <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px;">
             <div style="width: 100%;height: 1300px; box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px; background-color: white;">
                 <form th:action method="post" th:object="${project}">
-                    <input type="hidden" id="studyId" name="studyId" th:value="*{studyId}">
+                    <input type="hidden" id="projectId" th:value="*{id}" />
                     <div style="width: 100%;height: 680px;">
                         <div style="width: 100%;height: 260px; padding: 12px;">
                             <div class="mb-3" style="width: 100%; ">
                                 <label for="title" class="form-label">프로젝트 제목</label>
-                                <input class="form-control" type="text" id="title" name="title" placeholder="Title" required>
+                                <input class="form-control" type="text" id="title" name="title" placeholder="Title" th:value="*{title}" required>
                             </div>
                             <div class="mb-3" style="width: 100%; ">
                                 <label for="url" class="form-label">url</label>
-                                <input class="form-control" type="text" id="url" name="url" placeholder="URL" required>
+                                <input class="form-control" type="text" id="url" name="url" th:value="*{url}" placeholder="URL" required>
                             </div>
                             <div class="mb-3" style="width: 100%; ">
                                 <label class="form-label">참여 인원</label>
                                 <div class="form-control" style="width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                     <span th:each="member, iterStat : ${project.projectMemberList}"
-                                          th:text="${member.memberName + (iterStat.last ? '' : ', ')}"
+                                          th:text="${member.name + (iterStat.last ? '' : ', ')}"
                                           style="display: inline-block; margin-right: 8px;"></span>
-                                </div>
-                                <div th:each="member : ${project.projectMemberList}">
-                                    <input type="hidden" name="projectMembers"
-                                           th:value="${member.memberId}"
-                                           th:attr="data-member-name=${member.memberName}" />
                                 </div>
                             </div>
                         </div>
@@ -54,9 +49,27 @@
                             <div class="carousel slide" data-bs-ride="false" id="carousel-1" style="width: 100%;">
                                 <label class="formFileMultiple" style="display: block; text-align: center; width: 100%;">예시 이미지</label>
                                 <div class="carousel-inner">
-                                    <div class="carousel-item active">
+                                    <div th:if="${#lists.isEmpty(project.imgList)}" class="carousel-item active">
                                         <img class="w-100 d-block" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png" alt="Default Slide" style="height: 300px; border-radius: 10px; object-fit: contain;">
                                     </div>
+                                    <div th:if="${!#lists.isEmpty(project.imgList)}" th:each="img, stat : ${project.imgList}" th:classappend="${stat.index == 0} ? ' active'" class="carousel-item">
+                                        <img class="w-100 d-block" th:src="@{${img}}" alt="Slide Image" style="height: 300px; border-radius: 10px; object-fit: contain;">
+                                    </div>
+                                </div>
+                                <div th:if="${!#lists.isEmpty(project.imgList) and #lists.size(project.imgList) > 1}">
+                                    <a class="carousel-control-prev" href="#carousel-1" role="button" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" style="background-color: #a19b9b;"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#carousel-1" role="button" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" style="background-color: #a19b9b;"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </a>
+                                </div>
+                                <div class="carousel-indicators" th:if="${!#lists.isEmpty(project.imgList) and #lists.size(project.imgList) > 1}">
+                                    <button type="button" th:each="img, stat : ${project.imgList}"
+                                            th:attr="data-bs-target='#carousel-1', data-bs-slide-to=${stat.index}, aria-label='Slide ' + (${stat.index} + 1)"
+                                            th:classappend="${stat.index == 0} ? ' active'"></button>
                                 </div>
                                 <div>
                                     <a class="carousel-control-prev" href="#carousel-1" role="button" data-bs-slide="prev" style="display: none;">
@@ -75,19 +88,23 @@
                             <div class="mb-3">
                                 <input class="form-control-sm" type="file" id="formFileMultiple" multiple>
                             </div>
-                            <input type="hidden" id="uploadedImages" name="uploadedImages" />
+                            <div id="hiddenImages">
+                                <div th:if="${!#lists.isEmpty(project.imgList)}" th:each="img : ${project.imgList}">
+                                    <input type="hidden" name="uploadedImages" th:value="${img}" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div style="width: 100%;height: 460px; padding: 12px;">
                         <div class="editor-container editor-container_classic-editor" id="editor-container">
                             <div class="editor-container__editor">
-                                <div id="editor"></div>
+                                <div id="editor" th:utext="*{description}"></div>
                             </div>
                         </div>
                     </div>
                     <div class="justify-content-end" style="width: 100%;height: 200px;display: flex;align-items: center;gap: 10px;padding-right: 12px;">
                         <button class="btn btn-outline-secondary" type="button" th:text="취소" th:onclick="|window.history.back()|" style="width: 60px;height: 40px;">취소</button>
-                        <button class="btn btn-outline-primary" type="button" id="saveProjectBtn" th:text="저장" style="width: 60px;height: 40px;">저장</button>
+                        <button class="btn btn-outline-primary" type="button" id="modifyProjectBtn" th:text="저장" style="width: 60px;height: 40px;">저장</button>
                     </div>
                 </form>
             </div>
@@ -98,7 +115,14 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var rawImgList = /*[[${project.imgList}]]*/ [];
+    var uploadedImagesList = rawImgList.map(function(url) {
+        return { url: url };
+    });
+    /*]]>*/
+
     function submitForm() {
         if (!editor) {
             alert('에디터 오류');
@@ -115,17 +139,19 @@
         return false;
     }
 
-    let uploadedImagesList = [];
-
     function clearCarousel() {
         const carouselInner = document.querySelector('#carousel-1 .carousel-inner');
-        carouselInner.innerHTML = '';
+        if (carouselInner) {
+            carouselInner.innerHTML = '';
+        }
 
         const carouselIndicators = document.querySelector('#carousel-1 .carousel-indicators');
-        carouselIndicators.innerHTML = '';
+        if (carouselIndicators) {
+            carouselIndicators.innerHTML = '';
+        }
 
-        uploadedImagesList = [];
-        document.getElementById('uploadedImages').value = '';
+        // uploadedImagesList = [];
+        // document.getElementById('uploadedImages').value = '';
     }
 
     document.getElementById('formFileMultiple').addEventListener('change', function(e) {
@@ -145,7 +171,9 @@
             .then(result => {
                 result.forEach((fileData) => {
                     addImageToCarousel(fileData.url);
-                    updateHiddenInput(fileData);
+                    addHiddenImageInput(fileData.url);
+
+                    uploadedImagesList = result;
                 });
             })
             .catch(error => console.error('파일 업로드 에러:', error));
@@ -177,73 +205,65 @@
 
     function updateCarouselIndicators() {
         const carouselIndicators = document.querySelector('#carousel-1 .carousel-indicators');
-        carouselIndicators.innerHTML = '';
-
-        const carouselItems = document.querySelectorAll('#carousel-1 .carousel-item');
-        carouselItems.forEach((item, index) => {
-            const indicator = document.createElement('button');
-            indicator.type = 'button';
-            indicator.setAttribute('data-bs-target', '#carousel-1');
-            indicator.setAttribute('data-bs-slide-to', index);
-            indicator.setAttribute('aria-label', 'Slide ' + (index + 1));
-
-            if (index === 0) {
-                indicator.className = 'active';
-                indicator.setAttribute('aria-current', 'true');
+        if (carouselIndicators) {
+            carouselIndicators.innerHTML = '';
+            const carouselItems = document.querySelectorAll('#carousel-1 .carousel-item');
+            carouselItems.forEach((item, index) => {
+                const indicator = document.createElement('button');
+                indicator.type = 'button';
+                indicator.setAttribute('data-bs-target', '#carousel-1');
+                indicator.setAttribute('data-bs-slide-to', index);
+                indicator.setAttribute('aria-label', 'Slide ' + (index + 1));
+                if (index === 0) {
+                    indicator.className = 'active';
+                    indicator.setAttribute('aria-current', 'true');
+                }
+                carouselIndicators.appendChild(indicator);
+            });
+            const prevBtn = document.querySelector('#carousel-1 .carousel-control-prev');
+            const nextBtn = document.querySelector('#carousel-1 .carousel-control-next');
+            if (carouselItems.length > 1) {
+                prevBtn.style.display = '';
+                nextBtn.style.display = '';
+                carouselIndicators.style.display = '';
+            } else {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                carouselIndicators.style.display = 'none';
             }
-            carouselIndicators.appendChild(indicator);
-        });
-
-        const prevBtn = document.querySelector('#carousel-1 .carousel-control-prev');
-        const nextBtn = document.querySelector('#carousel-1 .carousel-control-next');
-        if (carouselItems.length < 2) {
-            prevBtn.style.display = 'none';
-            nextBtn.style.display = 'none';
-            carouselIndicators.style.display = 'none';
-        } else {
-            prevBtn.style.display = '';
-            nextBtn.style.display = '';
-            carouselIndicators.style.display = '';
         }
     }
 
-    function updateHiddenInput(fileData) {
-        uploadedImagesList.push(fileData);
-        document.getElementById('uploadedImages').value = JSON.stringify(uploadedImagesList);
+    function addHiddenImageInput(imageUrl) {
+        const hiddenImagesDiv = document.getElementById('hiddenImages');
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'uploadedImages';
+        input.value = imageUrl;
+        hiddenImagesDiv.appendChild(input);
     }
 
-    document.getElementById('saveProjectBtn').addEventListener('click', function(event) {
+    document.getElementById('modifyProjectBtn').addEventListener('click', function(event) {
         event.preventDefault();
 
         const title = document.getElementById('title').value;
         const url = document.getElementById('url').value;
         const description = editor.getData();
 
-        const memberInputs = document.getElementsByName('projectMembers');
-        let projectMemberList = [];
-        for (let input of memberInputs) {
-            projectMemberList.push({
-                memberId: input.value,
-                memberName: input.getAttribute('data-member-name')
-            });
-        }
-
         let imgList = uploadedImagesList.map(imageObj => imageObj.url);
 
-        const studyId = document.getElementById("studyId").value;
-
         const projectDto = {
-            studyId: studyId,
             title: title,
             description: description,
             url: url,
-            projectMemberList: projectMemberList,
             imgList: imgList
         };
 
         console.log(projectDto);
 
-        fetch('/project/create', {
+        const projectId = document.getElementById('projectId').value;
+
+        fetch('/project/modify/' + projectId, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -252,10 +272,10 @@
         })
             .then(response => {
                 if (response.redirected) {
-                    alert("프로젝트가 생성되었습니다.");
+                    alert("프로젝트가 수정되었습니다.");
                     window.location.href = response.url;
                 } else {
-                    console.error('프로젝트 생성 실패');
+                    console.error('프로젝트 수정 실패');
                 }
             })
             .catch(error => console.error('요청 오류:', error));

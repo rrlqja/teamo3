@@ -6,11 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import song.teamo3.domain.common.exception.project.exceptions.ProjectModifyNotAllowedException;
 import song.teamo3.domain.common.exception.project.exceptions.ProjectNotFoundException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyAccessDeniedException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyNotFoundException;
 import song.teamo3.domain.project.dto.CreateProjectDto;
 import song.teamo3.domain.project.dto.CreateProjectMemberListDto;
+import song.teamo3.domain.project.dto.ModifyProjectDto;
 import song.teamo3.domain.project.dto.ProjectDto;
 import song.teamo3.domain.project.dto.ProjectPageDto;
 import song.teamo3.domain.project.entity.Project;
@@ -79,11 +81,42 @@ public class ProjectService {
 
     @Transactional
     public ProjectDto getProject(Long projectId) {
-        Project project = projectRepository.findProjectById(projectId)
-                .orElseThrow(ProjectNotFoundException::new);
+        Project project = findProjectById(projectId);
 
         List<ProjectMember> projectMemberList = projectMemberRepository.findProjectMembersByProject(project);
 
         return new ProjectDto(project, projectMemberList);
+    }
+
+    @Transactional
+    public ModifyProjectDto getModifyProject(User user, Long projectId) {
+        Project project = findProjectById(projectId);
+
+        if (!project.getWriter().getId().equals(user.getId())) {
+            throw new ProjectModifyNotAllowedException("권한이 없습니다.");
+        }
+
+        List<ProjectMember> projectMemberList = projectMemberRepository.findProjectMembersByProject(project);
+
+        return new ModifyProjectDto(project, projectMemberList);
+    }
+
+    @Transactional
+    public Long modifyProject(User user, Long projectId, ModifyProjectDto modifyProjectDto) {
+        Project project = findProjectById(projectId);
+
+        if (!project.getWriter().getId().equals(user.getId())) {
+            throw new ProjectModifyNotAllowedException("권한이 없습니다.");
+        }
+
+        project.modify(modifyProjectDto.getTitle(), modifyProjectDto.getDescription(), modifyProjectDto.getImgList(), modifyProjectDto.getUrl());
+        Project modifiedProject = projectRepository.save(project);
+
+        return modifiedProject.getId();
+    }
+
+    private Project findProjectById(Long projectId) {
+        return projectRepository.findProjectById(projectId)
+                .orElseThrow(ProjectNotFoundException::new);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import song.teamo3.domain.project.dto.CreateProjectDto;
+import song.teamo3.domain.project.dto.ModifyProjectDto;
 import song.teamo3.domain.project.dto.ProjectDto;
 import song.teamo3.domain.project.service.ProjectService;
 import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
@@ -55,5 +56,28 @@ public class ProjectController {
         model.addAttribute("project", project);
 
         return "project/project";
+    }
+
+    @GetMapping("/modify/{projectId}")
+    public String getModifyProject(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                   @PathVariable("projectId") Long projectId,
+                                   Model model) {
+        ModifyProjectDto project = projectService.getModifyProject(userDetails.getUser(), projectId);
+
+        model.addAttribute("project", project);
+
+        return "project/modifyProject";
+    }
+
+    @PostMapping("/modify/{projectId}")
+    public String postModifyProject(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                    @PathVariable("projectId") Long projectId,
+                                    @RequestBody ModifyProjectDto modifyProjectDto,
+                                    RedirectAttributes redirectAttributes) {
+        Long modifiedProjectId = projectService.modifyProject(userDetails.getUser(), projectId, modifyProjectDto);
+
+        redirectAttributes.addAttribute("modifiedProjectId", modifiedProjectId);
+
+        return "redirect:/project/{projectId}";
     }
 }

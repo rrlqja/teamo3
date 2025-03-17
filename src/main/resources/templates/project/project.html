@@ -23,7 +23,7 @@
             <div th:replace="content :: leftBar"></div>
         </div>
         <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px; background-color: white;">
-            <div style="width: 100%;height: 1150px; box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;" th:object="${project}">
+            <div style="width: 100%;height: 1100px; box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;" th:object="${project}">
                 <div style="width: 100%;height: 560px;">
                     <div style="width: 100%;height: 200px; padding: 12px;">
                         <div class="mb-3" style="width: 100%; height: 50px;">
@@ -80,7 +80,7 @@
                     <div th:utext="*{description}"></div>
                 </div>
                 <div class="justify-content-end" style="width: 100%;height: 100px;display: flex;align-items: center;gap: 10px;padding-right: 12px;">
-                    <button class="btn btn-outline-primary" type="button" id="saveProjectBtn" th:text="수정" style="width: 60px;height: 40px;">수정</button>
+                    <button class="btn btn-outline-primary" type="button" id="saveProjectBtn" th:text="수정" th:onclick="|location.href='@{/project/modify/{projectId}(projectId=*{id})}'|" style="width: 60px;height: 40px;">수정</button>
                 </div>
             </div>
         </div>
