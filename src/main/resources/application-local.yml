@@ -15,3 +15,6 @@ jasypt:
   encryptor:
     bean: jasyptStringEncryptor
     password: ${JASYPT_ENCRYPTOR_PASSWORD}
+
+download:
+  path: ENC(5pN0MoLOUW2gsFaRf7Gtve+hurg05e/ZXCAvHZJ9OhIlgKmEvzG8u6Oyhuwv5Y9Y)

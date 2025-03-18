@@ -2,6 +2,7 @@ package song.teamo3.domain.common.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -26,7 +27,8 @@ import java.util.Map;
 @RequestMapping("/image")
 public class ImageController {
     private final FileService fileService;
-    private final static String DOWNLOAD_PATH = "http://localhost:8080/image/download/";
+    @Value("${download.path}")
+    private static String DOWNLOAD_PATH;
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> postUpload(@RequestParam("upload") MultipartFile upload) throws IOException {
