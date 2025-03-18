@@ -1,5 +1,6 @@
 package song.teamo3.domain.common.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 @MappedSuperclass
 public class PostEntity extends DateEntity {
     private String title;
+    @Column(length = 10000)
     private String description;
     private Long views;
 

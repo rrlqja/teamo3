@@ -2,6 +2,9 @@ package song.teamo3.domain.project.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import song.teamo3.domain.project.dto.CreateProjectDto;
 import song.teamo3.domain.project.dto.ModifyProjectDto;
 import song.teamo3.domain.project.dto.ProjectDto;
+import song.teamo3.domain.project.dto.ProjectPageDto;
 import song.teamo3.domain.project.service.ProjectService;
 import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
 
@@ -24,6 +28,16 @@ import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
 @RequiredArgsConstructor
 public class ProjectController {
     private final ProjectService projectService;
+
+    @GetMapping("/projectList")
+    public String getProjectList(@PageableDefault(value = 10, page = 0) Pageable pageable,
+                                 Model model) {
+        Page<ProjectPageDto> projectPage = projectService.getProjectPage(pageable);
+
+        model.addAttribute("projectPage", projectPage);
+
+        return "project/projectList";
+    }
 
     @GetMapping("/create/{studyId}")
     public String getCreateProject(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -51,7 +65,12 @@ public class ProjectController {
     public String getProject(@AuthenticationPrincipal UserDetailsImpl userDetails,
                              @PathVariable("projectId") Long projectId,
                              Model model) {
-        ProjectDto project = projectService.getProject(projectId);
+        ProjectDto project = null;
+        if (userDetails == null) {
+            project = projectService.getProject(projectId);
+        } else{
+            project = projectService.getProject(userDetails.getUser(), projectId);
+        }
 
         model.addAttribute("project", project);
 
@@ -79,5 +98,13 @@ public class ProjectController {
         redirectAttributes.addAttribute("modifiedProjectId", modifiedProjectId);
 
         return "redirect:/project/{projectId}";
+    }
+
+    @PostMapping("/delete/{projectId}")
+    public String postDeleteProject(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                    @PathVariable("projectId") Long projectId) {
+        projectService.deleteProject(userDetails.getUser(), projectId);
+
+        return "redirect:/project/projectList";
     }
 }

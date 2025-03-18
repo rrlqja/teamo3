@@ -10,6 +10,12 @@
     <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
     <link rel="stylesheet" th:href="@{/assets/css/common.css}">
     <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
+
+    <style>
+        .project-description img {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -23,7 +29,7 @@
             <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 750px;margin-bottom: 18px;">
                 <div class="card-body" style="padding: 0px;">
                     <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">
-                        <a th:href="@{/}" class="d-block text-decoration-none text-dark">
+                        <a th:href="@{/project/projectList}" class="d-block text-decoration-none text-dark">
                             프로젝트
                         </a>
                     </h4>
@@ -40,7 +46,7 @@
                                      alt="Project Image">
                                 <div class="card-body" style="padding: 12px;">
                                     <h4 class="card-title" th:text="${project.title}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Project Title</h4>
-                                    <div class="d-flex" style=" height:120px; border-bottom: 1px solid rgb(200,200,200);">
+                                    <div class="d-flex project-description" style=" height:120px; border-bottom: 1px solid rgb(200,200,200);">
                                         <span class="fw-light mb-0" th:utext="${project.description}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">description</span>
                                     </div>
                                     <div class="card-text" th:text="${project.writerName}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Project Writer</div>

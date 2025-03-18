@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import song.teamo3.domain.common.exception.project.exceptions.AlreadyDeletedProjectException;
+import song.teamo3.domain.common.exception.project.exceptions.ProjectAccessDeniedException;
 import song.teamo3.domain.common.exception.project.exceptions.ProjectModifyNotAllowedException;
 import song.teamo3.domain.common.exception.project.exceptions.ProjectNotFoundException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyAccessDeniedException;
@@ -83,14 +85,29 @@ public class ProjectService {
     public ProjectDto getProject(Long projectId) {
         Project project = findProjectById(projectId);
 
+        checkDeleted(project);
+
         List<ProjectMember> projectMemberList = projectMemberRepository.findProjectMembersByProject(project);
 
         return new ProjectDto(project, projectMemberList);
     }
 
     @Transactional
+    public ProjectDto getProject(User user, Long projectId) {
+        Project project = findProjectById(projectId);
+
+        checkDeleted(project);
+
+        List<ProjectMember> projectMemberList = projectMemberRepository.findProjectMembersByProject(project);
+
+        return new ProjectDto(project, projectMemberList, project.getWriter().getId().equals(user.getId()));
+    }
+
+    @Transactional
     public ModifyProjectDto getModifyProject(User user, Long projectId) {
         Project project = findProjectById(projectId);
+
+        checkDeleted(project);
 
         if (!project.getWriter().getId().equals(user.getId())) {
             throw new ProjectModifyNotAllowedException("권한이 없습니다.");
@@ -105,6 +122,8 @@ public class ProjectService {
     public Long modifyProject(User user, Long projectId, ModifyProjectDto modifyProjectDto) {
         Project project = findProjectById(projectId);
 
+        checkDeleted(project);
+
         if (!project.getWriter().getId().equals(user.getId())) {
             throw new ProjectModifyNotAllowedException("권한이 없습니다.");
         }
@@ -115,8 +134,27 @@ public class ProjectService {
         return modifiedProject.getId();
     }
 
+    @Transactional
+    public void deleteProject(User user, Long projectId) {
+        Project project = findProjectById(projectId);
+
+        checkDeleted(project);
+
+        if (!project.getWriter().getId().equals(user.getId())) {
+            throw new ProjectAccessDeniedException("권한이 없습니다.");
+        }
+
+        project.delete();
+    }
+
     private Project findProjectById(Long projectId) {
         return projectRepository.findProjectById(projectId)
                 .orElseThrow(ProjectNotFoundException::new);
+    }
+
+    private void checkDeleted(Project project) {
+        if (project.isDeleteFlag()) {
+            throw new AlreadyDeletedProjectException("삭제된 프로젝트입니다.");
+        }
     }
 }

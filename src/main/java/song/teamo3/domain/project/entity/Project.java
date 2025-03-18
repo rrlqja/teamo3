@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import song.teamo3.domain.common.entity.PostEntity;
 import song.teamo3.domain.study.entity.Study;
 import song.teamo3.domain.user.entity.User;
@@ -36,12 +37,24 @@ public class Project extends PostEntity {
     private Study study;
 
     @ElementCollection(fetch = FetchType.LAZY)
+    @BatchSize(size = 10)
     @CollectionTable(name = "project_image", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "imgage_url")
     private List<String> imgList = new ArrayList<>();
 
     private String url;
     private boolean deleteFlag = false;
+
+    public void modify(String title, String description, List<String> imgList, String url) {
+        super.setTitle(title);
+        super.setDescription(description);
+        this.imgList = imgList;
+        this.url = url;
+    }
+
+    public void delete() {
+        this.deleteFlag = true;
+    }
 
     public static Project create(User user, Study study, String title, String description, List<String> imgList, String url) {
         return new Project(user, study, title, description, imgList, url);
@@ -51,13 +64,6 @@ public class Project extends PostEntity {
         super(title, description);
         this.writer = writer;
         this.study = study;
-        this.imgList = imgList;
-        this.url = url;
-    }
-
-    public void modify(String title, String description, List<String> imgList, String url) {
-        super.setTitle(title);
-        super.setDescription(description);
         this.imgList = imgList;
         this.url = url;
     }

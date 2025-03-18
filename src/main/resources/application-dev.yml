@@ -8,10 +8,10 @@ spring:
       enabled: always
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/teamo3?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: ENC(w0N/BlpABBEq92ZkcQfyRJL+cjp1YK5qCMMEypYG4/EAlVIxoJdopkq0v+PmXclgYRnR/QeXe649wH0swyyikD9KV2BpguRM)
     #    jdbc:mysql://localhost:3306/DB_NAME?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: 1235
+    username: ENC(phW6d7YIsNErj+8Ub9vkAg==)
+    password: ENC(ql2W2noMkt+b/il6+6aVv/PNmXs/2JE8)
   jpa:
     hibernate:
       ddl-auto: create
@@ -42,7 +42,7 @@ logging.level:
 #      web.cors.DefaultCorsProcessor: trace # cors log
 
 upload:
-  path: ENC(AQ66smiFH5UC4uJ3+q/8jtHDQDKfebdjkW161ME4+Fef+seAkMdw9Mq7Cj8Ju07Z)
+  path: ENC(0TUPFuaCY/FVw5tX0o2dpUrAP/S/3Y0vq6hOGNFXz18=)
 
 jasypt:
   encryptor:

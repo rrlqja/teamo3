@@ -1,0 +1,112 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>ProjectList</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/common.css}">
+    <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div th:replace="content :: headerNav"></div>
+<div class="container" style="width: 1500px;height: 1250px;">
+    <div class="row justify-content-between" style="width: 100%;height: 100%;padding-top: 30px;">
+        <div class="col-md-2 d-flex flex-column" style="display: flex;">
+            <div th:replace="content :: leftBar"></div>
+        </div>
+        <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px;">
+            <div class="col-12" style="width: 100%;height: 850px;background: #dc9191;box-shadow: 0px 0px;border-radius: 10px;padding: 0px; margin-bottom: 30px;">
+                <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                    <div class="card-body" style="padding: 0px;">
+                        <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">
+                            <a th:href="@{/project/projectList}" class="d-block text-decoration-none text-dark">
+                                프로젝트
+                            </a>
+                        </h4>
+                        <div class="card-body" style="padding: 0px;">
+                            <ul class="list-group list-group-flush" style="width: 100%;">
+                                <li class="list-group-item" th:each="project, stat : ${projectPage}" th:if="${stat.index} <6" th:onclick="|location.href='@{/project/{projectId}(projectId=${project.id})}'|" style="height: 160px;width: 100%;padding: 0px;">
+                                    <div class="d-flex flex-column flex-lg-row" style="width: 100%;height: 100%;">
+                                        <div style="margin: 0; padding: 8px; min-width: 80px; min-height: 80px; width: 320px; height: 100%;">
+                                            <img class="rounded img-fluid d-block object-fit-contain"
+                                                 style="height: 100%; min-width: 80px; padding: 0; width: 320px; border-radius: 10px;"
+                                                 th:src="*{project.imgUrl != null ? project.imgUrl : 'https://cdn.bootstrapstudio.io/placeholders/1400x800.png'}">
+                                        </div>
+                                        <div class="py-4 py-lg-0 px-lg-4" style="width: 100%;height: 100%;">
+                                            <h4 style="height: 40px;margin: 0px;font-weight: bold; line-height:40px;" th:text="*{project.title}">title</h4>
+                                            <div style="height: 40px;width: 100%;display: flex; flex-direction: row; justfiy-content: start; gap: 5px;">
+                                                <div style="height: 100%;min-width: 50px;"><p th:text="*{project.writerName}" style="width: 100%;height: 100%;font-size: 13px; line-height: 30px;">Paragraph</p></div>
+                                                <div style="height: 100%;min-width: 50px;"><p th:text="*{project.createDate}" style="width: 100%;height: 100%;font-size: 13px; line-height: 30px;">Paragraph</p></div>
+<!--                                                <div style="height: 100%;min-width: 50px;"><p th:text="*{project.writerName}" style="width: 100%;height: 100%;font-size: 13px; line-height: 30px;">Paragraph</p></div>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(projectPage.getNumberOfElements()+1, 4)}" style="width: 100%;height: 160px;">&nbsp;</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-column" style="width: 100%;margin-bottom: 30px;min-width: 100%;min-height: 100px;display: flex;">
+                <div class="justify-content-between" style="min-width: 300px;display: flex;">
+                    <div style="min-height: 40px;width: 400px;display: flex;"><select style="min-height: 100%;min-width: 80px;width: 80px;">
+                        <option value="12" selected="">제목</option>
+                        <option value="13">작성자</option>
+                        <option value="14">내용</option>
+                    </select>
+                        <input type="search" style="min-width: 260px;min-height: 100%;padding: 0px;">
+                        <button class="btn btn-outline-primary" type="button" style="min-width: 80px;min-height: 100%;padding: 0px;">검색</button>
+                    </div>
+                </div>
+                <div class="justify-content-center" style="min-height: 40px; min-width: 100%; width: 100%; display: flex; margin-top: 10px;">
+                    <nav class="justify-content-center" style="min-height: 40px; height: 40px; width: 100%; min-width: 100%; display: flex;">
+                        <ul class="pagination">
+                            <li class="page-item" style="min-height: 40px; width: 40px; min-width: 40px; height: 40px;" th:if="${projectPage.number != 0}">
+                                <a class="page-link" aria-label="First" th:href="@{/project/projectList(page=0, searchType=${searchType}, searchValue=${searchValue})}">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" style="min-height: 40px; width: 40px; min-width: 40px; height: 40px;" th:if="${projectPage.number != 0}">
+                                <a class="page-link" aria-label="Previous" th:href="@{/project/projectList(page=${projectPage.number - 1}, searchType=${searchType}, searchValue=${searchValue})}">
+                                    <span aria-hidden="true">&lt;</span>
+                                </a>
+                            </li>
+                            <th:block th:if="${projectPage.totalElements != 0}" th:each="i : ${#numbers.sequence((projectPage.number >= 2) ? (projectPage.number - 2) : 0,(projectPage.totalPages > (projectPage.number + 2))? (projectPage.number + 2): (projectPage.totalPages - 1))}">
+                                <li class="page-item" style="min-height: 40px; width: 40px; min-width: 40px; height: 40px;" th:classappend="${i == projectPage.number} ? ' active'">
+                                    <a class="page-link" th:href="@{/project/projectList(page=${i}, searchType=${searchType}, searchValue=${searchValue})}" th:text="${i + 1}">
+                                        1
+                                    </a>
+                                </li>
+                            </th:block>
+                            <li class="page-item" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;" th:if="${projectPage.number < projectPage.totalPages - 1}">
+                                <a class="page-link" aria-label="Next" th:href="@{/project/projectList(page=${projectPage.number + 1}, searchType=${searchType}, searchValue=${searchValue})}">
+                                    <span aria-hidden="true">&gt;</span>
+                                </a>
+                            </li>
+                            <li class="page-item" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;" th:if="${projectPage.number < projectPage.totalPages - 1}">
+                                <a class="page-link" aria-label="Last" th:href="@{/project/projectList(page=${projectPage.totalPages - 1}, searchType=${searchType}, searchValue=${searchValue})}">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2" style="padding: 0px;">
+            <div th:replace="content :: rightBar"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+</body>
+</html>

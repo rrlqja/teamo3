@@ -15,7 +15,6 @@ public interface ProjectJpaRepository extends JpaRepository<Project, Long> {
     @Query("select p " +
             " from Project p " +
             " join fetch p.writer " +
-            " left join fetch p.imgList " +
             "where p.deleteFlag = false " +
             "order by p.createDate desc")
     Page<Project> findAll(Pageable pageable);

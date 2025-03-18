@@ -13,6 +13,13 @@
 
     <link rel="stylesheet" href="/ckeditor5/style.css">
     <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/44.2.1/ckeditor5.css" crossorigin>
+
+    <style>
+        .content-area img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="content :: headerNav"></div>
@@ -30,9 +37,9 @@
                             <p class="lead" type="text" id="title" th:text="*{title}"></p>
                         </div>
                         <div class="mb-3" style="width: 100%; height: 50px;">
-                            <p id="url">
+                            <p id="url" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 <small style="font-size: 13px; margin-right: 5px;">참조 주소</small><br/>
-                                <span th:text="*{url}"></span>
+                                <a th:text="*{url}" th:href="*{url}" target="_blank"></a>
                             </p>
                         </div>
                         <div class="mb-3" style="width: 100%; height: 50px; ">
@@ -76,11 +83,12 @@
                         <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 95%; border-bottom: 1px solid rgb(200,200,200);"></div>
                     </div>
                 </div>
-                <div style="width: 100%;height: 460px; padding: 14px; overflow-y: auto;">
-                    <div th:utext="*{description}"></div>
+                <div class="content-area" style="width: 100%;height: 460px; padding: 14px; overflow-y: auto;">
+                    <p th:utext="*{description}"></p>
                 </div>
                 <div class="justify-content-end" style="width: 100%;height: 100px;display: flex;align-items: center;gap: 10px;padding-right: 12px;">
-                    <button class="btn btn-outline-primary" type="button" id="saveProjectBtn" th:text="수정" th:onclick="|location.href='@{/project/modify/{projectId}(projectId=*{id})}'|" style="width: 60px;height: 40px;">수정</button>
+                    <button class="btn btn-outline-primary" type="button" id="saveProjectBtn" th:if="*{isWriter()}" th:text="수정" th:onclick="|location.href='@{/project/modify/{projectId}(projectId=*{id})}'|" style="width: 60px;height: 40px;">수정</button>
+                    <button class="btn btn-outline-secondary" type="button" th:if="*{isWriter()}" th:text="삭제" th:onclick="confirmDelete([[*{id}]])" style="width: 60px;height: 40px;">삭제</button>
                 </div>
             </div>
         </div>
@@ -91,6 +99,21 @@
 </div>
 
 <script>
+    function confirmDelete(projectId) {
+        if (confirm("정말 삭제하시겠습니까?")) {
+            fetch(`/project/delete/${projectId}`, {
+                method: "POST"
+            }).then((res) => {
+                if (res.redirected) {
+                    window.location.href = res.url;
+                } else {
+                    alert("잘못된 요청입니다.");
+                }
+            }).catch((err) => {
+                alert("잘못된 요청입니다.");
+            })
+        }
+    }
 
 </script>
 

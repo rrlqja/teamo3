@@ -16,6 +16,8 @@ public class ProjectDto {
     private List<String> imgList = new ArrayList<>();
     private List<String> memberNameList = new ArrayList<>();
 
+    private boolean isWriter = false;
+
     public ProjectDto(Project project, List<ProjectMember> projectMemberList) {
         this.id = project.getId();
         this.title = project.getTitle();
@@ -23,5 +25,15 @@ public class ProjectDto {
         this.url = project.getUrl();
         this.imgList = project.getImgList();
         this.memberNameList = projectMemberList.stream().map(pm -> pm.getUser().getName()).toList();
+    }
+
+    public ProjectDto(Project project, List<ProjectMember> projectMemberList, boolean isWriter) {
+        this.id = project.getId();
+        this.title = project.getTitle();
+        this.description = project.getDescription();
+        this.url = project.getUrl();
+        this.imgList = project.getImgList();
+        this.memberNameList = projectMemberList.stream().map(pm -> pm.getUser().getName()).toList();
+        this.isWriter = isWriter;
     }
 }
