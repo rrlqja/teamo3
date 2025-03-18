@@ -1,45 +1,12 @@
 spring:
 #  profiles:
 #    active: dev
-  messages:
-    basename: messages, errors
-  output:
-    ansi:
-      enabled: always
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(w0N/BlpABBEq92ZkcQfyRJL+cjp1YK5qCMMEypYG4/EAlVIxoJdopkq0v+PmXclgYRnR/QeXe649wH0swyyikD9KV2BpguRM)
+    url: ENC(BFc5hQDVrtKxWZWSW2ZC9zG5rffSiddBZ+CkMHc278jyAftB69UhfLipdH+EQp3mj4vwFms4hIj4XtDPvb3wectciQ5PLQXbCIAnSxy3dFjksovBqgdRlbb8xUTq3iTmfECOG3JO8D6V+WWhH778T1Y5e68yzscDFxHmBeWDBNbnGSOFncMEQQ==)
     #    jdbc:mysql://localhost:3306/DB_NAME?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ENC(phW6d7YIsNErj+8Ub9vkAg==)
     password: ENC(ql2W2noMkt+b/il6+6aVv/PNmXs/2JE8)
-  jpa:
-    hibernate:
-      ddl-auto: create
-#      ddl-auto: update
-    properties:
-      hibernate:
-#        format_sql: true
-#        show_sql: true
-#        highlight_sql: true
-        default_batch_fetch_size: 100
-    open-in-view: false
-  servlet:
-    multipart:
-      max-file-size: 30MB
-      max-request-size: 100MB
-
-server:
-  servlet:
-    session:
-      tracking-modes: cookie
-
-logging.level:
-  org:
-    hibernate.SQL: debug
-    springframework:
-      security: debug
-#  org.hibernate.orm.jdbc.bind: trace
-#      web.cors.DefaultCorsProcessor: trace # cors log
 
 upload:
   path: ENC(0TUPFuaCY/FVw5tX0o2dpUrAP/S/3Y0vq6hOGNFXz18=)

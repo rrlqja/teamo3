@@ -1,0 +1,17 @@
+spring:
+  #  profiles:
+  #    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/teamo3?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    #    jdbc:mysql://localhost:3306/DB_NAME?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: 1235
+
+upload:
+  path: ENC(AQ66smiFH5UC4uJ3+q/8jtHDQDKfebdjkW161ME4+Fef+seAkMdw9Mq7Cj8Ju07Z)
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    password: ${JASYPT_ENCRYPTOR_PASSWORD}
