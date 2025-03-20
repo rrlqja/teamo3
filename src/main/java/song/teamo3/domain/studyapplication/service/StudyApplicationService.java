@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import song.teamo3.domain.chat.service.ChatRoomService;
 import song.teamo3.domain.common.exception.studyapplication.exceptions.StudyApplicationAccessDeniedException;
 import song.teamo3.domain.common.exception.studyapplication.exceptions.StudyApplicationNotApproveException;
 import song.teamo3.domain.common.exception.studyapplication.exceptions.StudyApplicationNotFoundException;
@@ -28,6 +29,7 @@ import static song.teamo3.domain.studyapplication.entity.StudyApplicationStatus.
 @Service
 @RequiredArgsConstructor
 public class StudyApplicationService {
+    private final ChatRoomService chatRoomService;
     private final StudyMemberService studyMemberService;
     private final StudyApplicationJpaRepository studyApplicationRepository;
 
@@ -82,6 +84,8 @@ public class StudyApplicationService {
         studyApplication.approve();
 
         studyMemberService.createStudyMember(studyApplication.getUser(), studyApplication.getStudy(), StudyMemberRole.MEMBER);
+
+        chatRoomService.addChatRoomUser(studyApplication.getStudy(), studyApplication.getUser());
 
         return studyApplication.getStudy().getId();
     }

@@ -5,6 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import song.teamo3.domain.chat.entity.Chat;
+import song.teamo3.domain.chat.entity.ChatRoom;
+import song.teamo3.domain.chat.repository.ChatJpaRepository;
+import song.teamo3.domain.chat.repository.ChatRoomJpaRepository;
+import song.teamo3.domain.chat.service.ChatRoomService;
 import song.teamo3.domain.comment.entity.Comment;
 import song.teamo3.domain.comment.repository.CommentJpaRepository;
 import song.teamo3.domain.project.entity.Project;
@@ -45,6 +50,9 @@ public class InitConfig {
         private final CommentJpaRepository commentRepository;
         private final ProjectJpaRepository projectRepository;
         private final ProjectMemberJpaRepository projectMemberRepository;
+        private final ChatRoomService chatRoomService;
+        private final ChatRoomJpaRepository chatRoomRepository;
+        private final ChatJpaRepository chatRepository;
 
         public void init() {
             User user1 = userRepository.save(User.create("1", passwordEncoder.encode("1"), "관리자"));
@@ -69,6 +77,25 @@ public class InitConfig {
 
             Project project2 = projectRepository.save(createProject(user3, study2, "발더스 게이트를 소개합니다!", "<p>게임 제작 스터디를 통해</p><p>발더스 게이트라는 오픈월드 턴제 RPG 게임을 만들었습니다!</p><p>많은 관심 부탁드립니다!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"http://localhost:8080/image/download/bg1.jpg\" width=\"854\" height=\"480\"></figure><p>동료들을 모아 적들과 전투를 할 수 있어요!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"http://localhost:8080/image/download/bg2.png\" width=\"854\" height=\"480\"><p>&nbsp;</p></figure><p>동료들과의 로맨스도 즐겨보세요!</p>", List.of("http://localhost:8080/image/download/bg.webp"), "https://namu.wiki/w/%EB%B0%9C%EB%8D%94%EC%8A%A4%20%EA%B2%8C%EC%9D%B4%ED%8A%B8%203"));
             List<ProjectMember> projectMember2List = projectMemberRepository.saveAll(ProjectMember.create(List.of(user3, user4), project2));
+
+            Long chatRoom1Id = chatRoomService.createChatRoom(study1, user2);
+            ChatRoom chatRoom1 = chatRoomRepository.findChatRoomById(chatRoom1Id).get();
+            Chat chat1 = chatRepository.save(Chat.create(user2, chatRoom1, "test message1"));
+            Chat chat2 = chatRepository.save(Chat.create(user2, chatRoom1, "test message2"));
+            Chat chat3 = chatRepository.save(Chat.create(user2, chatRoom1, "test message3"));
+            Chat chat4 = chatRepository.save(Chat.create(user2, chatRoom1, "test message4"));
+            Chat chat5 = chatRepository.save(Chat.create(user2, chatRoom1, "test message5"));
+            Chat chat6 = chatRepository.save(Chat.create(user2, chatRoom1, "test message6"));
+            Chat chat7 = chatRepository.save(Chat.create(user2, chatRoom1, "test message7"));
+            Chat chat8 = chatRepository.save(Chat.create(user2, chatRoom1, "test message8"));
+            Chat chat9 = chatRepository.save(Chat.create(user2, chatRoom1, "test message9"));
+            Chat chat10 = chatRepository.save(Chat.create(user2, chatRoom1, "test message10"));
+            Chat chat11 = chatRepository.save(Chat.create(user2, chatRoom1, "test message11"));
+            Chat chat12 = chatRepository.save(Chat.create(user2, chatRoom1, "test message12"));
+            Chat chat13 = chatRepository.save(Chat.create(user2, chatRoom1, "test message13"));
+            Chat chat14 = chatRepository.save(Chat.create(user2, chatRoom1, "test message14"));
+            Chat chat15 = chatRepository.save(Chat.create(user2, chatRoom1, "test message15"));
+            Chat chat16 = chatRepository.save(Chat.create(user2, chatRoom1, "test message16"));
         }
 
         private static Project createProject(User user, Study study, String title, String descrption, List<String> imgList, String url) {

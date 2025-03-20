@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import song.teamo3.domain.chat.service.ChatRoomService;
 import song.teamo3.domain.comment.dto.CommentPageDto;
 import song.teamo3.domain.comment.dto.CreateCommentDto;
 import song.teamo3.domain.comment.service.CommentService;
@@ -38,6 +39,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class StudyService {
+    private final ChatRoomService chatRoomService;
     private final CommentService commentService;
     private final StudyMemberService studyMemberService;
     private final StudyApplicationService studyApplicationService;
@@ -58,6 +60,9 @@ public class StudyService {
         studyMemberService.createStudyMember(user, study, StudyMemberRole.ADMIN);
 
         log.info("[Create Study] id: {}", createStudy.getId());
+
+        chatRoomService.createChatRoom(createStudy, user);
+
         return createStudy.getId();
     }
 
@@ -141,6 +146,7 @@ public class StudyService {
         Study study = findStudyById(studyId);
 
         studyMemberService.exitStudyMember(user, study);
+        chatRoomService.exitChatRoom(user, study);
 
         return study.getId();
     }
