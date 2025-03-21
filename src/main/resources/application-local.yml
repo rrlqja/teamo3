@@ -17,4 +17,4 @@ jasypt:
     password: ${JASYPT_ENCRYPTOR_PASSWORD}
 
 download:
-  path: ENC(5pN0MoLOUW2gsFaRf7Gtve+hurg05e/ZXCAvHZJ9OhIlgKmEvzG8u6Oyhuwv5Y9Y)
+  path: ENC(2lGlh6YcZUd6G7BVL/zhyrlXgQ8mVlYl+xGhKE5sBdqUs3xUD4YCZzaPLJpqmZBJ)
