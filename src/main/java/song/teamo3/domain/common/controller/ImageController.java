@@ -28,7 +28,7 @@ import java.util.Map;
 public class ImageController {
     private final FileService fileService;
     @Value("${download.path}")
-    private static String DOWNLOAD_PATH;
+    private String DOWNLOAD_PATH;
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> postUpload(@RequestParam("upload") MultipartFile upload) throws IOException {
