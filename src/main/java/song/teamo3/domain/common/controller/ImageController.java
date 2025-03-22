@@ -27,8 +27,8 @@ import java.util.Map;
 @RequestMapping("/image")
 public class ImageController {
     private final FileService fileService;
-//    @Value("${download.path}")
-    private String DOWNLOAD_PATH = "http://3.39.11.109:8080/image/download/";
+    @Value("${download.path}")
+    private String DOWNLOAD_PATH;
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> postUpload(@RequestParam("upload") MultipartFile upload) throws IOException {

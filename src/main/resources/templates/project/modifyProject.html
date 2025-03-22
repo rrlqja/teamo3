@@ -117,6 +117,7 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
+    window.uploadUrl = /*[[${@environment.getProperty('download.path')}]]*/ 'http://localhost:8080/image/download/';
     var rawImgList = /*[[${project.imgList}]]*/ [];
     var uploadedImagesList = rawImgList.map(function(url) {
         return { url: url };

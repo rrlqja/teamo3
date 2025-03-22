@@ -88,7 +88,8 @@ const editorConfig = {
 		Underline
 	],
 	simpleUpload: {
-		uploadUrl: 'http://localhost:8080/image/upload',
+		// uploadUrl: 'http://localhost:8080/image/upload',
+		uploadUrl: window.uploadUrl,
 		withCredentials: true
 	},
 	heading: {

@@ -3,6 +3,7 @@ package song.teamo3.config;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import song.teamo3.domain.chat.entity.Chat;
@@ -42,6 +43,9 @@ public class InitConfig {
     @Component
     @RequiredArgsConstructor
     private static class InitService {
+        @Value("${download.path}")
+        private String downloadPath;
+
         private final PasswordEncoder passwordEncoder;
         private final UserJpaRepository userRepository;
         private final StudyJpaRepository studyRepository;
@@ -72,10 +76,10 @@ public class InitConfig {
 
             Comment comment1 = commentRepository.save(Comment.create(user2, study1, "많은 응원 부탁드립니다."));
 
-            Project project1 = projectRepository.save(createProject(user2, study1, "엘든링을 소개합니다!", "<p>게임 제작 스터디를 통해</p><p>엘든링이라는 액션 RPG 게임을 만들었습니다!</p><p>많은 관심 부탁드립니다!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"http://localhost:8080/image/download/er1.gif\" width=\"854\" height=\"480\"></figure><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"http://localhost:8080/image/download/er2.gif\" width=\"854\" height=\"480\"><p>&nbsp;</p></figure><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"http://localhost:8080/image/download/er3.gif\" width=\"854\" height=\"480\"></figure>", List.of("http://localhost:8080/image/download/er.webp"), "https://namu.wiki/w/%EC%97%98%EB%93%A0%20%EB%A7%81"));
+            Project project1 = projectRepository.save(createProject(user2, study1, "엘든링을 소개합니다!", "<p>게임 제작 스터디를 통해</p><p>엘든링이라는 액션 RPG 게임을 만들었습니다!</p><p>많은 관심 부탁드립니다!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "er1.gif\" width=\"854\" height=\"480\"></figure><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "er2.gif\" width=\"854\" height=\"480\"><p>&nbsp;</p></figure><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "er3.gif\" width=\"854\" height=\"480\"></figure>", List.of(downloadPath +"er.webp"), "https://namu.wiki/w/%EC%97%98%EB%93%A0%20%EB%A7%81"));
             List<ProjectMember> projectMember1List = projectMemberRepository.saveAll(ProjectMember.create(List.of(user2), project1));
 
-            Project project2 = projectRepository.save(createProject(user3, study2, "발더스 게이트를 소개합니다!", "<p>게임 제작 스터디를 통해</p><p>발더스 게이트라는 오픈월드 턴제 RPG 게임을 만들었습니다!</p><p>많은 관심 부탁드립니다!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"http://localhost:8080/image/download/bg1.jpg\" width=\"854\" height=\"480\"></figure><p>동료들을 모아 적들과 전투를 할 수 있어요!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"http://localhost:8080/image/download/bg2.png\" width=\"854\" height=\"480\"><p>&nbsp;</p></figure><p>동료들과의 로맨스도 즐겨보세요!</p>", List.of("http://localhost:8080/image/download/bg.webp"), "https://namu.wiki/w/%EB%B0%9C%EB%8D%94%EC%8A%A4%20%EA%B2%8C%EC%9D%B4%ED%8A%B8%203"));
+            Project project2 = projectRepository.save(createProject(user3, study2, "발더스 게이트를 소개합니다!", "<p>게임 제작 스터디를 통해</p><p>발더스 게이트라는 오픈월드 턴제 RPG 게임을 만들었습니다!</p><p>많은 관심 부탁드립니다!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "bg1.jpg\" width=\"854\" height=\"480\"></figure><p>동료들을 모아 적들과 전투를 할 수 있어요!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "bg2.png\" width=\"854\" height=\"480\"><p>&nbsp;</p></figure><p>동료들과의 로맨스도 즐겨보세요!</p>", List.of(downloadPath + "bg.webp"), "https://namu.wiki/w/%EB%B0%9C%EB%8D%94%EC%8A%A4%20%EA%B2%8C%EC%9D%B4%ED%8A%B8%203"));
             List<ProjectMember> projectMember2List = projectMemberRepository.saveAll(ProjectMember.create(List.of(user3, user4), project2));
 
             Long chatRoom1Id = chatRoomService.createChatRoom(study1, user2);

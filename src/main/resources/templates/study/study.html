@@ -132,7 +132,11 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    window.uploadUrl = /*[[${@environment.getProperty('download.path')}]]*/ 'http://localhost:8080/image/download/';
+    /*]]>*/
+
     function openApplyPopup(url) {
         window.open(url, 'applyPopup', 'width=600,height=800');
     }

@@ -34,7 +34,11 @@
     </form>
 </div>
 
-<script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    window.uploadUrl = /*[[${@environment.getProperty('download.path')}]]*/ 'http://localhost:8080/image/download/';
+    /*]]>*/
+
     function submitForm() {
         if (!editor) {
             alert('에디터 오류');
