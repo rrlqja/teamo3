@@ -25,8 +25,8 @@
                         <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">인기글</h4>
                         <div class="card-body" style="padding: 0px;">
                             <ul class="list-group list-group-flush">
-                                <a class="list-group-item list-group-item-action" th:each="study, stat : ${studyPage}" th:if="${stat.index} < 5" th:text="${study.title}" th:href="@{/study/{studyId}(studyId=${study.id})}">Item 1</a>
-                                <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(studyPage.getNumberOfElements()+1, 5)}">&nbsp;</li>
+                                <a class="list-group-item list-group-item-action" th:each="bestStudy, stat : ${bestStudyPage}" th:if="${stat.index} < 5" th:text="${bestStudy.title}" th:href="@{/study/{studyId}(studyId=${bestStudy.id})}">Item 1</a>
+                                <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(bestStudyPage.getNumberOfElements()+1, 5)}">&nbsp;</li>
                             </ul>
                         </div>
                     </div>

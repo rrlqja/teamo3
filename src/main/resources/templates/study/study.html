@@ -123,9 +123,14 @@
                         th:onclick="bumpUp([[*{id}]])">
                     끌어 올리기
                 </button>
-                <button class="btn btn-outline-secondary" type="button" th:onclick="" style="width: 100px; height: 40px;">
-                    <img th:src="@{/imgs/blank_heart.png}" style="width: 24px;height: 24px;">
-                    <span th:text="0"></span>
+                <button th:data-study-id="*{id}"
+                        th:class="*{isFavorite()} ? 'btn btn-outline-danger' : 'btn btn-outline-secondary'"
+                        type="button"
+                        onclick="favorite(this)"
+                        style="width: 100px; height: 40px;">
+                    <img th:src="*{favorite} ? '/imgs/heart.png' : '/imgs/blank_heart.png'"
+                         style="width: 24px; height: 24px;">
+                    <span th:text="*{favorites}">0</span>
                 </button>
             </div>
         </div>
@@ -276,6 +281,36 @@
                 alert("잘못된 요청입니다.");
             })
         }
+    }
+
+    function favorite(btn) {
+        const studyId = btn.getAttribute('data-study-id');
+
+        fetch('/studyFavorite/favorite/' + studyId, {
+            method: 'POST'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("요청 실패: " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if(data.favorite) {
+                    btn.classList.remove('btn-outline-secondary');
+                    btn.classList.add('btn-outline-danger');
+                    btn.querySelector('img').src = '/imgs/heart.png';
+                } else {
+                    btn.classList.remove('btn-outline-danger');
+                    btn.classList.add('btn-outline-secondary');
+                    btn.querySelector('img').src = '/imgs/blank_heart.png';
+                }
+                btn.querySelector('span').textContent = data.favorites;
+            })
+            .catch(error => {
+                console.error('좋아요 오류 발생:', error);
+                alert('요청중 오류가 발생했습니다.');
+            });
     }
 </script>
 

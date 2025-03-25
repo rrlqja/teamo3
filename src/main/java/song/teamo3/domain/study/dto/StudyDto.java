@@ -29,8 +29,10 @@ public class StudyDto {
 
     private boolean isWriter;
     private boolean isMember;
+    private boolean isFavorite;
+    private Long favorites;
 
-    public StudyDto(Study study, User user, List<StudyMemberListDto> studymemberList, Page<CommentPageDto> commentPage, boolean isMember) {
+    public StudyDto(Study study, User user, List<StudyMemberListDto> studymemberList, Page<CommentPageDto> commentPage, boolean isMember, boolean isFavorite, Long favorites) {
         this.id = study.getId();
         this.title = study.getTitle();
         this.description = study.getDescription();
@@ -46,9 +48,11 @@ public class StudyDto {
 
         this.isWriter = (user != null && user.getId().equals(study.getWriter().getId()));
         this.isMember = isMember;
+        this.isFavorite = isFavorite;
+        this.favorites = favorites;
     }
 
-    public StudyDto(Study study, List<StudyMemberListDto> studyMemberList, Page<CommentPageDto> commentPage) {
+    public StudyDto(Study study, List<StudyMemberListDto> studyMemberList, Page<CommentPageDto> commentPage, Long favorites) {
         this.id = study.getId();
         this.title = study.getTitle();
         this.description = study.getDescription();
@@ -64,5 +68,7 @@ public class StudyDto {
 
         this.isWriter = false;
         this.isMember = false;
+        this.isFavorite = false;
+        this.favorites = favorites;
     }
 }

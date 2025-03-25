@@ -28,6 +28,9 @@ public class ChatRoomController {
     public String getChattingRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                       @PageableDefault(size = 10, page = 0) Pageable pageable,
                                       Model model) {
+        if (userDetails == null) {
+            return "redirect:/user/login";
+        }
         Page<ChatRoomPageDto> chatRoomPage = chatRoomService.getChatRoomPage(userDetails.getUser(), pageable);
 
         model.addAttribute("chatRoomPage", chatRoomPage);

@@ -8,15 +8,29 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import song.teamo3.domain.study.entity.Study;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
 public interface StudyJpaRepository extends JpaRepository<Study, Long> {
     @Query("select s " +
             " from Study s " +
+            " join fetch s.writer " +
             "where s.deleteFlag = false " +
             "order by s.bumpUpDate desc")
     Page<Study> findStudyPage(Pageable pageable);
+
+    @Query("select s " +
+            " from Study s " +
+            " left outer join StudyFavorite sf " +
+            "   on s.id = sf.study.id " +
+            " join fetch s.writer " +
+            "where s.deleteFlag = false " +
+            "  and s.createDate >= :createDate " +
+            "group by s " +
+            "order by count(sf) desc, s.createDate desc")
+    Page<Study> findBestStudyPage(@Param("createDate") LocalDateTime createDate,
+                                  Pageable pageable);
 
     @Query("select s " +
             " from Study s " +

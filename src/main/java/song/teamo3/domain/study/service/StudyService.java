@@ -17,6 +17,7 @@ import song.teamo3.domain.common.exception.study.exceptions.StudyAccessDeniedExc
 import song.teamo3.domain.common.exception.study.exceptions.AlreadyDeletedStudyException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyEditNotAllowedException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyNotFoundException;
+import song.teamo3.domain.study.dto.BestStudyPageDto;
 import song.teamo3.domain.study.dto.CreateStudyApplicationDto;
 import song.teamo3.domain.study.dto.CreateStudyDto;
 import song.teamo3.domain.study.dto.EditStudyDto;
@@ -27,6 +28,7 @@ import song.teamo3.domain.study.entity.StudyStatus;
 import song.teamo3.domain.study.repository.StudyJpaRepository;
 import song.teamo3.domain.studyapplication.dto.StudyApplicationPageDto;
 import song.teamo3.domain.studyapplication.service.StudyApplicationService;
+import song.teamo3.domain.studyfavorite.service.StudyFavoriteService;
 import song.teamo3.domain.studymember.dto.StudyMemberListDto;
 import song.teamo3.domain.studymember.entity.StudyMemberRole;
 import song.teamo3.domain.studymember.service.StudyMemberService;
@@ -44,11 +46,18 @@ public class StudyService {
     private final StudyMemberService studyMemberService;
     private final StudyApplicationService studyApplicationService;
     private final StudyJpaRepository studyRepository;
+    private final StudyFavoriteService studyFavoriteService;
 
     @Transactional
     public Page<StudyPageDto> getStudyPage(Pageable pageable) {
         return studyRepository.findStudyPage(pageable)
                 .map(StudyPageDto::new);
+    }
+
+    @Transactional
+    public Page<BestStudyPageDto> getBestStudyPage(Pageable pageable) {
+        return studyRepository.findBestStudyPage(LocalDateTime.now().minusDays(7), pageable)
+                .map(BestStudyPageDto::new);
     }
 
     @Transactional
@@ -77,8 +86,10 @@ public class StudyService {
 
         incrementViews(study);
 
+        Long favorites = studyFavoriteService.getFavorites(study);
+
         log.info("[Get Study] id: {}", study.getId());
-        return new StudyDto(study, studyMemberList, commentPage);
+        return new StudyDto(study, studyMemberList, commentPage, favorites);
     }
 
     @Transactional
@@ -93,9 +104,11 @@ public class StudyService {
         incrementViews(study);
 
         boolean isMember = studyMemberService.isMember(user, study);
+        boolean isFavorite = studyFavoriteService.isFavorite(user, study);
+        Long favorites = studyFavoriteService.getFavorites(study);
 
         log.info("[Get Study] id: {}", study.getId());
-        return new StudyDto(study, user, studyMemberList, commentPage, isMember);
+        return new StudyDto(study, user, studyMemberList, commentPage, isMember, isFavorite, favorites);
     }
 
     @Transactional

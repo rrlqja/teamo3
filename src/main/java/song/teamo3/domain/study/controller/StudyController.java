@@ -3,6 +3,7 @@ package song.teamo3.domain.study.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import song.teamo3.domain.comment.dto.CreateCommentDto;
 import song.teamo3.domain.project.dto.CreateProjectDto;
+import song.teamo3.domain.study.dto.BestStudyPageDto;
 import song.teamo3.domain.study.dto.CreateStudyApplicationDto;
 import song.teamo3.domain.study.dto.CreateStudyDto;
 import song.teamo3.domain.study.dto.EditStudyDto;
@@ -42,8 +44,10 @@ public class StudyController {
     public String getStudyList(@PageableDefault(size = 10, page = 0) Pageable pageable,
                                Model model) {
         Page<StudyPageDto> studyPage = studyService.getStudyPage(pageable);
-
         model.addAttribute("studyPage", studyPage);
+
+        Page<BestStudyPageDto> bestStudyPage = studyService.getBestStudyPage(PageRequest.of(0, 5));
+        model.addAttribute("bestStudyPage", bestStudyPage);
 
         return "study/studyList";
     }
