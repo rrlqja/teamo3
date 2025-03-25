@@ -19,13 +19,21 @@ public class UserService {
 
     @Transactional
     public Long createUser(CreateUserDto createUserDto) {
-        userRepository.findUserByUsername(createUserDto.getUsername())
-                .ifPresent(u -> {
-                    throw new DuplicatedUsernameException("이미 존재하는 사용자 이름입니다.");
-                });
+        validateUsername(createUserDto.getUsername());
 
         User user = createUserDto.toUser(passwordEncoder);
 
-        return userRepository.save(user).getId();
+        User createUser = userRepository.save(user);
+
+        log.info("User created: {}", createUser.getId());
+        return createUser.getId();
+    }
+
+    @Transactional
+    public void validateUsername(String username) {
+        userRepository.findUserByUsername(username)
+                .ifPresent(user-> {
+                    throw new DuplicatedUsernameException("이미 존재하는 아이디입니다.");
+                });
     }
 }

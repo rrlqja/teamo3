@@ -4,12 +4,127 @@
 <head>
     <meta charset="UTF-8">
     <title>Signup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/common.css}">
+    <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
 </head>
 <body>
-<form th:action th:object="${signup}" method="post">
-    <input type="text" th:field="*{username}" placeholder="Username">
-    <input type="password" th:field="*{password}" placeholder="Password">
-    <input type="submit" value="Signup">
-</form>
+    <div class="row d-flex justify-content-center" style="padding-top: 80px;">
+        <div class="card mb-5" style="width: 720px;">
+            <div class="card-body d-flex flex-column align-items-center mt-3">
+                <form id="signup-form" class="text-start w-75" method="post" th:action="@{/user/login}" th:object="${user}">
+                    <label for="username" class="mb-1">아이디</label>
+                    <div class="mb-1 d-flex">
+                        <input class="form-control" type="text" th:field="*{username}" placeholder="ex) hongGilDong" required>
+                        <button class="btn btn-outline-secondary ms-1" type="button" id="check-username-btn" style="width: 110px;">중복확인</button>
+                    </div>
+                    <div id="validate-username" class="form-text mt-1 mb-2">
+
+                    </div>
+                    <label for="name" class="mb-1">이름</label>
+                    <div class="mb-3"><input class="form-control" type="text" th:field="*{name}" placeholder="홍길동" required></div>
+                    <label for="password" class="mb-1">비밀번호</label>
+                    <div class="mb-3"><input class="form-control" type="password" th:field="*{password}" placeholder="******" required></div>
+                    <label for="passwordConfirm" class="mb-1">비밀번호 확인</label>
+                    <div class="mb-1"><input class="form-control" type="password" id="passwordConfirm" placeholder="******" required></div>
+                    <div id="validate-password" class="form-text mt-1 mb-3">
+
+                    </div>
+                    <div class="mb-3"><button class="btn btn-primary d-block w-100" type="submit">회원가입</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
+
+<script>
+    document.getElementById('check-username-btn').addEventListener('click', function() {
+        const usernameInput = document.querySelector('input[name="username"]');
+        const username = usernameInput.value.trim();
+        const resultDiv = document.getElementById('validate-username');
+
+        if (!username) {
+            resultDiv.textContent = "아이디를 입력해주세요.";
+            resultDiv.dataset.validated = "false";
+            return;
+        }
+
+        fetch('/user/signup/validateUsername?username=' + encodeURIComponent(username))
+            .then(response => {
+                if (response.ok) {
+                    resultDiv.textContent = "사용 가능한 아이디입니다.";
+                    resultDiv.dataset.validated = "true";
+                } else {
+                    throw new Error("중복된 아이디입니다.");
+                }
+            })
+            .catch(error => {
+                resultDiv.textContent = error.message;
+                resultDiv.dataset.validated = "false";
+            });
+    });
+
+    function validatePasswordMatch() {
+        const password = document.querySelector('input[name="password"]').value;
+        const passwordConfirm = document.getElementById('passwordConfirm').value;
+        const validatePassword = document.getElementById('validate-password');
+
+        if (passwordConfirm) {
+            if (password === passwordConfirm) {
+                validatePassword.textContent = "정상적인 비밀번호입니다.";
+            } else {
+                validatePassword.textContent = "비밀번호를 다시 확인해주세요.";
+            }
+        } else {
+            validatePassword.textContent = "";
+        }
+    }
+
+    document.getElementById('passwordConfirm').addEventListener('input', validatePasswordMatch);
+
+    document.querySelector('input[name="password"]').addEventListener('input', validatePasswordMatch);
+
+    document.getElementById('signup-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const usernameValidated = document.getElementById('validate-username').dataset.validated;
+        const password = document.querySelector('input[name="password"]').value.trim();
+        const passwordConfirm = document.getElementById('passwordConfirm').value.trim();
+
+        if (!password || !passwordConfirm) {
+            alert("비밀번호를 입력해주세요.");
+            return;
+        }
+
+        if (usernameValidated !== "true") {
+            alert("아이디 중복 검증을 수행해주세요.");
+            return;
+        }
+
+        if (password !== passwordConfirm) {
+            alert("비밀번호를 확인해주세요.");
+            return;
+        }
+
+        const formData = new FormData(this);
+
+        fetch('/user/signup', {
+            method: 'POST',
+            body: formData,
+        })
+            .then((res) => {
+                if (res.redirected) {
+                    window.location.href = res.url;
+                } else {
+                    alert("잘못된 요청입니다.");
+                }
+            })
+            .catch(error => {
+                alert('오류가 발생하였습니다. 다시 시도해주세요.');
+                console.error(error);
+            });
+    });
+</script>
 </html>
