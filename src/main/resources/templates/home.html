@@ -40,12 +40,12 @@
                              th:if="${stat.index} < 3">
                             <div class="card" style="height: 100%;"
                                  th:onclick="|location.href='@{/project/{id}(id=${project.id})}'|">
-                                <img class="card-img-top w-100 d-block fit-cover"
+                                <img class="card-img-top w-100 d-block"
                                      style="height: 180px; object-fit: contain; padding: 6px;"
                                      th:src="@{${project.imgUrl == null ? 'https://cdn.bootstrapstudio.io/placeholders/1400x800.png' : project.imgUrl}}"
                                      alt="Project Image">
                                 <div class="card-body" style="padding: 12px;">
-                                    <h4 class="card-title" th:text="${project.title}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Project Title</h4>
+                                    <h4 class="card-title" th:text="${project.title}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">Project Title</h4>
                                     <div class="d-flex project-description" style=" height:120px; border-bottom: 1px solid rgb(200,200,200);">
                                         <span class="fw-light mb-0" th:utext="${project.description}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">description</span>
                                     </div>

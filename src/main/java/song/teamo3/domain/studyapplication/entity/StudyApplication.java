@@ -48,4 +48,8 @@ public class StudyApplication extends PostEntity {
     public void approve() {
         this.status = StudyApplicationStatus.APPROVED;
     }
+
+    public void reject() {
+        this.status = StudyApplicationStatus.REJECTED;
+    }
 }

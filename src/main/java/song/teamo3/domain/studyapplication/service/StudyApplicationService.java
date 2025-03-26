@@ -89,4 +89,20 @@ public class StudyApplicationService {
 
         return studyApplication.getStudy().getId();
     }
+
+    @Transactional
+    public Long reject(User user, Long studyApplicationId) {
+        StudyApplication studyApplication = studyApplicationRepository.findById(studyApplicationId)
+                .orElseThrow(StudyApplicationNotFoundException::new);
+
+        if (!studyApplication.getStatus().equals(PENDING) || !studyApplication.getStudy().getWriter().getId().equals(user.getId())) {
+            throw new StudyApplicationNotApproveException("거절할 수 없습니다.");
+        }
+
+        studyApplication.reject();
+
+        StudyApplication rejectStudyApplication = studyApplicationRepository.save(studyApplication);
+
+        return rejectStudyApplication.getStudy().getId();
+    }
 }
