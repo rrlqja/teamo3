@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,11 +15,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import song.teamo3.domain.chat.dto.ChatRoomListDto;
+import song.teamo3.domain.chat.service.ChatRoomService;
 import song.teamo3.domain.comment.dto.CreateCommentDto;
-import song.teamo3.domain.project.dto.CreateProjectDto;
 import song.teamo3.domain.study.dto.BestStudyPageDto;
 import song.teamo3.domain.study.dto.CreateStudyApplicationDto;
 import song.teamo3.domain.study.dto.CreateStudyDto;
@@ -39,9 +37,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StudyController {
     private final StudyService studyService;
+    private final ChatRoomService chatRoomService;
 
     @GetMapping("/studyList")
-    public String getStudyList(@PageableDefault(size = 10, page = 0) Pageable pageable,
+    public String getStudyList(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                               @PageableDefault(size = 10, page = 0) Pageable pageable,
                                Model model) {
         Page<StudyPageDto> studyPage = studyService.getStudyPage(pageable);
         model.addAttribute("studyPage", studyPage);
@@ -49,11 +49,22 @@ public class StudyController {
         Page<BestStudyPageDto> bestStudyPage = studyService.getBestStudyPage(PageRequest.of(0, 5));
         model.addAttribute("bestStudyPage", bestStudyPage);
 
+        model.addAttribute("noticeList", Page.empty());
+        if (userDetails != null) {
+            Page<ChatRoomListDto> chatRoomList = chatRoomService.getChatRoomList(userDetails.getUser());
+            model.addAttribute("chatRoomList", chatRoomList);
+        }
+
         return "study/studyList";
     }
 
     @GetMapping("/create")
-    public String getCreateStudy(@ModelAttribute(name = "study") CreateStudyDto createStudyDto) {
+    public String getCreateStudy(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                 @ModelAttribute(name = "study") CreateStudyDto createStudyDto,
+                                 Model model) {
+        model.addAttribute("noticeList", Page.empty());
+        Page<ChatRoomListDto> chatRoomList = chatRoomService.getChatRoomList(userDetails.getUser());
+        model.addAttribute("chatRoomList", chatRoomList);
 
         return "study/createStudy";
     }
@@ -92,6 +103,10 @@ public class StudyController {
         StudyDto study = studyService.getStudy(studyId);
 
         model.addAttribute("study", study);
+
+        model.addAttribute("noticeList", Page.empty());
+        Page<ChatRoomListDto> chatRoomList = chatRoomService.getChatRoomList(userDetails.getUser());
+        model.addAttribute("chatRoomList", chatRoomList);
 
         return "study/editStudy";
     }
@@ -184,5 +199,13 @@ public class StudyController {
         redirectAttributes.addAttribute("studyId", commentStudyId);
 
         return "redirect:/study/{studyId}";
+    }
+
+    @PostMapping("/createChatRoom/{studyId}")
+    public String postCreateChatRoom(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                     @PathVariable("studyId") Long studyId) {
+        studyService.createChatRoom(userDetails.getUser(), studyId);
+
+        return "redirect:/chatroom/chatRoomList";
     }
 }

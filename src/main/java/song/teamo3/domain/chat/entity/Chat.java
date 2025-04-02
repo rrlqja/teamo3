@@ -39,7 +39,11 @@ public class Chat {
     private LocalDateTime createDate;
 
     public static Chat create(User user, ChatRoom chatRoom, String message) {
-        return new Chat(user, chatRoom, message);
+        Chat chat = new Chat(user, chatRoom, message);
+
+        chatRoom.updateLastChatTime();
+
+        return chat;
     }
 
     private Chat(User writer, ChatRoom chatRoom, String message) {

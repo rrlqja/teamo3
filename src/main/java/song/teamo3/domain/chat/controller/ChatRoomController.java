@@ -11,9 +11,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import song.teamo3.domain.chat.dto.ChatPageDto;
+import song.teamo3.domain.chat.dto.ChatRoomDto;
 import song.teamo3.domain.chat.dto.ChatRoomPageDto;
+import song.teamo3.domain.chat.dto.ModifyChatRoomTitleDto;
 import song.teamo3.domain.chat.service.ChatRoomService;
 import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
 
@@ -38,12 +42,29 @@ public class ChatRoomController {
         return "chatroom/chatRoomList";
     }
 
+    @GetMapping("/api/chatRoomList")
+    public ResponseEntity<Page<ChatRoomPageDto>> getChatRoomApi(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                @PageableDefault(size = 10, page = 0) Pageable pageable) {
+        Page<ChatRoomPageDto> chatRoomPage = chatRoomService.getChatRoomPage(userDetails.getUser(), pageable);
+
+        return ResponseEntity.ok(chatRoomPage);
+    }
+
     @GetMapping("/{chatRoomId}/chatList")
-    public ResponseEntity<Page<ChatPageDto>> getChatList(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    public ResponseEntity<ChatRoomDto> getChatList(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                          @PathVariable("chatRoomId") Long chatRoomId,
                                                          @PageableDefault(size = 10, page = 0) Pageable pageable) {
-        Page<ChatPageDto> chatPage = chatRoomService.getChatList(userDetails.getUser(), chatRoomId, pageable);
+        ChatRoomDto chatRoom = chatRoomService.getChatList(userDetails.getUser(), chatRoomId, pageable);
 
-        return ResponseEntity.ok(chatPage);
+        return ResponseEntity.ok(chatRoom);
+    }
+
+    @PostMapping("/modifyTitle/{chatRoomId}")
+    public ResponseEntity<?> postModifyChatRoomTitle(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                     @PathVariable("chatRoomId") Long chatRoomId,
+                                                     @RequestBody ModifyChatRoomTitleDto modifyChatRoomDto) {
+        chatRoomService.modify(userDetails.getUser(), chatRoomId, modifyChatRoomDto);
+
+        return ResponseEntity.ok().build();
     }
 }

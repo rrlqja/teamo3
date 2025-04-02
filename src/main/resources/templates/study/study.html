@@ -8,7 +8,9 @@
     <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
     <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" th:href="@{/assets/css/common.css}">
+    <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
 
     <style>
         .content-area img {
@@ -30,7 +32,7 @@
                 <p th:onclick="|location.href='@{/study/studyList}'|" style="display: inline-block; max-width: 100%; height: 100%; line-height: 40px; font-weight: bold; font-size: 18px; cursor: pointer;">스터디</p>
             </div>
             <div style="width: 100%;min-height: 530px;margin-bottom: 30px;">
-                <div class="card" th:object="${study}" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                <div class="card" th:object="${study}" style="box-shadow: 0px 0px 5px rgba(110,122,135,0.25);border-radius: 10px;width: 100%;height: 100%;border: none;">
                     <div class="card-body" style="padding: 0px;">
                         <div style="width: 100%;height: 60px;padding: 0px;">
                             <p th:text="*{title}" style="width: 100%;height: 100%;margin: 0px;line-height: 60px;margin-right: 0px;margin-left: 0px;padding-left: 12px;padding-right: 12px;font-weight: bold;font-size: 19px;">제목</p>
@@ -58,8 +60,19 @@
                             <button class="btn btn-outline-secondary" type="button" th:text="수정" th:onclick="|location.href='@{/study/modify/{studyId}(studyId=*{id})}'|" style="width: 60px;height: 40px;">수정</button>
                             <button class="btn btn-outline-secondary" type="button" th:text="삭제" th:onclick="confirmDelete([[*{id}]])" style="width: 60px;height: 40px;">삭제</button>
                         </div>
+                        <div class="justify-content-center" style="width: 100%;height: 60px;display: flex;align-items: center;">
+                            <button th:data-study-id="*{id}"
+                                    th:class="*{isFavorite()} ? 'btn btn-outline-danger' : 'btn btn-outline-secondary'"
+                                    type="button"
+                                    onclick="favorite(this)"
+                                    style="width: 100px; height: 40px;">
+                                <img th:src="*{favorite} ? '/imgs/heart.png' : '/imgs/blank_heart.png'"
+                                     style="width: 24px; height: 24px;">
+                                <span th:text="*{favorites}">0</span>
+                            </button>
+                        </div>
                         <div class="justify-content-center align-items-center" th:if="*{status == 'RECRUITING'}" style="height: 60px;display: flex;">
-                            <button class="btn btn-outline-primary" type="button" th:onclick="|openApplyPopup('@{/study/apply/{studyId}(studyId=*{id})}')|">스터디 가입 신청</button>
+                            <button class="btn btn-outline-primary" type="button" sec:authorize="isAuthenticated()" th:onclick="|openApplyPopup('@{/study/apply/{studyId}(studyId=*{id})}')|">스터디 가입 신청</button>
                         </div>
                         <div class="justify-content-end" style="width: 100%;height: 60px;display: flex;align-items: center;gap: 10px;padding-right: 12px;" th:if="*{isMember()}">
                             <button class="btn btn-outline-danger" type="button" th:text="탈퇴" th:onclick="exitStudy([[*{id}]])" style="width: 60px;height: 40px;">수정</button>
@@ -68,7 +81,7 @@
                 </div>
             </div>
             <div style="width: 100%;min-height: 100px;margin-bottom: 30px;">
-                <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                <div class="card" style="box-shadow: 0px 0px 5px rgba(110,122,135,0.25);border-radius: 10px;width: 100%;height: 100%;border: none;">
                     <div class="card-body" style="padding: 0px;">
                         <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">댓글</h4>
                         <div class="card-body" style="padding: 0px;" th:object="${study}">
@@ -110,28 +123,21 @@
             </div>
         </div>
         <div class="col-md-2" style="padding: 0px;">
-            <div th:object="${study}" style="width: 100%;height: 600px;display: flex;flex-direction: column;padding: 16px; gap: 16px; position: fixed;">
-                <button class="btn btn-outline-primary" type="button" th:if="*{isWriter()}" th:onclick="|openApplicationListPopup('@{/study/{studyId}/applicationList(studyId=*{id})}')|" style="width: 100px;height: 40px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">신청서 목록</button>
-                <button class="btn btn-outline-primary" type="button" th:if="*{isWriter()}" th:onclick="|location.href='@{/project/create/{studyId}(studyId=*{id})}'|" style="padding-left: 0px; padding-right: 0px; width: 100px;height: 40px; font-size: 13px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">프로젝트 생성</button>
-                <button type="button" id="studyStatusButton" style="padding-left: 0px; padding-right: 0px; width: 100px;height: 40px; font-size: 13px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+            <div th:object="${study}" style="width: 100%;height: 600px;display: flex;flex-direction: column;padding: 16px; gap: 16px;">
+                <button type="button" id="studyStatusButton" style="padding-left: 0px; padding-right: 0px; width: 100px;height: 40px; font-size: 13px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;background-color: #ffffff;"
                         th:class="*{status == 'RECRUITING'} ? 'btn btn-outline-primary' : 'btn btn-outline-secondary'"
                         th:onclick="changeStudyStatus([[*{id}]])">
                     <span id="studyStatus" th:text="*{status == 'RECRUITING'} ? '모집중' : '모집완료'"/>
                 </button>
-                <button type="button" id="bumpUpButton" style="padding-left: 0px; padding-right: 0px; width: 100px;height: 40px; font-size: 13px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                <button class="btn btn-outline-primary" type="button" th:if="*{isWriter()}" th:onclick="|openApplicationListPopup('@{/study/{studyId}/applicationList(studyId=*{id})}')|" style="width: 100px;height: 40px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background-color: #ffffff;">신청서 목록</button>
+                <button class="btn btn-outline-primary" type="button" th:if="*{isWriter()}" th:onclick="|location.href='@{/project/create/{studyId}(studyId=*{id})}'|" style="padding-left: 0px; padding-right: 0px; width: 100px;height: 40px; font-size: 13px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;background-color: #ffffff;">프로젝트 생성</button>
+                <button type="button" id="bumpUpButton" style="padding-left: 0px; padding-right: 0px; width: 100px;height: 40px; font-size: 13px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;background-color: #ffffff;"
                         class="btn btn-outline-primary"
-                        th:onclick="bumpUp([[*{id}]])">
+                        th:onclick="bumpUp([[*{id}]])"
+                        th:if="*{isWriter()}">
                     끌어 올리기
                 </button>
-                <button th:data-study-id="*{id}"
-                        th:class="*{isFavorite()} ? 'btn btn-outline-danger' : 'btn btn-outline-secondary'"
-                        type="button"
-                        onclick="favorite(this)"
-                        style="width: 100px; height: 40px;">
-                    <img th:src="*{favorite} ? '/imgs/heart.png' : '/imgs/blank_heart.png'"
-                         style="width: 24px; height: 24px;">
-                    <span th:text="*{favorites}">0</span>
-                </button>
+                <button class="btn btn-outline-primary" type="button" th:if="*{isWriter()}" th:onclick="createChatRoom([[*{id}]])" style="padding-left: 0px; padding-right: 0px; width: 100px;height: 40px; font-size: 13px;  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;background-color: #ffffff;">채팅방 개설</button>
             </div>
         </div>
     </div>
@@ -216,6 +222,22 @@
         }
     }
 
+    function createChatRoom(studyId) {
+        if (confirm("채팅방을 개설하시겠습니까?")) {
+            fetch(`/study/createChatRoom/${studyId}`, {
+                method: "POST"
+            }).then((res) => {
+                if (res.redirected) {
+                    window.location.href = res.url;
+                } else {
+                    alert("이미 채팅방이 존재합니다.");
+                }
+            }).catch((err) => {
+                alert(err.message());
+            })
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.edit-button').forEach(function(button) {
             button.addEventListener('click', function() {
@@ -291,7 +313,7 @@
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error("요청 실패: " + response.status);
+                    throw new Error("로그인이 필요합니다. " + response.status);
                 }
                 return response.json();
             })
@@ -309,7 +331,7 @@
             })
             .catch(error => {
                 console.error('좋아요 오류 발생:', error);
-                alert('요청중 오류가 발생했습니다.');
+                alert('로그인이 필요합니다. ');
             });
     }
 </script>

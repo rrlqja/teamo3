@@ -42,6 +42,7 @@ public class Project extends PostEntity {
     @Column(name = "imgage_url")
     private List<String> imgList = new ArrayList<>();
 
+    private String subTitle;
     private String url;
     private boolean deleteFlag = false;
 
@@ -56,15 +57,16 @@ public class Project extends PostEntity {
         this.deleteFlag = true;
     }
 
-    public static Project create(User user, Study study, String title, String description, List<String> imgList, String url) {
-        return new Project(user, study, title, description, imgList, url);
+    public static Project create(User user, Study study, String title, String description, List<String> imgList, String url, String subTitle) {
+        return new Project(user, study, title, description, imgList, url, subTitle);
     }
 
-    private Project(User writer, Study study, String title, String description, List<String> imgList, String url) {
+    private Project(User writer, Study study, String title, String description, List<String> imgList, String url, String subTitle) {
         super(title, description);
         this.writer = writer;
         this.study = study;
         this.imgList = imgList;
         this.url = url;
+        this.subTitle = subTitle;
     }
 }

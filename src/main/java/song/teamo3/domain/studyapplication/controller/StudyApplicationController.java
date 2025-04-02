@@ -46,8 +46,8 @@ public class StudyApplicationController {
 
     @PostMapping("/reject/{studyApplicationId}")
     public String postReject(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                              @PathVariable("studyApplicationId") Long studyApplicationId,
-                              RedirectAttributes redirectAttributes) {
+                             @PathVariable("studyApplicationId") Long studyApplicationId,
+                             RedirectAttributes redirectAttributes) {
         Long studyId = studyApplicationService.reject(userDetails.getUser(), studyApplicationId);
 
         redirectAttributes.addAttribute("studyId", studyId);

@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import song.teamo3.domain.study.entity.Study;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,11 +25,24 @@ public class ChatRoom {
     @ManyToOne(fetch = FetchType.LAZY)
     private Study study;
 
+    private String chatRoomName;
+
+    private LocalDateTime lastChatTime;
+
+    public void updateLastChatTime() {
+        lastChatTime = LocalDateTime.now();
+    }
+
+    public void modify(String chatRoomName) {
+        this.chatRoomName = chatRoomName;
+    }
+
     public static ChatRoom create(Study study) {
         return new ChatRoom(study);
     }
 
     private ChatRoom(Study study) {
         this.study = study;
+        this.chatRoomName = study.getTitle();
     }
 }

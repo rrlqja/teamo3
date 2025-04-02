@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import song.teamo3.domain.chat.dto.ChatRoomListDto;
+import song.teamo3.domain.chat.service.ChatRoomService;
 import song.teamo3.domain.project.dto.CreateProjectDto;
 import song.teamo3.domain.project.dto.ModifyProjectDto;
 import song.teamo3.domain.project.dto.ProjectDto;
@@ -28,11 +30,21 @@ import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
 @RequiredArgsConstructor
 public class ProjectController {
     private final ProjectService projectService;
+    private final ChatRoomService chatRoomService;
 
     @GetMapping("/projectList")
-    public String getProjectList(@PageableDefault(value = 10, page = 0) Pageable pageable,
+    public String getProjectList(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                 @PageableDefault(value = 10, page = 0) Pageable pageable,
                                  Model model) {
         Page<ProjectPageDto> projectPage = projectService.getProjectPage(pageable);
+
+        Page<Object> empty = Page.empty();
+
+        model.addAttribute("noticeList", empty);
+        if (userDetails != null) {
+            Page<ChatRoomListDto> chatRoomList = chatRoomService.getChatRoomList(userDetails.getUser());
+            model.addAttribute("chatRoomList", chatRoomList);
+        }
 
         model.addAttribute("projectPage", projectPage);
 
@@ -73,6 +85,14 @@ public class ProjectController {
         }
 
         model.addAttribute("project", project);
+
+        Page<Object> empty = Page.empty();
+
+        model.addAttribute("noticeList", empty);
+        if (userDetails != null) {
+            Page<ChatRoomListDto> chatRoomList = chatRoomService.getChatRoomList(userDetails.getUser());
+            model.addAttribute("chatRoomList", chatRoomList);
+        }
 
         return "project/project";
     }

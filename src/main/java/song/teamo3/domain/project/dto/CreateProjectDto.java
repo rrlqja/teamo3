@@ -18,6 +18,7 @@ public class CreateProjectDto {
     private String title;
     private String description;
     private String url;
+    private String subTitle;
     private List<CreateProjectMemberListDto> projectMemberList = new ArrayList<>();
     private List<String> imgList = new ArrayList<>();
 
@@ -27,6 +28,6 @@ public class CreateProjectDto {
     }
 
     public Project toEntity(User user, Study study) {
-        return Project.create(user, study, title, description, imgList, url);
+        return Project.create(user, study, title, description, imgList, url, subTitle);
     }
 }

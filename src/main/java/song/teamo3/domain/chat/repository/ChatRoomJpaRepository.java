@@ -18,6 +18,8 @@ public interface ChatRoomJpaRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query("select cr " +
             " from ChatRoom cr " +
+            " join fetch cr.study crs " +
+            " join fetch crs.writer " +
             "where cr.id = :id")
     Optional<ChatRoom> findChatRoomById(@Param("id") Long id);
 }

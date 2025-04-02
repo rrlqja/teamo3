@@ -70,8 +70,6 @@ public class StudyService {
 
         log.info("[Create Study] id: {}", createStudy.getId());
 
-        chatRoomService.createChatRoom(createStudy, user);
-
         return createStudy.getId();
     }
 
@@ -238,5 +236,16 @@ public class StudyService {
         if (study.isDeleteFlag()) {
             throw new AlreadyDeletedStudyException("삭제된 스터디 입니다.");
         }
+    }
+
+    @Transactional
+    public void createChatRoom(User user, Long studyId) {
+        Study study = findStudyById(studyId);
+
+        if (!study.getWriter().getId().equals(user.getId())) {
+            throw new StudyAccessDeniedException("권한이 없습니다.");
+        }
+
+        Long chatRoomId = chatRoomService.createChatRoom(study);
     }
 }

@@ -8,12 +8,25 @@
     <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
     <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" th:href="@{/assets/css/common.css}">
     <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
 
     <style>
         .project-description img {
             display: none;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 2px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -26,68 +39,70 @@
             <div th:replace="content :: leftBar"></div>
         </div>
         <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px;">
-            <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 750px;margin-bottom: 18px;">
-                <div class="card-body" style="padding: 0px;">
-                    <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">
-                        <a th:href="@{/project/projectList}" class="d-block text-decoration-none text-dark">
-                            프로젝트
-                        </a>
+            <div class="card" style="box-shadow: 0 0 5px rgba(110,122,135,0.25); border-radius: 10px; width: 750px; margin-bottom: 18px; border: none;">
+                <div class="card-body p-0">
+                    <h4 class="card-title mb-2" style="font-size: 18px; font-weight: 600; border-bottom: 0.1px solid #b4bbc3; padding: 8px;">
+                        <a th:href="@{/project/projectList}" class="d-block text-decoration-none text-dark">프로젝트</a>
                     </h4>
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3" style="height: 450px; width: 100%; padding: 0; margin: 0;">
-                        <div class="col"
-                             style="padding: 12px 6px; height: 100%;"
-                             th:each="project, stat : ${projectPage}"
-                             th:if="${stat.index} < 3">
-                            <div class="card" style="height: 100%;"
-                                 th:onclick="|location.href='@{/project/{id}(id=${project.id})}'|">
-                                <img class="card-img-top w-100 d-block"
-                                     style="height: 180px; object-fit: contain; padding: 6px;"
+                    <div class="d-flex flex-nowrap custom-scroll" style="overflow-x: auto; min-height: 280px; margin: 0; padding: 0;">
+                        <div class="px-2" th:each="project, stat : ${projectPage}" th:if="${stat.index} < 6" style="min-width: 250px;">
+                            <div class="card h-100 border-0" th:onclick="|location.href='@{/project/{id}(id=${project.id})}'|" style="cursor: pointer; padding: 8px;">
+                                <img class="card-img-top w-100" style="height: 105px; object-fit: cover; border-radius: 15px;"
                                      th:src="@{${project.imgUrl == null ? 'https://cdn.bootstrapstudio.io/placeholders/1400x800.png' : project.imgUrl}}"
                                      alt="Project Image">
-                                <div class="card-body" style="padding: 12px;">
-                                    <h4 class="card-title" th:text="${project.title}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">Project Title</h4>
-                                    <div class="d-flex project-description" style=" height:120px; border-bottom: 1px solid rgb(200,200,200);">
-                                        <span class="fw-light mb-0" th:utext="${project.description}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">description</span>
+                                <div class="card-body w-100" style="padding: 2px;">
+                                    <span class="card-title"
+                                          th:text="${project.title}"
+                                          style="font-size: 18px; font-weight:800; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; white-space: normal; overflow: hidden; text-overflow: ellipsis;">
+                                      Project Title
+                                    </span>
+                                    <div class="d-flex" style="display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; height: 40px; border-bottom: 1px solid #c8c8c8;">
+                                        <span class="" th:text="${project.subTitle}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">subTitle</span>
                                     </div>
-                                    <div class="card-text" th:text="${project.writerName}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Project Writer</div>
+                                    <div class="card-text" th:text="${project.writerName}" style="font-size: 15px;">Project Writer</div>
+                                    <div class="card-text" th:text="${project.createDate}" style="font-size: 14px;">Create Date</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="justify-content-between row mb-3" style="width: 750px;height: 350px;background: rgba(225,97,97,0);box-shadow: 0px 0px;border-radius: 10px;display: flex;margin-right: 0px;margin-left: 0px;">
+            <div class="justify-content-between row mb-3" style="width: 750px;height: 340px;background: rgba(225,97,97,0);box-shadow: 0px 0px;border-radius: 10px;display: flex;margin-right: 0px;margin-left: 0px;">
                 <div class="col-12" style="width: 360px;height: 100%;background: #dc9191;box-shadow: 0px 0px;border-radius: 10px;padding: 0px;">
-                    <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                    <div class="card" style="border-bottom-style: none;box-shadow: 0px 0px 5px rgba(110,122,135,0.25);border-radius: 10px;width: 100%;height: 100%;border: none;">
                         <div class="card-body" style="padding: 0px;">
                             <h4 class="card-title"
-                                style="margin-bottom: 2px; font-size: 21px; font-weight: bold; border-bottom: 0.5px solid #b4bbc3; padding: 8px;">
+                                style="margin-bottom: 2px;font-size: 16px;font-weight: 600; border-bottom: 0.5px solid #b4bbc3; padding: 8px;">
                                 <a th:href="@{/study/studyList}" class="d-block text-decoration-none text-dark">
                                     스터디
                                 </a>
                             </h4>
                             <div class="card-body" style="padding: 0px;">
                                 <ul class="list-group list-group-flush">
-                                    <a class="list-group-item list-group-item-action" th:each="study, stat : ${studyPage}" th:if="${stat.index} < 6" th:text="${study.title}" th:href="@{/study/{studyId}(studyId=${study.id})}">Item 1</a>
-                                    <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(studyPage.getNumberOfElements()+1, 6)}">&nbsp;</li>
+                                    <a class="list-group-item list-group-item-action" th:each="study, stat : ${studyPage}" th:if="${stat.index} < 7" th:text="${study.title}" th:href="@{/study/{studyId}(studyId=${study.id})}">Item 1</a>
+                                    <li class="list-group-item border-0"
+                                        th:if="${studyPage.getNumberOfElements() < 7}"
+                                        th:each="i : ${#numbers.sequence(1, 7 - studyPage.getNumberOfElements())}"
+                                        style="padding: 0;">&nbsp;
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12" style="width: 360px;height: 100%;background: #dc9191;box-shadow: 0px 0px;border-radius: 10px;padding: 0px;">
-                    <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                    <div class="card" style="border-bottom-style: none;box-shadow: 0px 0px 5px rgba(110,122,135,0.25);border-radius: 10px;width: 100%;height: 100%;border: none;">
                         <div class="card-body" style="padding: 0px;">
                             <h4 class="card-title"
-                            style="margin-bottom: 2px; font-size: 21px; font-weight: bold; border-bottom: 0.5px solid #b4bbc3; padding: 8px;">
+                            style="margin-bottom: 2px;font-size: 16px;font-weight: 600; border-bottom: 0.5px solid #b4bbc3; padding: 8px;">
                             <a th:href="@{/teaming/teamingList}" class="d-block text-decoration-none text-dark">
                                 컨텐츠2
                             </a>
                         </h4>
                             <div class="card-body" style="padding: 0px;">
                                 <ul class="list-group list-group-flush">
-                                    <a class="list-group-item list-group-item-action" th:each="teaming, stat : ${teamingPage}" th:if="${stat.index} < 6" th:text="${teaming.title}" th:href="@{/teaming/{teamingId}(teamingId=${teaming.teamingId})}">Item 1</a>
-                                    <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(teamingPage.getNumberOfElements()+1, 6)}">&nbsp;</li>
+<!--                                    <a class="list-group-item list-group-item-action" th:each="teaming, stat : ${teamingPage}" th:if="${stat.index} < 6" th:text="${teaming.title}" th:href="@{/teaming/{teamingId}(teamingId=${teaming.teamingId})}">Item 1</a>-->
+<!--                                    <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(teamingPage.getNumberOfElements()+1, 6)}">&nbsp;</li>-->
                             </ul>
                             </div>
                         </div>
@@ -96,18 +111,18 @@
             </div>
             <div class="justify-content-between row mb-3" style="width: 750px;height: 350px;background: rgba(225,97,97,0);box-shadow: 0px 0px;border-radius: 10px;display: flex;margin-right: 0px;margin-left: 0px;">
                 <div class="col-12" style="width: 100%;min-height: 250px;background: #dc9191;box-shadow: 0px 0px;border-radius: 10px;padding: 0px;">
-                    <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;height: 100%;">
+                    <div class="card" style="border-bottom-style: none;box-shadow: 0px 0px 5px rgba(110,122,135,0.25);border-radius: 10px;width: 100%;height: 100%;border: none;">
                         <div class="card-body" style="padding: 0px;">
                             <h4 class="card-title"
-                                style="margin-bottom: 2px; font-size: 21px; font-weight: bold; border-bottom: 0.5px solid #b4bbc3; padding: 8px;">
+                                style="margin-bottom: 2px;font-size: 18px;font-weight: 600; border-bottom: 0.5px solid #b4bbc3; padding: 8px;">
                                 <a th:href="@{/teaming/teamingList}" class="d-block text-decoration-none text-dark">
                                     테스트
                                 </a>
                             </h4>
                             <div class="card-body" style="padding: 0px;">
                                 <ul class="list-group list-group-flush">
-                                    <a class="list-group-item list-group-item-action" th:each="teaming, stat : ${teamingPage}" th:if="${stat.index} < 10" th:text="${teaming.title}" th:href="@{/teaming/{teamingId}(teamingId=${teaming.teamingId})}">Item 1</a>
-                                    <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(teamingPage.getNumberOfElements()+1, 10)}">&nbsp;</li>
+<!--                                    <a class="list-group-item list-group-item-action" th:each="teaming, stat : ${teamingPage}" th:if="${stat.index} < 10" th:text="${teaming.title}" th:href="@{/teaming/{teamingId}(teamingId=${teaming.teamingId})}">Item 1</a>-->
+<!--                                    <li class="list-group-item border-0" th:each="i : ${#numbers.sequence(teamingPage.getNumberOfElements()+1, 10)}">&nbsp;</li>-->
                                 </ul>
                             </div>
                         </div>
@@ -116,7 +131,7 @@
             </div>
         </div>
         <div class="col-md-2" style="padding: 0px;">
-            <div th:replace="content :: rightBar"></div>
+            <div th:replace="content :: rightBar(noticeList = ${noticeList}, chatRoomList = ${chatRoomList})"></div>
         </div>
     </div>
 </div>

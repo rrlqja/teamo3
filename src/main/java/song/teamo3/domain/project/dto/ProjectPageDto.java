@@ -12,6 +12,7 @@ public class ProjectPageDto {
     private String description;
     private String writerName;
     private String imgUrl;
+    private String subTitle;
     private String createDate;
 
     public ProjectPageDto(Project project) {
@@ -20,6 +21,7 @@ public class ProjectPageDto {
         this.description = project.getDescription();
         this.writerName = project.getWriter().getName();
         this.imgUrl = !project.getImgList().isEmpty() ? project.getImgList().get(0) : null;
+        this.subTitle = project.getSubTitle();
         this.createDate = project.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }

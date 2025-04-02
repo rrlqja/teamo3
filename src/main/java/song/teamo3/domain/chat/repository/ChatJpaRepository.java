@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import song.teamo3.domain.chat.entity.Chat;
 import song.teamo3.domain.chat.entity.ChatRoom;
 
+import java.util.Optional;
+
 @Repository
 public interface ChatJpaRepository extends JpaRepository<Chat, Long> {
     @Query("select c " +
@@ -18,4 +20,12 @@ public interface ChatJpaRepository extends JpaRepository<Chat, Long> {
             "order by c.createDate desc")
     Page<Chat> findChatsByChatRoom(@Param("chatRoom") ChatRoom chatRoom,
                                    Pageable pageable);
+
+    @Query("select c " +
+            " from Chat c " +
+            " join fetch c.writer " +
+            "where c.chatRoom = :chatRoom " +
+            "order by c.createDate desc " +
+            "limit 1")
+    Optional<Chat> findLastChatByChatRoom(@Param("chatRoom") ChatRoom chatRoom);
 }

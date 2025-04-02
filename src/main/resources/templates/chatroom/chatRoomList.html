@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
     <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" th:href="@{/assets/css/common.css}">
     <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
 
@@ -32,7 +33,7 @@
             background-color: #fffefa;
             padding: 6px;
             border-radius: 10px;
-            box-shadow: 1px 1px 3px rgba(110,122,135,0.3);
+            box-shadow: 0px 0px 5px rgba(110,122,135,0.25);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -74,49 +75,158 @@
 <body>
 <div th:replace="content :: headerNav"></div>
 
-<div class="container" style="width: 1500px;height: 1250px;">
-    <div class="row justify-content-between" style="width: 100%;height: 100%;padding-top: 30px;">
-        <div class="col-md-2 d-flex flex-column" style="display: flex;">
-            <div th:replace="content :: leftBar"></div>
+<div class="container" style="width: 1440px;height: 840px; margin-top: 30px; padding: 0px;">
+    <div class="row" style="width: 100%;height: 100%;display: flex; flex-direction: column; box-shadow: 0px 0px 5px rgba(110,122,135,0.25);border-radius: 10px; margin: 0px;background-color: #ffffff">
+        <div class="col-md-2" id="chatRoomListContainer" style="height: 100%; padding: 0; overflow-y: auto; border-right: 0.5px solid rgb(155,159,163);">
+            <ul class="list-group list-group-flush" id="chatRoomList" style="border-top-left-radius: 10px;">
+                <li class="list-group-item" style="height: 100px; padding: 10px; border-bottom: 0.1px solid rgb(196,200,204);"
+                    th:each="chatRoom, stat : ${chatRoomPage}"
+                    th:onclick="showDetail([[${chatRoom.id}]])">
+                    <div class="chatRoomName" id="chatRoomName" style="font-size: 18px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                         th:text="${chatRoom.chatRoomName}"></div>
+                    <div class="study-member-list" style="font-size: 14px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <span th:each="member, stat : ${chatRoom.userList}">
+                            <span th:text="${member.name}"></span>
+                            <span th:if="${!stat.last}">, </span>
+                        </span>
+                    </div>
+                    <div style="height: 50px; line-height: 40px; font-weight: 300; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <span th:if="*{chatRoom.lastChat != null && chatRoom.lastChat != ''}" th:id="|lastChat_${chatRoom.id}|" th:text="${chatRoom.lastChatWriterName + ': ' + chatRoom.lastChat}">last chat</span>
+                    </div>
+                </li>
+            </ul>
         </div>
-        <div class="col-md-10" style="padding: 0px;margin-right: 0px;margin-left: 0px;display: flex; flex-direction: column; background-color: white;">
-            <div class="row" style="width: 100%;height: 720px;display: flex; box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;">
-                <div class="col-md-3" style="height: 100%;padding: 0px;overflow-y: auto;border-right: 0.5px solid rgb(155,159,163);">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item" style="height: 70px; padding: 10px; border-bottom: 0.5px solid rgb(155,159,163);"
-                            th:each="chatRoom, stat : ${chatRoomPage}"
-                            th:onclick="showDetail([[${chatRoom.id}]])">
-                            <div class="study-name" style="font-size: 18px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-                                 th:text="${chatRoom.studyName}"></div>
-                            <div class="study-member-list" style="font-size: 14px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                <span th:each="member, stat : ${chatRoom.userList}">
-                                    <span th:text="${member.name}"></span>
-                                    <span th:if="${!stat.last}">, </span>
-                                </span>
-                            </div>
-                        </li>
-                    </ul>
+        <div class="col-md-10" style="height: 100%;">
+            <div id="chatPlaceholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                <p style="font-size: 20px; color: #aaa;">채팅방을 선택해주세요.</p>
+            </div>
+            <div id="chatDetail" style="width: 100%;height: 100%; display: none;">
+                <div style="width: 100%; height: 60px; display: flex; align-items: center; border-bottom: 1px solid rgb(200,200,200); gap: 10px; padding-left: 10px;">
+                    <span id="chatTitleDisplay" style="max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
+                    <input id="chatTitleInput" class="" type="text" style="display: none; width: fit-content; max-width: 60%; min-width: 35%; margin-right: 10px;" />
+                    <button id="chatTitleEditBtn" type="button" class="btn btn-outline-secondary btn-sm" style="height: 30px;">수정</button>
+                    <button id="chatTitleCancelBtn" type="button" class="btn btn-outline-secondary btn-sm" style="height: 30px; display: none;">취소</button>
                 </div>
-                <div class="col-md-9" style="height: 100%;">
-                    <div id="chatPlaceholder" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                        <p style="font-size: 20px; color: #aaa;">채팅방을 선택해주세요.</p>
-                    </div>
-                    <div id="chatDetail" style="width: 100%;height: 100%; display: none;">
-                        <div id="chatListContainer" style="width: 100%; height: 600px; overflow-y: auto; padding: 10px; border-bottom: 1px solid rgb(200,200,200);">
-                        </div>
-                        <div class="justify-content-end" style="width: 100%;height: 80px;display: flex; flex-direction: row; align-items: center; gap:16px;">
-                            <input class="input-group" type="text" id="messageInput" placeholder="메시지 입력" style="width: 80%"/>
-                            <button class="btn btn-outline-primary" onclick="sendMessage()">전송</button>
-                        </div>
-                    </div>
+                <div id="chatListContainer" style="width: 100%; height: 700px; overflow-y: auto; padding: 10px; border-bottom: 1px solid rgb(200,200,200);">
+                </div>
+                <div class="justify-content-end" style="width: 100%;height: 80px;display: flex; flex-direction: row; align-items: center; gap:16px;">
+                    <input class="input-group" type="text" id="messageInput" placeholder="메시지 입력" style="width: 80%"/>
+                    <button class="btn btn-outline-primary" onclick="sendMessage()">전송</button>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatRoomId = urlParams.get('chatRoomId');
+        if (chatRoomId) {
+            showDetail(chatRoomId);
+        }
+    });
+
+    document.getElementById('chatTitleEditBtn').addEventListener('click', function() {
+        const displayElem = document.getElementById('chatTitleDisplay');
+        const chatRoomNameElem = document.getElementById('chatRoomName');
+        const inputElem = document.getElementById('chatTitleInput');
+        const cancelBtn = document.getElementById('chatTitleCancelBtn');
+
+        if (this.textContent.trim() === '수정') {
+            inputElem.value = displayElem.textContent;
+            displayElem.style.display = 'none';
+            inputElem.style.display = 'inline-block';
+            this.textContent = '저장';
+            cancelBtn.style.display = 'inline-block';
+        } else {
+            const newTitle = inputElem.value;
+            fetch(`/chatroom/modifyTitle/${currentChatRoomId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newTitle })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        displayElem.textContent = newTitle;
+                        chatRoomNameElem.textContent = newTitle;
+                        inputElem.style.display = 'none';
+                        displayElem.style.display = 'block';
+                        this.textContent = '수정';
+                        cancelBtn.style.display = 'none';
+                    } else {
+                        alert('제목 업데이트에 실패하였습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('제목 업데이트 오류:', error);
+                    alert('제목 업데이트 중 오류가 발생했습니다.');
+                });
+        }
+    });
+
+    document.getElementById('chatTitleCancelBtn').addEventListener('click', function() {
+        const displayElem = document.getElementById('chatTitleDisplay');
+        const inputElem = document.getElementById('chatTitleInput');
+        const editBtn = document.getElementById('chatTitleEditBtn');
+
+        inputElem.style.display = 'none';
+        displayElem.style.display = 'block';
+        editBtn.textContent = '수정';
+        this.style.display = 'none';
+    });
+
+    let currentChatRoomPage = 0;
+    let totalChatRoomPages = 10
+
+    document.getElementById('chatRoomListContainer').addEventListener('scroll', function() {
+        if (this.scrollTop + this.clientHeight >= this.scrollHeight - 20) {
+            loadMoreChatRooms();
+        }
+    });
+
+    function loadMoreChatRooms() {
+        if (currentChatRoomPage >= totalChatRoomPages - 1) return;
+
+        currentChatRoomPage++;
+
+        fetch(`/chatroom/api/chatRoomList?page=${currentChatRoomPage}&size=10`)
+            .then(response => {
+                if (!response.ok) {
+                    console.error("채팅방 로드 오류 발생");
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                totalChatRoomPages = data.totalPages;
+                const chatRoomList = document.getElementById('chatRoomList');
+                data.content.forEach(chatRoom => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.style.cssText = "height: 100px; padding: 10px; border-bottom: 0.1px solid rgb(196,200,204);";
+                    li.onclick = function() {
+                        showDetail(chatRoom.id, chatRoom.chatRoomName);
+                    };
+
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'chatRoomName';
+                    nameDiv.style.cssText = "font-size: 18px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;";
+                    nameDiv.textContent = chatRoom.chatRoomName;
+                    li.appendChild(nameDiv);
+
+                    const memberDiv = document.createElement('div');
+                    memberDiv.className = 'study-member-list';
+                    memberDiv.style.cssText = "font-size: 14px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;";
+                    memberDiv.textContent = chatRoom.userList.map(member => member.name).join(', ');
+                    li.appendChild(memberDiv);
+
+                    chatRoomList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('채팅방 로드 오류:', error));
+    }
+
     let currentPage = 0;
     let isLoading = false;
     let hasMoreMessages = true;
@@ -153,9 +263,18 @@
                 }
                 return response.json();
             })
-            .then(messages => {
-                messages = messages.content.reverse();
+            .then(chatRoom => {
+                document.getElementById('chatTitleDisplay').textContent = chatRoom.chatRoomName;
 
+                if (chatRoom.admin) {
+                    document.getElementById('chatTitleEditBtn').style.display = 'inline-block';
+                } else {
+                    document.getElementById('chatTitleEditBtn').style.display = 'none';
+                    document.getElementById('chatTitleInput').style.display = 'none';
+                    document.getElementById('chatTitleCancelBtn').style.display = 'none';
+                }
+
+                let messages = chatRoom.chatPage.content.reverse();
                 const chatListContainer = document.getElementById('chatListContainer');
                 messages.forEach(chat => {
                     const messageDiv = createMessageDiv(chat);
@@ -183,13 +302,13 @@
                 }
                 return response.json();
             })
-            .then(messages => {
-                if (messages.content.length === 0) {
+            .then(chatRoom => {
+                if (chatRoom.chatPage.content.length === 0) {
                     hasMoreMessages = false;
                     return;
                 }
 
-                const chats = messages.content.reverse();
+                const chats = chatRoom.chatPage.content.reverse();
 
                 for (let i = chats.length - 1; i >= 0; i--) {
                     const messageDiv = createMessageDiv(chats[i]);
@@ -199,7 +318,7 @@
                 currentPage++;
 
                 const newScrollHeight = chatListContainer.scrollHeight;
-                chatListContainer.scrollTop = newScrollHeight - previousScrollHeight;
+                chatListContainer.scrollTop = newScrollHeight - previousScrollHeight + 100;
             })
             .catch(error => console.error('이전 메시지 로드 중 오류:', error))
             .finally(() => {
@@ -275,6 +394,11 @@
             const messageDiv = createMessageDiv(chat.body);
             chatListContainer.appendChild(messageDiv);
             chatListContainer.scrollTop = chatListContainer.scrollHeight;
+
+            const lastChatElem = document.getElementById('lastChat_' + chatRoomId);
+            if (lastChatElem) {
+                lastChatElem.textContent = chat.body.writerName + ': ' + chat.body.message;
+            }
         });
     }
 
