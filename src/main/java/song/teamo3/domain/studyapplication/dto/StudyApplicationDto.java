@@ -17,9 +17,9 @@ public class StudyApplicationDto {
     public StudyApplicationDto(StudyApplication studyApplication) {
         this.id = studyApplication.getId();
         this.title = studyApplication.getTitle();
-        this.description = studyApplication.getDescription();
+        this.description = studyApplication.getContent();
         this.createDate = studyApplication.getCreateDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
 
-        this.username = studyApplication.getUser().getUsername();
+        this.username = studyApplication.getWriter().getUsername();
     }
 }

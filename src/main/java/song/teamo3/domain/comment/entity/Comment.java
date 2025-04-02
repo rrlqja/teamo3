@@ -11,7 +11,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import song.teamo3.domain.common.entity.DateEntity;
-import song.teamo3.domain.study.entity.Study;
+import song.teamo3.domain.post.entity.Post;
 import song.teamo3.domain.user.entity.User;
 
 @Entity
@@ -25,9 +25,9 @@ public class Comment extends DateEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User writer;
 
-    @JoinColumn(name = "study_id")
+    @JoinColumn(name = "post_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Study study;
+    private Post post;
 
     private String text;
     private boolean deleteFlag;
@@ -40,13 +40,13 @@ public class Comment extends DateEntity {
         deleteFlag = true;
     }
 
-    public static Comment create(User user, Study study, String text) {
-        return new Comment(user, study, text);
+    public static Comment create(User user, Post post, String text) {
+        return new Comment(user, post, text);
     }
 
-    private Comment(User writer, Study study, String text) {
+    private Comment(User writer, Post post, String text) {
         this.writer = writer;
-        this.study = study;
+        this.post = post;
         this.text = text;
         this.deleteFlag = false;
     }

@@ -25,60 +25,94 @@
 <body>
 <div th:replace="content :: headerNav"></div>
 
-<div class="container" style="width: 1500px;height: 1250px;">
-    <div class="flex-column align-items-center" style="display: flex; width: 100%;height: 100%;padding-top: 30px;" th:object="${project}">
+<div class="container" style="width: 1920px;height: 1250px;">
+    <div class="flex-column align-items-center" style="display: flex; width: 100%;min-height: 100%;padding-top: 30px; padding-bottom: 50px;" th:object="${project}">
         <div class="" style="display:flex; flex-direction: column; align-items: center; width: 100%; padding: 12px; ">
-            <div class="mb-3 flex-row" style="display:flex; width: 75%; min-height: 150px; ">
-                <div class="mh-100" style="width: 27%; align-items: end; padding-right: 8px;border-right: 1px solid #c0c4c8; font-size: 14px; font-weight: 300;">
+            <div class="mb-3 flex-row" style="display:flex; width: 80%; min-height: 150px; ">
+                <div class="mh-100" style="width: 33%; align-items: end; padding-right: 8px;border-right: 1px solid #c0c4c8; font-size: 14px; font-weight: 300;">
                     <div class="mw-100 mh-100" style="font-size: 14px; font-weight: 400; text-align: end; align-items: end;word-break: break-all; margin-top: 30px;">
-                        <span class="">Create Date</span><br/>
-                        <span class="">writer</span>
+                        <span class="" th:text="*{createDate}">Create Date</span><br/>
+                        <span class="" th:text="*{writerName}">writer</span>
                     </div>
-                    <div class="mw-100" style="font-size: 14px; font-weight: 400; text-align: end; align-items: end; border-top: 1px solid #c0c4c8;">
+                    <div class="mw-100" style="font-size: 12px; font-weight: 400; text-align: end; align-items: end; border-top: 1px solid #c0c4c8;">
                         <span>참여 멤버 </span><br/>
-                        <span class="">writer</span>
-<!--                        <span th:each="member, iterStat : *{memberNameList}">-->
-<!--                            <span th:text="${member}"></span><span th:text="${iterStat.last ? '' : ', '}"></span>-->
-<!--                        </span>                        -->
-                    </div>
-                    <div class="mw-100" style="font-size: 14px; font-weight: 400; text-align: end; align-items: end; border-top: 1px solid #c0c4c8;">
-                        <span>참조주소 </span><br/>
-                        <span class="">writer</span>
-                    </div>
-                </div>
-                <div class="mw-100 mh-100" style="display: flex; flex-direction: column; width: 73%; padding-left: 10px; padding-right: 240px;">
-                    <div style="display: flex; flex-direction: column;">
-                        <span id="title" style="font-size: 46px; font-weight: 900; word-break: break-all; margin-top: 40px;">
-                            LG gram
+                        <span th:each="member, iterStat : *{memberNameList}" style="font-size: 14px; word-break: break-all;">
+                            <span th:text="${member}"></span>
+                            <span th:text="${iterStat.last ? '' : ', '}"></span>
                         </span>
                     </div>
-                    <div style="display: flex; flex-direction: column; margin-top: 15px;">
-                        <span id="subTitle" style="font-size: 34px; font-weight: 600; word-break: break-all;">
+                    <div class="mw-100" style="font-size: 12px; font-weight: 400; text-align: end; align-items: end; border-top: 1px solid #c0c4c8;">
+                        <span>참조주소 </span><br/>
+                        <a class="" th:text="*{url}" th:href="*{url}" style="font-size: 13px; word-break: break-all; cursor: pointer">url</a>
+                    </div>
+                </div>
+                <div class="mw-100 mh-100" style="display: flex; flex-direction: column; width: 67%; padding-left: 10px; padding-right: 240px;">
+                    <div style="display: flex; flex-direction: column;">
+                        <span id="title" th:text="*{title}" style="font-size: 46px; font-weight: 900; word-break: break-all; margin-top: 40px;">
                             title
                         </span>
                     </div>
-                    <div style="margin-top: 10px; width: 700px; border-top: 1px solid #c0c4c8; font-size: 14px; font-weight: 400; margin-bottom: 5px; padding-top: 5px;">
-                        <span>댓글: 12</span>
-                        <span style="margin-left: 15px;">좋아요: 34</span>
+                    <div style="display: flex; flex-direction: column; margin-top: 15px;">
+                        <span id="subTitle" th:text="*{subTitle}" style="font-size: 34px; font-weight: 600; word-break: break-all;">
+                            subTitle
+                        </span>
+                    </div>
+                    <div style="margin-top: 10px; width: 750px; border-top: 1px solid #c0c4c8; font-size: 14px; font-weight: 400; margin-bottom: 5px; padding-top: 5px;">
+                        <img th:src="@{/imgs/comment.png}" style="width: 24px; height: 24px; margin-right: 3px;"><span th:text="*{commentCount}" style="font-weight: 600;"></span>
+                        <img th:src="@{/imgs/favorite.png}" style="width: 24px; height: 24px; margin-right: 3px;"><span th:text="*{favoriteCount}" style="font-weight: 600;"></span>
                     </div>
                 </div>
             </div>
-            <div class="content-area" style="width: 100%;min-height: 460px; padding: 14px; display: flex; flex-direction: column; align-items: center;">
+            <div class="content-area" style="width: 100%;min-height: 460px; padding: 14px; display: flex; flex-direction: column; align-items: center; font-weight: 460; margin-bottom: 50px;">
                 <span th:utext="*{description}" ></span>
             </div>
-            <div class="justify-content-end" style="width: 100%;height: 100px;display: flex;align-items: center;gap: 10px;padding-right: 12px;">
+            <div class="" style="width: 60%; height: 50px; display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 10px; background: #f3f4f5;margin-bottom: 25px;">
+                <div class="" th:onclick="|location.href='@{/project/projectList}'|" style="width: 100px; height: 35px; border-radius: 10px; background: #dce0e4; cursor: pointer; text-align: center; line-height: 35px; align-items: center; font-size: 15px; font-weight: 500;">
+                    목록으로
+                </div>
+            </div>
+            <div class="justify-content-end" th:if="*{isWriter()}" style="width: 100%;height: 100px;display: flex;align-items: center;gap: 10px;padding-right: 12px;">
                 <button class="btn btn-outline-primary" type="button" id="saveProjectBtn" th:if="*{isWriter()}" th:text="수정" th:onclick="|location.href='@{/project/modify/{projectId}(projectId=*{id})}'|" style="width: 60px;height: 40px;">수정</button>
                 <button class="btn btn-outline-secondary" type="button" th:if="*{isWriter()}" th:text="삭제" th:onclick="confirmDelete([[*{id}]])" style="width: 60px;height: 40px;">삭제</button>
             </div>
         </div>
-        <div style="width: 100%;min-height: 100px;margin-bottom: 30px;">
-            <div class="card" style="box-shadow: 0px 0px 5px rgba(110,122,135,0.25);border-radius: 10px;width: 100%;height: 100%;border: none;">
+        <div style="width: 60%;margin-bottom: 30px;">
+            <div class="card" style="box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px;border-radius: 10px;width: 100%;height: 100%;border: none; padding-bottom: 20px;">
                 <div class="card-body" style="padding: 0px;">
-                    <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">댓글</h4>
+                    <h4 class="card-title" style="margin-bottom: 2px;font-size: 16px;font-weight: 700;border-bottom: 0.1px solid rgba(0, 0, 0, 0.2);padding: 16px;">댓글</h4>
+                    <div class="card-body" style="padding: 0px;" th:object="${project}">
                         <ul class="list-group list-group-flush">
+                            <li class="list-group-item" th:each="comment, stat : ${project.commentPage}" th:if="${stat.index} < 10"style="min-height: 60px;">
+                                <input type="hidden" class="comment-id" th:value="${comment.id}">
+                                <div class="d-flex justify-content-between align-items-end" style="">
+                                    <div>
+                                        <span th:text="${comment.writerName}" style="margin-right: 10px; font-weight: bold;">작성자</span>
+                                        <span th:text="${comment.createDate}" style="font-size: 14px;">작성일</span>
+                                    </div>
+                                    <div sec:authorize="isAuthenticated()" th:if="${(#authentication.name == comment.writerUsername) && (!comment.isDeleted())}">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm edit-button" style="margin-right: 5px;">수정</button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" th:onclick="commentDelete([[${comment.id}]])">삭제</button>
+                                    </div>
+                                </div>
+                                <div class="comment-display">
+                                    <p th:text="${comment.text}">댓글 내용</p>
+                                </div>
+                                <div class="comment-edit" style="display: none;">
+                                    <textarea class="form-control edit-textarea" rows="3" th:text="${comment.text}" style="resize: none; width: 100%; margin: 6px;"></textarea>
+                                    <div class="d-flex justify-content-end" style="margin-top: 5px;">
+                                        <button type="button" class="btn btn-primary btn-sm save-button" style="margin-right: 5px;">저장</button>
+                                        <button type="button" class="btn btn-secondary btn-sm cancel-button">취소</button>
+                                    </div>
+                                </div>
+                            </li>
                         </ul>
                     </div>
-                    <div style="width: 100%;height: 60px;padding: 0px; display: flex; flex-direction: row; align-items: center;">
+                    <div sec:authorize="isAuthenticated()" style="width: 100%;height: 60px;padding: 0px; display: flex; flex-direction: row; align-items: center;">
+                        <form th:action="@{/post/{id}/createComment(id=${project.id})}" th:method="POST" style="display: flex; align-items: center; width: 100%;">
+                            <input class="form-control" type="text" id="text" name="text" placeholder="댓글을 작성해보세요." style="flex: 1; margin-right: 10px; margin-left: 10px;">
+                            <input type="hidden" name="id"  th:value="${project.id}">
+                            <button type="submit" class="btn btn-outline-primary" style="width: 100px; margin-right: 10px;">저장</button>
+                        </form>
                     </div>
                 </div>
             </div>

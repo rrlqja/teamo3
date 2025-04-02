@@ -18,10 +18,10 @@ public class StudyApplicationPageDto {
     public StudyApplicationPageDto(StudyApplication studyApplication) {
         this.id = studyApplication.getId();
         this.title = studyApplication.getTitle();
-        this.description = studyApplication.getDescription();
+        this.description = studyApplication.getContent();
         this.status = studyApplication.getStatus().toString();
 
-        this.writerName = studyApplication.getUser().getUsername();
+        this.writerName = studyApplication.getWriter().getUsername();
         this.createDate=studyApplication.getCreateDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
     }
 }

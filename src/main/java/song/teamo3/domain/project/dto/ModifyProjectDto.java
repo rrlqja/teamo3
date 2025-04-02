@@ -23,7 +23,7 @@ public class ModifyProjectDto {
     public ModifyProjectDto(Project project, List<ProjectMember> projectMemberList) {
         this.id = project.getId();
         this.title = project.getTitle();
-        this.description = project.getDescription();
+        this.description = project.getContent();
         this.url = project.getUrl();
         this.imgList = project.getImgList();
         this.projectMemberList = projectMemberList.stream().map(ProjectMemberDto::new).toList();

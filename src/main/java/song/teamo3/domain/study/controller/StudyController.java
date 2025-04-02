@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import song.teamo3.domain.chat.dto.ChatRoomListDto;
 import song.teamo3.domain.chat.service.ChatRoomService;
-import song.teamo3.domain.comment.dto.CreateCommentDto;
 import song.teamo3.domain.study.dto.BestStudyPageDto;
 import song.teamo3.domain.study.dto.CreateStudyApplicationDto;
 import song.teamo3.domain.study.dto.CreateStudyDto;
@@ -185,18 +184,6 @@ public class StudyController {
         Long bumpUpStudyId = studyService.bumpUp(userDetails.getUser(), studyId);
 
         redirectAttributes.addAttribute("studyId", bumpUpStudyId);
-
-        return "redirect:/study/{studyId}";
-    }
-
-    @PostMapping("/{studyId}/createComment")
-    public String postCreateComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                    @PathVariable("studyId") Long studyId,
-                                    @ModelAttribute CreateCommentDto commentDto,
-                                    RedirectAttributes redirectAttributes) {
-        Long commentStudyId = studyService.createComment(userDetails.getUser(), studyId, commentDto);
-
-        redirectAttributes.addAttribute("studyId", commentStudyId);
 
         return "redirect:/study/{studyId}";
     }

@@ -18,7 +18,7 @@ public class ProjectPageDto {
     public ProjectPageDto(Project project) {
         this.id = project.getId();
         this.title = project.getTitle();
-        this.description = project.getDescription();
+        this.description = project.getContent();
         this.writerName = project.getWriter().getName();
         this.imgUrl = !project.getImgList().isEmpty() ? project.getImgList().get(0) : null;
         this.subTitle = project.getSubTitle();

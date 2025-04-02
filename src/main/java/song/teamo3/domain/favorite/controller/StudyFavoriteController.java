@@ -1,4 +1,4 @@
-package song.teamo3.domain.studyfavorite.controller;
+package song.teamo3.domain.favorite.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,25 +9,25 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import song.teamo3.domain.studyfavorite.dto.FavoriteDto;
-import song.teamo3.domain.studyfavorite.service.StudyFavoriteService;
+import song.teamo3.domain.favorite.dto.FavoriteDto;
+import song.teamo3.domain.favorite.service.FavoriteService;
 import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
 
 @Slf4j
 @Controller
-@RequestMapping("/studyFavorite")
+@RequestMapping("/favorite")
 @RequiredArgsConstructor
 public class StudyFavoriteController {
-    private final StudyFavoriteService studyFavoriteService;
+    private final FavoriteService favoriteService;
 
-    @PostMapping("/favorite/{studyId}")
+    @PostMapping("/{postId}")
     public ResponseEntity<FavoriteDto> postFavorite(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                    @PathVariable("studyId") Long studyId) {
+                                                    @PathVariable("postId") Long postId) {
         if (userDetails == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        FavoriteDto favorite = studyFavoriteService.favorite(userDetails.getUser(), studyId);
+        FavoriteDto favorite = favoriteService.favorite(userDetails.getUser(), postId);
 
         return ResponseEntity.ok(favorite);
     }

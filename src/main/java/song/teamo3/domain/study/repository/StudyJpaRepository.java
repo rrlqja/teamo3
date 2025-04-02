@@ -22,8 +22,8 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long> {
 
     @Query("select s " +
             " from Study s " +
-            " left outer join StudyFavorite sf " +
-            "   on s.id = sf.study.id " +
+            " left outer join Favorite sf " +
+            "   on s.id = sf.post.id " +
             " join fetch s.writer " +
             "where s.deleteFlag = false " +
             "  and s.createDate >= :createDate " +

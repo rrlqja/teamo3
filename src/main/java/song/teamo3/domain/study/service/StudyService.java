@@ -28,7 +28,7 @@ import song.teamo3.domain.study.entity.StudyStatus;
 import song.teamo3.domain.study.repository.StudyJpaRepository;
 import song.teamo3.domain.studyapplication.dto.StudyApplicationPageDto;
 import song.teamo3.domain.studyapplication.service.StudyApplicationService;
-import song.teamo3.domain.studyfavorite.service.StudyFavoriteService;
+import song.teamo3.domain.favorite.service.FavoriteService;
 import song.teamo3.domain.studymember.dto.StudyMemberListDto;
 import song.teamo3.domain.studymember.entity.StudyMemberRole;
 import song.teamo3.domain.studymember.service.StudyMemberService;
@@ -46,7 +46,7 @@ public class StudyService {
     private final StudyMemberService studyMemberService;
     private final StudyApplicationService studyApplicationService;
     private final StudyJpaRepository studyRepository;
-    private final StudyFavoriteService studyFavoriteService;
+    private final FavoriteService favoriteService;
 
     @Transactional
     public Page<StudyPageDto> getStudyPage(Pageable pageable) {
@@ -84,7 +84,7 @@ public class StudyService {
 
         incrementViews(study);
 
-        Long favorites = studyFavoriteService.getFavorites(study);
+        Long favorites = favoriteService.getFavorites(study);
 
         log.info("[Get Study] id: {}", study.getId());
         return new StudyDto(study, studyMemberList, commentPage, favorites);
@@ -102,8 +102,8 @@ public class StudyService {
         incrementViews(study);
 
         boolean isMember = studyMemberService.isMember(user, study);
-        boolean isFavorite = studyFavoriteService.isFavorite(user, study);
-        Long favorites = studyFavoriteService.getFavorites(study);
+        boolean isFavorite = favoriteService.isFavorite(user, study);
+        Long favorites = favoriteService.getFavorites(study);
 
         log.info("[Get Study] id: {}", study.getId());
         return new StudyDto(study, user, studyMemberList, commentPage, isMember, isFavorite, favorites);
@@ -119,7 +119,7 @@ public class StudyService {
 
         checkDeleted(study);
 
-        study.editPost(editStudyDto.getTitle(), editStudyDto.getDescription());
+        study.edit(editStudyDto.getTitle(), editStudyDto.getDescription());
         Study editStudy = studyRepository.save(study);
 
         log.info("[Edit Study] id: {}", editStudy.getId());
@@ -229,7 +229,7 @@ public class StudyService {
     }
 
     private void incrementViews(Study study) {
-        study.incrementViews();
+        study.increaseViews();
     }
 
     private void checkDeleted(Study study) {

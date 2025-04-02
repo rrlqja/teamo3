@@ -1,4 +1,4 @@
-package song.teamo3.domain.studyfavorite.dto;
+package song.teamo3.domain.favorite.dto;
 
 import lombok.Data;
 

@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface StudyApplicationJpaRepository extends JpaRepository<StudyApplication, Long> {
     @Query("select sa " +
             " from StudyApplication sa " +
-            "where sa.user = :user " +
+            "where sa.writer = :user " +
             "  and sa.study = :study " +
             "  and sa.status = :status")
     Optional<StudyApplication> findStudyApplicationByUserAndStudy(@Param("user") User user,
@@ -33,7 +33,7 @@ public interface StudyApplicationJpaRepository extends JpaRepository<StudyApplic
 
     @Query("select sa " +
             " from StudyApplication sa " +
-            " join fetch sa.user " +
+            " join fetch sa.writer " +
             " join fetch sa.study " +
             "where sa.id = :id")
     Optional<StudyApplication> findById(@Param("id") Long id);

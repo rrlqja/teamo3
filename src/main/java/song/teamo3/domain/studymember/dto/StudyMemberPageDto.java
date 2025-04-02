@@ -21,7 +21,7 @@ public class StudyMemberPageDto {
 
         this.studyId = studyMember.getStudy().getId();
         this.studyTitle = studyMember.getStudy().getTitle();
-        this.studyDescription = studyMember.getStudy().getDescription();
+        this.studyDescription = studyMember.getStudy().getContent();
 
         this.studyWriterName = studyMember.getStudy().getWriter().getName();
         this.studyCreateDate = studyMember.getStudy().getCreateDate().format(DateTimeFormatter.ofPattern("yy-MM-dd"));

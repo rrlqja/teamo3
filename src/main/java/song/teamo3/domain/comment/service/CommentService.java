@@ -14,7 +14,7 @@ import song.teamo3.domain.comment.repository.CommentJpaRepository;
 import song.teamo3.domain.common.exception.comment.exceptions.AlreadyDeletedCommentException;
 import song.teamo3.domain.common.exception.comment.exceptions.CommentAccessDeniedException;
 import song.teamo3.domain.common.exception.comment.exceptions.CommentNotFoundException;
-import song.teamo3.domain.study.entity.Study;
+import song.teamo3.domain.post.entity.Post;
 import song.teamo3.domain.user.entity.User;
 
 @Slf4j
@@ -24,8 +24,8 @@ public class CommentService {
     private final CommentJpaRepository commentRepository;
 
     @Transactional
-    public Long saveComment(User user, Study study, CreateCommentDto commentDto) {
-        Comment comment = commentDto.toEntity(user, study);
+    public Long saveComment(User user, Post post, CreateCommentDto commentDto) {
+        Comment comment = commentDto.toEntity(user, post);
 
         Comment saveComment = commentRepository.save(comment);
 
@@ -34,8 +34,8 @@ public class CommentService {
     }
 
     @Transactional
-    public Page<CommentPageDto> getCommentPage(Study study, Pageable pageable) {
-        return commentRepository.findCommentsByStudy(study, pageable)
+    public Page<CommentPageDto> getCommentPage(Post post, Pageable pageable) {
+        return commentRepository.findCommentsByStudy(post, pageable)
                 .map(CommentPageDto::new);
     }
 
@@ -54,7 +54,7 @@ public class CommentService {
         comment.modify(commentDto.getText());
 
         log.info("[Modify Comment] id: {}", commentId);
-        return comment.getStudy().getId();
+        return comment.getPost().getId();
     }
 
     @Transactional
@@ -68,7 +68,7 @@ public class CommentService {
         log.info("[Delete Comment] id: {}", commentId);
         comment.delete();
 
-        return comment.getStudy().getId();
+        return comment.getPost().getId();
     }
 
     private Comment findCommentById(Long commentId) {

@@ -3,15 +3,19 @@ package song.teamo3.domain.project.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import song.teamo3.domain.comment.dto.CommentPageDto;
+import song.teamo3.domain.comment.service.CommentService;
 import song.teamo3.domain.common.exception.project.exceptions.AlreadyDeletedProjectException;
 import song.teamo3.domain.common.exception.project.exceptions.ProjectAccessDeniedException;
 import song.teamo3.domain.common.exception.project.exceptions.ProjectModifyNotAllowedException;
 import song.teamo3.domain.common.exception.project.exceptions.ProjectNotFoundException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyAccessDeniedException;
 import song.teamo3.domain.common.exception.study.exceptions.StudyNotFoundException;
+import song.teamo3.domain.favorite.service.FavoriteService;
 import song.teamo3.domain.project.dto.CreateProjectDto;
 import song.teamo3.domain.project.dto.CreateProjectMemberListDto;
 import song.teamo3.domain.project.dto.ModifyProjectDto;
@@ -34,7 +38,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
+    private final FavoriteService favoriteService;
     private final StudyMemberService studyMemberService;
+    private final CommentService commentService;
     private final ProjectJpaRepository projectRepository;
     private final ProjectMemberJpaRepository projectMemberRepository;
     private final StudyJpaRepository studyRepository;
@@ -88,8 +94,10 @@ public class ProjectService {
         checkDeleted(project);
 
         List<ProjectMember> projectMemberList = projectMemberRepository.findProjectMembersByProject(project);
+        Page<CommentPageDto> commentPage = commentService.getCommentPage(project, PageRequest.of(0, 10));
+        Long favorites = favoriteService.getFavorites(project);
 
-        return new ProjectDto(project, projectMemberList);
+        return new ProjectDto(project, projectMemberList, commentPage, favorites);
     }
 
     @Transactional
@@ -99,8 +107,10 @@ public class ProjectService {
         checkDeleted(project);
 
         List<ProjectMember> projectMemberList = projectMemberRepository.findProjectMembersByProject(project);
+        Page<CommentPageDto> commentPage = commentService.getCommentPage(project, PageRequest.of(0, 10));
+        Long favorites = favoriteService.getFavorites(project);
 
-        return new ProjectDto(project, projectMemberList, project.getWriter().getId().equals(user.getId()));
+        return new ProjectDto(project, projectMemberList, commentPage, project.getWriter().getId().equals(user.getId()), favorites);
     }
 
     @Transactional

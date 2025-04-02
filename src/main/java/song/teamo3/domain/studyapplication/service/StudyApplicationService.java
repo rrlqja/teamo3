@@ -83,9 +83,9 @@ public class StudyApplicationService {
 
         studyApplication.approve();
 
-        studyMemberService.createStudyMember(studyApplication.getUser(), studyApplication.getStudy(), StudyMemberRole.MEMBER);
+        studyMemberService.createStudyMember(studyApplication.getWriter(), studyApplication.getStudy(), StudyMemberRole.MEMBER);
 
-        chatRoomService.addChatRoomUser(studyApplication.getStudy(), studyApplication.getUser());
+        chatRoomService.addChatRoomUser(studyApplication.getStudy(), studyApplication.getWriter());
 
         return studyApplication.getStudy().getId();
     }

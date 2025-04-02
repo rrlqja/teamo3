@@ -35,7 +35,7 @@ public class StudyDto {
     public StudyDto(Study study, User user, List<StudyMemberListDto> studymemberList, Page<CommentPageDto> commentPage, boolean isMember, boolean isFavorite, Long favorites) {
         this.id = study.getId();
         this.title = study.getTitle();
-        this.description = study.getDescription();
+        this.description = study.getContent();
         this.bumpUpDate = study.getBumpUpDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
         this.views = study.getViews();
         this.status = study.getStatus().name();
@@ -55,7 +55,7 @@ public class StudyDto {
     public StudyDto(Study study, List<StudyMemberListDto> studyMemberList, Page<CommentPageDto> commentPage, Long favorites) {
         this.id = study.getId();
         this.title = study.getTitle();
-        this.description = study.getDescription();
+        this.description = study.getContent();
         this.bumpUpDate = study.getBumpUpDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
         this.views = study.getViews();
         this.status = study.getStatus().name();

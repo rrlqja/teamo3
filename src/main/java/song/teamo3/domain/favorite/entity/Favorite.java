@@ -1,4 +1,4 @@
-package song.teamo3.domain.studyfavorite.entity;
+package song.teamo3.domain.favorite.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,19 +10,19 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import song.teamo3.domain.study.entity.Study;
+import song.teamo3.domain.post.entity.Post;
 import song.teamo3.domain.user.entity.User;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StudyFavorite {
+public class Favorite {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "study_id")
+    @JoinColumn(name = "post_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Study study;
+    private Post post;
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,12 +30,12 @@ public class StudyFavorite {
 
     private boolean deleteFlag = false;
 
-    public static StudyFavorite create(Study study, User user) {
-        return new StudyFavorite(study, user);
+    public static Favorite create(Post post, User user) {
+        return new Favorite(post, user);
     }
 
-    private StudyFavorite(Study study, User user) {
-        this.study = study;
+    private Favorite(Post post, User user) {
+        this.post = post;
         this.user = user;
     }
 
