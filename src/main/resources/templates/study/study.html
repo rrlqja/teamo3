@@ -174,21 +174,22 @@
     }
 
     function exitStudy(studyId) {
-        fetch(`/study/exit/${studyId}`, {
-            method: 'POST'
-        })
-            .then(response => {
-                if (response.redirected) {
-                    alert("탈퇴하였습니다.");
-                    window.location.href = response.url;
-                }
-                else {
-                    throw new Error('탈퇴 요청 실패');
-                }
+        if (confirm("탈퇴하시겠습니까?")) {
+            fetch(`/study/exit/${studyId}`, {
+                method: 'POST'
             })
-            .catch(error => {
-                alert("탈퇴 에러");
-            });
+                .then(response => {
+                    if (response.redirected) {
+                        alert("탈퇴하였습니다.");
+                        window.location.href = response.url;
+                    } else {
+                        throw new Error('탈퇴 요청 실패');
+                    }
+                })
+                .catch(error => {
+                    alert("탈퇴 에러");
+                });
+        }
     }
 
     function changeStudyStatus(studyId) {

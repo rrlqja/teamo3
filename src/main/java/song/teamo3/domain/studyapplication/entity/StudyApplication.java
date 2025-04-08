@@ -26,6 +26,14 @@ public class StudyApplication extends Post {
     @Enumerated(EnumType.STRING)
     private StudyApplicationStatus status;
 
+    public void approve() {
+        this.status = StudyApplicationStatus.APPROVED;
+    }
+
+    public void reject() {
+        this.status = StudyApplicationStatus.REJECTED;
+    }
+
     public static StudyApplication create(User user, Study study, String title, String description) {
         return new StudyApplication(user, study, title, description);
     }
@@ -34,13 +42,5 @@ public class StudyApplication extends Post {
         super(user, title, description);
         this.study = study;
         this.status = StudyApplicationStatus.PENDING;
-    }
-
-    public void approve() {
-        this.status = StudyApplicationStatus.APPROVED;
-    }
-
-    public void reject() {
-        this.status = StudyApplicationStatus.REJECTED;
     }
 }

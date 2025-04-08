@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
     <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" th:href="@{/assets/css/common.css}">
     <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
 
@@ -23,16 +24,21 @@
             <div th:replace="content :: leftBar"></div>
         </div>
         <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px;">
-            <form th:action th:method="POST" th:object="${study}" th:onsubmit="return submitForm()">
-                <input class="form-control" type="text" th:field="*{title}" placeholder="스터디 핵심 내용을 작성해보세요.">
-                <div class="editor-container editor-container_classic-editor" id="editor-container">
-                    <div class="editor-container__editor">
-                        <div id="editor"></div>
+            <div class="" style="width: 100%; min-height: 650px; padding: 14px; box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px; border-radius: 10px; background: white;">
+                <form th:action th:method="POST" th:object="${study}" th:onsubmit="return submitForm()">
+                    <input class="form-control" type="text" th:field="*{title}" placeholder="스터디 핵심 내용을 작성해보세요." style="margin-bottom: 16px;">
+                    <div class="editor-container editor-container_classic-editor" id="editor-container">
+                        <div class="editor-container__editor">
+                            <div id="editor"></div>
+                        </div>
                     </div>
-                </div>
-                <input type="hidden" th:field="*{description}">
-                <button type="submit" class="btn btn-outline-primary">저장</button>
-            </form>
+                    <input type="hidden" th:field="*{description}">
+                    <div style="width: 100%; display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px;">
+                        <button type="button" class="btn btn-outline-secondary" th:onclick="|window.history.back()|" style="width: 60px; height: 40px; background: #f1f3f5; color: #000000; font-size: 14px; font-weight: 500; border: none;">취소</button>
+                        <button type="submit" class="btn btn-outline-primary" style="width: 60px; height: 40px; background: #3f9dff; color: #ffffff; font-size: 14px; font-weight: 500; border: none;">등록</button>
+                    </div>
+                </form>
+            </div>
         </div>
         <div class="col-md-2" style="padding: 0px;">
             <div th:replace="content :: rightBar(noticeList = ${noticeList}, chatRoomList = ${chatRoomList})"></div>

@@ -19,7 +19,8 @@ public interface StudyApplicationJpaRepository extends JpaRepository<StudyApplic
             " from StudyApplication sa " +
             "where sa.writer = :user " +
             "  and sa.study = :study " +
-            "  and sa.status = :status")
+            "  and sa.status = :status " +
+            "  and sa.deleteFlag = false")
     Optional<StudyApplication> findStudyApplicationByUserAndStudy(@Param("user") User user,
                                                                   @Param("study") Study study,
                                                                   @Param("status") StudyApplicationStatus status);
@@ -27,7 +28,8 @@ public interface StudyApplicationJpaRepository extends JpaRepository<StudyApplic
     @Query("select sa " +
             " from StudyApplication sa " +
             "where sa.study = :study " +
-            "  and sa.status = :status")
+            "  and sa.status = :status" +
+            "  and sa.deleteFlag = false")
     List<StudyApplication> findPendingStudyApplicationsByStudy(@Param("study") Study study,
                                                                @Param("status") StudyApplicationStatus status);
 
@@ -35,12 +37,15 @@ public interface StudyApplicationJpaRepository extends JpaRepository<StudyApplic
             " from StudyApplication sa " +
             " join fetch sa.writer " +
             " join fetch sa.study " +
-            "where sa.id = :id")
+            "where sa.id = :id" +
+            "  and sa.deleteFlag = false")
     Optional<StudyApplication> findById(@Param("id") Long id);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("delete " +
-            " from StudyApplication sa " +
+    @Query("update StudyApplication sa" +
+            "  set sa.deleteFlag = true " +
             "where sa.study = :study")
     Integer deleteStudyApplicationsByStudy(@Param("study") Study study);
+
+    List<StudyApplication> findStudyApplicationsByStudy(Study study);
 }

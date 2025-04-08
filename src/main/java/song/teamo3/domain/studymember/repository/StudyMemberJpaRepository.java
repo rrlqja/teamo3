@@ -19,7 +19,8 @@ public interface StudyMemberJpaRepository extends JpaRepository<StudyMember, Lon
     @Query("select sm " +
             " from StudyMember sm " +
             "where sm.user = :user " +
-            "  and sm.study = :study ")
+            "  and sm.study = :study " +
+            "  and sm.deleteFlag = false")
     Optional<StudyMember> findStudyMemberByUserAndStudy(@Param("user") User user,
                                                         @Param("study") Study study);
 
@@ -36,12 +37,13 @@ public interface StudyMemberJpaRepository extends JpaRepository<StudyMember, Lon
     @Query("select sm " +
             " from StudyMember sm " +
             " join fetch sm.user " +
-            "where sm.study = :study")
+            "where sm.study = :study" +
+            "  and sm.deleteFlag = false")
     List<StudyMember> findStudyMembersByStudy(@Param("study") Study study);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("delete " +
-            " from StudyMember sm " +
+    @Query("update StudyMember sm" +
+            "  set sm.deleteFlag = true " +
             "where sm.study = :study ")
     Integer deleteStudyMembersByStudy(@Param("study") Study study);
 }

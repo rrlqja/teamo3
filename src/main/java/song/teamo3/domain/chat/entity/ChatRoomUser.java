@@ -27,7 +27,7 @@ public class ChatRoomUser {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    boolean deleted = false;
+    boolean deleteFlag = false;
 
     public static ChatRoomUser create(ChatRoom chatRoom, User user) {
         return new ChatRoomUser(chatRoom, user);
@@ -39,6 +39,6 @@ public class ChatRoomUser {
     }
 
     public void delete() {
-        this.deleted = true;
+        this.deleteFlag = true;
     }
 }

@@ -11,6 +11,7 @@ import song.teamo3.domain.common.exception.studyapplication.exceptions.StudyAppl
 import song.teamo3.domain.common.exception.studyapplication.exceptions.StudyApplicationNotApproveException;
 import song.teamo3.domain.common.exception.studyapplication.exceptions.StudyApplicationNotFoundException;
 import song.teamo3.domain.common.exception.studymember.exceptions.DuplicateStudyMemberException;
+import song.teamo3.domain.post.entity.Post;
 import song.teamo3.domain.study.dto.CreateStudyApplicationDto;
 import song.teamo3.domain.study.entity.Study;
 import song.teamo3.domain.studyapplication.dto.StudyApplicationDto;
@@ -104,5 +105,12 @@ public class StudyApplicationService {
         StudyApplication rejectStudyApplication = studyApplicationRepository.save(studyApplication);
 
         return rejectStudyApplication.getStudy().getId();
+    }
+
+    @Transactional
+    public void delete(Study study) {
+        List<StudyApplication> studyApplicationList = studyApplicationRepository.findStudyApplicationsByStudy(study);
+        studyApplicationList.forEach(Post::delete);
+//        studyApplicationRepository.deleteStudyApplicationsByStudy(study);
     }
 }

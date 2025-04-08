@@ -16,8 +16,7 @@ public interface FavoriteJpaRepository extends JpaRepository<Favorite, Long> {
             " from Favorite f " +
             " join fetch f.post " +
             "where f.user = :user " +
-            "  and f.post = :post" +
-            "  and f.deleteFlag = false")
+            "  and f.post = :post")
     Optional<Favorite> findFavoriteByUserAndPost(@Param("user") User user,
                                                  @Param("post") Post post);
 

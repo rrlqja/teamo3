@@ -23,17 +23,17 @@ public class FavoriteService {
 
     @Transactional
     public FavoriteDto favorite(User user, Long postId) {
-        Optional<Post> optionalStudy = postRepository.findPostById((postId));
-        if (optionalStudy.isEmpty()) {
+        Optional<Post> optionalPost = postRepository.findPostById((postId));
+        if (optionalPost.isEmpty()) {
             return new FavoriteDto(null);
         }
 
-        Post post = optionalStudy.get();
-        Optional<Favorite> optionalStudyFavorite = favoriteRepository.findFavoriteByUserAndPost(user, post);
+        Post post = optionalPost.get();
+        Optional<Favorite> optionalPostFavorite = favoriteRepository.findFavoriteByUserAndPost(user, post);
 
         Favorite favorite = null;
-        if (optionalStudyFavorite.isPresent()) {
-            favorite = optionalStudyFavorite.get();
+        if (optionalPostFavorite.isPresent()) {
+            favorite = optionalPostFavorite.get();
             if (favorite.isDeleteFlag()) {
                 favorite.restore();
             } else {
@@ -52,9 +52,9 @@ public class FavoriteService {
 
     @Transactional
     public boolean isFavorite(User user, Study study) {
-        Optional<Favorite> optionalStudyFavorite = favoriteRepository.findFavoriteByUserAndPost(user, study);
+        Optional<Favorite> optionalPostFavorite = favoriteRepository.findFavoriteByUserAndPost(user, study);
 
-        if (optionalStudyFavorite.isPresent()) {
+        if (optionalPostFavorite.isPresent()) {
             return true;
         }
 

@@ -134,7 +134,11 @@ public class StudyService {
             throw new StudyAccessDeniedException("권한이 없습니다.");
         }
 
+        studyMemberService.delete(study);
+        studyApplicationService.delete(study);
         study.delete();
+
+        chatRoomService.delete(study);
     }
 
     @Transactional
@@ -153,13 +157,16 @@ public class StudyService {
     }
 
     @Transactional
-    public Long exitStudy(User user, Long studyId) {
+    public void exitStudy(User user, Long studyId) {
         Study study = findStudyById(studyId);
+
+        if (study.getWriter().getId().equals(user.getId())) {
+            deleteStudy(user, studyId);
+            return;
+        }
 
         studyMemberService.exitStudyMember(user, study);
         chatRoomService.exitChatRoom(user, study);
-
-        return study.getId();
     }
 
     @Transactional

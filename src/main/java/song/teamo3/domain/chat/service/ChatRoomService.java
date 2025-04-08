@@ -3,6 +3,7 @@ package song.teamo3.domain.chat.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import song.teamo3.domain.chat.dto.ChatRoomListDto;
 import song.teamo3.domain.chat.dto.ChatRoomPageDto;
 import song.teamo3.domain.chat.dto.ChatRoomUserListDto;
 import song.teamo3.domain.chat.dto.ModifyChatRoomTitleDto;
+import song.teamo3.domain.chat.entity.Chat;
 import song.teamo3.domain.chat.entity.ChatRoom;
 import song.teamo3.domain.chat.entity.ChatRoomUser;
 import song.teamo3.domain.chat.repository.ChatJpaRepository;
@@ -27,8 +29,12 @@ import song.teamo3.domain.studymember.entity.StudyMember;
 import song.teamo3.domain.studymember.repository.StudyMemberJpaRepository;
 import song.teamo3.domain.user.entity.User;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -74,11 +80,33 @@ public class ChatRoomService {
 
     @Transactional
     public Page<ChatRoomPageDto> getChatRoomPage(User user, Pageable pageable) {
-        return chatRoomUserRepository.findChatRoomUsersByUser(user, pageable)
-                .map(ChatRoomUser::getChatRoom)
-                .map(cr -> new ChatRoomPageDto(cr,
-                        chatRoomUserRepository.findChatRoomUsersByChatRoom(cr).stream().map(ChatRoomUserListDto::new).toList(),
-                        chatRepository.findLastChatByChatRoom(cr).orElse(null)));
+        Page<ChatRoom> chatRoomPage = chatRoomUserRepository.findChatRoomPageByUser(user, pageable);
+
+        List<Long> chatRoomIds = chatRoomPage.map(ChatRoom::getId).toList();
+        List<ChatRoomUser> chatRoomUserList = chatRoomUserRepository.findChatRoomUsersByChatRooms(chatRoomIds);
+
+        Map<Long, List<ChatRoomUserListDto>> chatRoomUserMap = chatRoomUserList.stream()
+                .collect(Collectors.groupingBy(
+                        cru -> cru.getChatRoom().getId(),
+                        Collectors.mapping(
+                                ChatRoomUserListDto::new,
+                                Collectors.toList()
+                        )
+                ));
+
+
+        List<Chat> lastChats = chatRepository.findLastChatsByChatRoomIds(chatRoomIds);
+        Map<Long, Chat> lastChatMap = lastChats.stream()
+                .collect(Collectors.toMap(
+                        chat -> chat.getChatRoom().getId(),
+                        Function.identity()
+                ));
+
+        return chatRoomPage.map(chatRoom -> new ChatRoomPageDto(
+                chatRoom,
+                chatRoomUserMap.getOrDefault(chatRoom.getId(), Collections.emptyList()),
+                lastChatMap.get(chatRoom.getId()))
+        );
     }
 
     @Transactional
@@ -116,9 +144,26 @@ public class ChatRoomService {
 
     @Transactional
     public Page<ChatRoomListDto> getChatRoomList(User user) {
-        return chatRoomUserRepository.findChatRoomUsersByUser(user, PageRequest.of(0, 4))
-                .map(ChatRoomUser::getChatRoom)
-                .map(chatRoom -> new ChatRoomListDto(chatRoom, chatRepository.findLastChatByChatRoom(chatRoom).orElse(null)));
+        PageRequest pageable = PageRequest.of(0, 4);
+        Page<ChatRoom> chatRooms = chatRoomUserRepository.findChatRoomPageByUser(user, pageable);
+
+        List<Long> chatRoomIds = chatRooms.stream()
+                .map(ChatRoom::getId)
+                .collect(Collectors.toList());
+
+        List<Chat> lastChats = chatRepository.findLastChatsByChatRoomIds(chatRoomIds);
+
+        Map<Long, Chat> lastChatMap = lastChats.stream()
+                .collect(Collectors.toMap(
+                        chat -> chat.getChatRoom().getId(),
+                        Function.identity()
+                ));
+
+        List<ChatRoomListDto> dtoList = chatRooms.stream()
+                .map(chatRoom -> new ChatRoomListDto(chatRoom, lastChatMap.get(chatRoom.getId())))
+                .toList();
+
+        return new PageImpl<>(dtoList, pageable, chatRooms.getTotalElements());
     }
 
     @Transactional
@@ -137,5 +182,17 @@ public class ChatRoomService {
     private ChatRoom getChatRoom(Long roomId) {
         return chatRoomRepository.findChatRoomById(roomId)
                 .orElseThrow(ChatRoomNotFoundException::new);
+    }
+
+    @Transactional
+    public void delete(Study study) {
+        ChatRoom chatRoom = chatRoomRepository.findChatRoomByStudy(study)
+                .orElseThrow(ChatRoomNotFoundException::new);
+
+        List<ChatRoomUser> chatRoomUserList = chatRoomUserRepository.findChatRoomUsersByChatRoom(chatRoom);
+        chatRoomUserList.forEach(ChatRoomUser::delete);
+//        chatRoomUserRepository.deleteChatRoomByChatRoom(chatRoom);
+
+        chatRoom.delete();
     }
 }

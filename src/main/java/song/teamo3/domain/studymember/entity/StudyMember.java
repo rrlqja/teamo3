@@ -33,6 +33,8 @@ public class StudyMember {
     @Enumerated(EnumType.STRING)
     private StudyMemberRole role;
 
+    private boolean deleteFlag = false;
+
     public static StudyMember create(User user, Study study, StudyMemberRole role) {
         return new StudyMember(user, study, role);
     }
@@ -41,5 +43,9 @@ public class StudyMember {
         this.user = user;
         this.study = study;
         this.role = role;
+    }
+
+    public void delete() {
+        this.deleteFlag = true;
     }
 }
