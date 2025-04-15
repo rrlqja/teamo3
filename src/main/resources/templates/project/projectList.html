@@ -76,17 +76,17 @@
 
             <div class="d-flex flex-column" style="width: 100%; margin-bottom: 30px; min-height: 100px;">
                 <div class="d-flex justify-content-between" style="min-width: 300px;">
-                    <div class="d-flex" style="width: 400px; min-height: 40px;">
-                        <select class="form-select" style="width: 80px;">
-                            <option value="12" selected>제목</option>
-                            <option value="13">작성자</option>
-                            <option value="14">내용</option>
-                        </select>
-                        <input type="search" class="form-control" style="min-width: 260px; padding: 0;">
-                        <button class="btn btn-outline-primary" type="button" style="width: 80px; padding: 0;">
-                            검색
-                        </button>
-                    </div>
+                    <form class="form-inline d-flex justify-content-center" id="searchBoardForm" method="get" th:action>
+                        <div style="min-height: 40px;width: 400px;display: flex;">
+                            <select class="form-select" name="searchType" style="min-height: 100%;min-width: 100px;width: 100px;">
+                                <option value="TITLE" th:selected="${param.searchType == null or param.searchType[0] == 'TITLE'}">제목</option>
+                                <option value="WRITER" th:selected="${param.searchType != null and param.searchType[0] == 'WRITER'}">작성자</option>
+                                <option value="CONTENT" th:selected="${param.searchType != null and param.searchType[0] == 'CONTENT'}">내용</option>
+                            </select>
+                            <input class="form-control" type="search" name="searchValue" th:value="${param.searchValue}" style="min-width: 260px;min-height: 100%;padding: 0px;">
+                            <button class="btn btn-outline-primary" type="submit" style="min-width: 80px;min-height: 100%;padding: 0px;background-color: #3f9dff; color: #ffffff;">검색</button>
+                        </div>
+                    </form>
                 </div>
                 <div class="d-flex justify-content-center mt-3">
                     <nav>

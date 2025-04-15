@@ -34,6 +34,10 @@ import song.teamo3.domain.user.repository.UserJpaRepository;
 
 import java.util.List;
 
+import static song.teamo3.domain.common.entity.SearchType.CONTENT;
+import static song.teamo3.domain.common.entity.SearchType.TITLE;
+import static song.teamo3.domain.common.entity.SearchType.WRITER;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -49,6 +53,23 @@ public class ProjectService {
     @Transactional
     public Page<ProjectPageDto> getProjectPage(Pageable pageable) {
         Page<Project> projectPage = projectRepository.findAll(pageable);
+
+        return projectPage.map(ProjectPageDto::new);
+    }
+
+    @Transactional
+    public Page<ProjectPageDto> getProjectPage(Pageable pageable, String searchType, String searchValue) {
+        Page<Project> projectPage = Page.empty();
+
+        if (TITLE.name().equals(searchType)) {
+            projectPage = projectRepository.findProjectPageByTitle(searchValue, pageable);
+        } else if (WRITER.name().equals(searchType)) {
+            projectPage = projectRepository.findProjectPageByWriter(searchValue, pageable);
+        } else if (CONTENT.name().equals(searchType)) {
+            projectPage = projectRepository.findProjectPageByContent(searchValue, pageable);
+        } else {
+            projectPage = projectRepository.findAll(pageable);
+        }
 
         return projectPage.map(ProjectPageDto::new);
     }

@@ -104,18 +104,20 @@
             </div>
             <div class="flex-column" style="width: 100%;margin-bottom: 30px;min-width: 100%;min-height: 100px;display: flex;">
                 <div class="justify-content-between" style="min-width: 300px;display: flex;">
-                    <div style="min-height: 40px;width: 400px;display: flex;">
-                        <select class="form-select" style="min-height: 100%;min-width: 100px;width: 100px;">
-                            <option value="12" selected="selected">제목</option>
-                            <option value="13">작성자</option>
-                            <option value="14">내용</option>
-                        </select>
-                        <input class="form-control" type="search" style="min-width: 260px;min-height: 100%;padding: 0px;">
-                        <button class="btn btn-outline-primary" type="button" style="min-width: 80px;min-height: 100%;padding: 0px;background-color: #3f9dff; color: #ffffff;">검색</button>
-                    </div>
-                    <div style="min-width: 80px;" sec:authorize="isAuthenticated()">
-                        <button class="btn btn-outline-primary" type="button" th:onclick="|location.href='@{/study/create}'|" style="min-width: 100%;min-height: 100%; background-color: #6dbc74; color: #ffffff; border: none; border-radius: 10px;">스터디 생성</button>
-                    </div>
+                    <form class="form-inline d-flex justify-content-center" id="searchBoardForm" method="get" th:action>
+                        <div style="min-height: 40px;width: 400px;display: flex;">
+                            <select class="form-select" name="searchType" style="min-height: 100%;min-width: 100px;width: 100px;">
+                                <option value="TITLE" th:selected="${param.searchType == null or param.searchType[0] == 'TITLE'}">제목</option>
+                                <option value="WRITER" th:selected="${param.searchType != null and param.searchType[0] == 'WRITER'}">작성자</option>
+                                <option value="CONTENT" th:selected="${param.searchType != null and param.searchType[0] == 'CONTENT'}">내용</option>
+                            </select>
+                            <input class="form-control" type="search" name="searchValue" th:value="${param.searchValue}" style="min-width: 260px;min-height: 100%;padding: 0px;">
+                            <button class="btn btn-outline-primary" type="submit" style="min-width: 80px;min-height: 100%;padding: 0px;background-color: #3f9dff; color: #ffffff;">검색</button>
+                        </div>
+                        <div style="min-width: 80px;" sec:authorize="isAuthenticated()">
+                            <button class="btn btn-outline-primary" type="button" th:onclick="|location.href='@{/study/create}'|" style="min-width: 100%;min-height: 100%; background-color: #6dbc74; color: #ffffff; border: none; border-radius: 10px;">스터디 생성</button>
+                        </div>
+                    </form>
                 </div>
                 <div class="d-flex justify-content-center mt-3">
                     <nav>

@@ -21,6 +21,33 @@ public interface ProjectJpaRepository extends JpaRepository<Project, Long> {
 
     @Query("select p " +
             " from Project p " +
+            " join fetch p.writer " +
+            "where p.deleteFlag = false " +
+            "  and p.title like concat('%', :title, '%') " +
+            "order by p.createDate desc")
+    Page<Project> findProjectPageByTitle(@Param("title") String title,
+                                         Pageable pageable);
+
+    @Query("select p " +
+            " from Project p " +
+            " join fetch p.writer " +
+            "where p.deleteFlag = false " +
+            "  and p.writer.name like concat('%', :writer, '%') " +
+            "order by p.createDate desc")
+    Page<Project> findProjectPageByWriter(@Param("writer") String writer,
+                                          Pageable pageable);
+
+    @Query("select p " +
+            " from Project p " +
+            " join fetch p.writer " +
+            "where p.deleteFlag = false " +
+            "  and p.content like concat('%', :content, '%') " +
+            "order by p.createDate desc")
+    Page<Project> findProjectPageByContent(@Param("content") String content,
+                                           Pageable pageable);
+
+    @Query("select p " +
+            " from Project p " +
             " left join fetch p.imgList " +
             "where p.id = :id")
     Optional<Project> findProjectById(@Param("id") Long id);

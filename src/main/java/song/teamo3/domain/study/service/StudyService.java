@@ -37,6 +37,8 @@ import song.teamo3.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static song.teamo3.domain.common.entity.SearchType.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -52,6 +54,22 @@ public class StudyService {
     public Page<StudyPageDto> getStudyPage(Pageable pageable) {
         return studyRepository.findStudyPage(pageable)
                 .map(StudyPageDto::new);
+    }
+
+    @Transactional
+    public Page<StudyPageDto> getStudyPage(Pageable pageable, String searchType, String searchValue) {
+        Page<Study> studyPsge = Page.empty();
+        if (TITLE.name().equals(searchType)) {
+            studyPsge = studyRepository.findStudyPageByTitle(searchValue, pageable);
+        } else if (WRITER.name().equals(searchType)) {
+            studyPsge = studyRepository.findStudyPageByWriter(searchValue, pageable);
+        } else if (CONTENT.name().equals(searchType)) {
+            studyPsge = studyRepository.findStudyPageByContent(searchValue, pageable);
+        } else {
+            studyPsge = studyRepository.findStudyPage(pageable);
+        }
+
+        return studyPsge.map(StudyPageDto::new);
     }
 
     @Transactional

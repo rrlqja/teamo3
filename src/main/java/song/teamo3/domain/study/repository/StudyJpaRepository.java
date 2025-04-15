@@ -23,6 +23,33 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long> {
 
     @Query("select s " +
             " from Study s " +
+            " join fetch s.writer " +
+            "where s.deleteFlag = false " +
+            "  and s.title like concat('%', :title, '%') " +
+            "order by s.bumpUpDate desc")
+    Page<Study> findStudyPageByTitle(@Param("title") String title,
+                                     Pageable pageable);
+
+    @Query("select s " +
+            " from Study s " +
+            " join fetch s.writer " +
+            "where s.deleteFlag = false " +
+            "  and s.writer.name like concat('%', :writer, '%') " +
+            "order by s.bumpUpDate desc")
+    Page<Study> findStudyPageByWriter(@Param("writer") String writer,
+                                     Pageable pageable);
+
+    @Query("select s " +
+            " from Study s " +
+            " join fetch s.writer " +
+            "where s.deleteFlag = false " +
+            "  and s.content like concat('%', :content, '%') " +
+            "order by s.bumpUpDate desc")
+    Page<Study> findStudyPageByContent(@Param("content") String content,
+                                      Pageable pageable);
+
+    @Query("select s " +
+            " from Study s " +
             " left outer join Favorite sf " +
             "   on s.id = sf.post.id " +
             " join fetch s.writer " +
@@ -39,10 +66,4 @@ public interface StudyJpaRepository extends JpaRepository<Study, Long> {
             " join fetch s.writer " +
             "where s.id = :id ")
     Optional<Study> findStudyById(@Param("id") Long id);
-
-    @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("update Study s " +
-            "  set s.deleteFlag = true " +
-            "where s = :study")
-    Integer deleteStudy(@Param("study") Study study);
 }

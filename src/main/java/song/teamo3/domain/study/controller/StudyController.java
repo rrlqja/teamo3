@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import song.teamo3.domain.chat.dto.ChatRoomListDto;
 import song.teamo3.domain.chat.service.ChatRoomService;
@@ -41,8 +42,16 @@ public class StudyController {
     @GetMapping("/studyList")
     public String getStudyList(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                @PageableDefault(size = 10, page = 0) Pageable pageable,
+                               @RequestParam(value = "searchType", required = false) String searchType,
+                               @RequestParam(value = "searchValue", required = false) String searchValue,
                                Model model) {
-        Page<StudyPageDto> studyPage = studyService.getStudyPage(pageable);
+        Page<StudyPageDto> studyPage = Page.empty();
+
+        if (searchValue != null && !searchValue.trim().isEmpty()) {
+            studyPage = studyService.getStudyPage(pageable, searchType, searchValue);
+        } else {
+            studyPage = studyService.getStudyPage(pageable);
+        }
         model.addAttribute("studyPage", studyPage);
 
         Page<BestStudyPageDto> bestStudyPage = studyService.getBestStudyPage(PageRequest.of(0, 5));
