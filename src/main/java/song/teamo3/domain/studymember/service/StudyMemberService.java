@@ -10,7 +10,6 @@ import song.teamo3.domain.common.exception.studymember.exceptions.DuplicateStudy
 import song.teamo3.domain.common.exception.studymember.exceptions.StudyMemberNotFoundException;
 import song.teamo3.domain.study.entity.Study;
 import song.teamo3.domain.study.repository.StudyJpaRepository;
-import song.teamo3.domain.studyapplication.entity.StudyApplication;
 import song.teamo3.domain.studyapplication.repository.StudyApplicationJpaRepository;
 import song.teamo3.domain.studymember.dto.StudyMemberListDto;
 import song.teamo3.domain.studymember.dto.StudyMemberPageDto;
@@ -87,5 +86,18 @@ public class StudyMemberService {
         List<StudyMember> studyMemberList = studyMemberRepository.findStudyMembersByStudy(study);
         studyMemberList.forEach(StudyMember::delete);
 //        studyMemberRepository.deleteStudyMembersByStudy(study);
+    }
+
+    @Transactional
+    public List<Study> getStudyListByUser(User user) {
+        return studyMemberRepository.findStudyListByUser(user).stream()
+                .map(StudyMember::getStudy)
+                .toList();
+    }
+
+    @Transactional
+    public Page<Study> getStudyPageByUser(User user, Pageable pageable) {
+        return studyMemberRepository.findStudyListByUser(user, pageable)
+                .map(StudyMember::getStudy);
     }
 }

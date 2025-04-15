@@ -53,6 +53,6 @@ public class ChatRoom {
 
     private ChatRoom(Study study) {
         this.study = study;
-        this.chatRoomName = study.getTitle();
+        this.chatRoomName = study.getStudyName();
     }
 }

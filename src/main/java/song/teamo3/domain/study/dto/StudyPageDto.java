@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 public class StudyPageDto {
     private Long id;
     private String title;
+    private String studyName;
     private String writerName;
     private String bumpUpDate;
     private Long views;
@@ -17,6 +18,7 @@ public class StudyPageDto {
     public StudyPageDto(Study study) {
         this.id = study.getId();
         this.title = study.getTitle();
+        this.studyName = study.getStudyName();
         this.writerName = study.getWriter().getName();
         this.bumpUpDate = study.getBumpUpDate().format(DateTimeFormatter.ofPattern("yy-MM-dd"));
         this.views = study.getViews();

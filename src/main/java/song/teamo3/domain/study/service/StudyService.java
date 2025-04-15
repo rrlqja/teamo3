@@ -255,4 +255,10 @@ public class StudyService {
 
         Long chatRoomId = chatRoomService.createChatRoom(study);
     }
+
+    @Transactional
+    public Page<StudyPageDto> getStudyByUser(User user, Pageable pageable) {
+        return studyMemberService.getStudyPageByUser(user, pageable)
+                .map(StudyPageDto::new);
+    }
 }

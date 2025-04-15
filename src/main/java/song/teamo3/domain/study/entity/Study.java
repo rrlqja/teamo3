@@ -1,6 +1,5 @@
 package song.teamo3.domain.study.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,6 +18,7 @@ import java.time.LocalDateTime;
 @DiscriminatorValue("STUDY")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Study extends Post {
+    private String studyName;
     @Enumerated(EnumType.STRING)
     private StudyStatus status;
 
@@ -35,12 +35,13 @@ public class Study extends Post {
         bumpUpDate = LocalDateTime.now();
     }
 
-    public static Study create(User writer, String title, String description) {
-        return new Study(writer, title, description, StudyStatus.RECRUITING);
+    public static Study create(User writer, String title, String description, String studyName) {
+        return new Study(writer, title, description, studyName, StudyStatus.RECRUITING);
     }
 
-    private Study(User writer, String title, String description, StudyStatus status) {
+    private Study(User writer, String title, String description, String studyName, StudyStatus status) {
         super(writer, title, description);
+        this.studyName = studyName;
         this.status = status;
     }
 }

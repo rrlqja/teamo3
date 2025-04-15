@@ -27,6 +27,7 @@
             <div class="" style="width: 100%; min-height: 650px; padding: 14px; box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px; border-radius: 10px; background: white;">
                 <form th:action th:method="POST" th:object="${study}" th:onsubmit="return submitForm()">
                     <input class="form-control" type="text" th:field="*{title}" placeholder="스터디 핵심 내용을 작성해보세요." style="margin-bottom: 16px;">
+                    <input class="form-control" type="text" th:field="*{studyName}" placeholder="스터디 이름" style="margin-bottom: 16px;">
                     <div class="editor-container editor-container_classic-editor" id="editor-container">
                         <div class="editor-container__editor">
                             <div id="editor"></div>

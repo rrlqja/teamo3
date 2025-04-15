@@ -1,0 +1,1026 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>StudyCalendar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/assets/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Articles-Cards-images.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/Navbar-With-Button-icons.css}">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" th:href="@{/assets/css/common.css}">
+    <link rel="stylesheet" th:href="@{/fullcalendar/calendar.css}">
+    <script th:src="@{/assets/bootstrap/js/bootstrap.min.js}"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
+    <script>
+        var calendar;
+        var currentStudyId = 0;
+        var currentClickedDate = null;
+        var currentSchedule = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'ko',
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today customButton',
+                    center: '',
+                    right: 'title'
+                },
+                titleFormat: { year: 'numeric', month: 'long' },
+                customButtons: {
+                    customButton: {
+                        text: '일정 추가',
+                        click: function() {
+                            if (!currentStudyId || currentStudyId === 0) {
+                                alert("스터디를 선택하세요");
+                                return;
+                            }
+                            if (!currentClickedDate) {
+                                alert("날짜를 선택하세요");
+                                return;
+                            }
+
+                            const selectedDate = currentClickedDate;
+
+                            document.getElementById('scheduleStartDate').value = selectedDate;
+                            document.getElementById('scheduleEndDate').value = selectedDate;
+
+                            document.getElementById('scheduleStudyId').value = currentStudyId;
+
+                            const modalEl = document.getElementById('addScheduleModal');
+                            const modalInstance = new bootstrap.Modal(modalEl);
+                            modalInstance.show();
+                        }
+                    }
+                },
+                dayMaxEvents: 3,
+
+                dateClick: function(info) {
+                    document.getElementById('detailView').style.visibility = 'hidden';
+                    document.getElementById('memoListContainer').style.visibility = 'hidden';
+
+                    if (currentClickedDate === info.dateStr) {
+                        currentClickedDate = null;
+                        document.querySelectorAll('.fc-daygrid-day').forEach(function(cell) {
+                            cell.classList.remove('active-day');
+                        });
+                        var today = new Date();
+                        var year = today.getFullYear();
+                        var month = ('0' + (today.getMonth() + 1)).slice(-2);
+                        var day = ('0' + today.getDate()).slice(-2);
+                        var startParam = year + '-' + month + '-' + day + "T00:00:00";
+
+                        var future = new Date(today);
+                        future.setMonth(future.getMonth() + 1);
+                        var futureYear = future.getFullYear();
+                        var futureMonth = ('0' + (future.getMonth() + 1)).slice(-2);
+                        var futureDay = ('0' + future.getDate()).slice(-2);
+                        var endParam = futureYear + '-' + futureMonth + '-' + futureDay + "T00:00:00";
+
+                        var url = '/studyCalendar/studySchedules?start=' + startParam + '&end=' + endParam;
+                        if (currentStudyId && currentStudyId !== 0) {
+                            url += '&studyId=' + currentStudyId;
+                        }
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => { renderScheduleList(data); })
+                            .catch(error => { console.error("로딩 오류:", error); });
+                        return;
+                    }
+
+                    currentClickedDate = info.dateStr;
+                    document.querySelectorAll('.fc-daygrid-day').forEach(function(cell) {
+                        cell.classList.remove('active-day');
+                    });
+                    info.dayEl.classList.add('active-day');
+
+                    var url = '/studyCalendar/studySchedules?date=' + info.dateStr;
+                    if (currentStudyId && currentStudyId !== 0) {
+                        url += '&studyId=' + currentStudyId;
+                    }
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            renderScheduleList(data);
+                        })
+                        .catch(error => {
+                            console.error("로딩 오류:", error);
+                        });
+                },
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    var url = '/studyCalendar/studySchedules';
+                    if (currentStudyId && currentStudyId !== 0) {
+                        url += '?studyId=' + currentStudyId;
+                        url += '&start=' + fetchInfo.startStr + '&end=' + fetchInfo.endStr;
+                    }
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            successCallback(data);
+                        })
+                        .catch(error => failureCallback(error));
+                }
+            });
+            calendar.render();
+        });
+
+        function filterCalendar(studyId, element) {
+            currentStudyId = studyId;
+            calendar.refetchEvents();
+
+            document.getElementById('detailView').style.visibility = 'hidden';
+            document.getElementById('memoListContainer').style.visibility = 'hidden';
+
+            document.querySelectorAll('.list-group-item').forEach(function(item) {
+                item.classList.remove('selected');
+            });
+            if (studyId !== 0) {
+                element.classList.add('selected');
+            }
+
+            var url = '/studyCalendar/studySchedules';
+            if (currentClickedDate) {
+                url += '?date=' + currentClickedDate;
+                if (currentStudyId && currentStudyId !== 0) {
+                    url += '&studyId=' + currentStudyId;
+                }
+            } else {
+                const currentData = calendar.getCurrentData();
+                const startDateObj = currentData.dateProfile.activeRange.start;
+                const endDateObj = currentData.dateProfile.activeRange.end;
+
+                const formatDate = dateObj => {
+                    const year  = dateObj.getFullYear();
+                    const month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
+                    const day   = ('0' + dateObj.getDate()).slice(-2);
+                    return `${year}-${month}-${day}T00:00:00`;
+                };
+
+                const formattedStart = formatDate(startDateObj);
+                const formattedEnd = formatDate(endDateObj);
+
+                url += '?start=' + formattedStart + '&end=' + formattedEnd;
+                if (currentStudyId && currentStudyId !== 0) {
+                    url += '&studyId=' + currentStudyId;
+                }
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    renderScheduleList(data);
+                })
+                .catch(error => {
+                    console.error("스케줄 로딩 오류:", error);
+                });
+        }
+
+
+        function submitSchedule() {
+            const name        = document.getElementById('scheduleName').value;
+            const description = document.getElementById('scheduleDescription').value;
+            const startDate   = document.getElementById('scheduleStartDate').value;
+            const endDate     = document.getElementById('scheduleEndDate').value;
+            const studyId     = document.getElementById('scheduleStudyId').value;
+
+            const startDatetime = startDate + "T00:00:00";
+            const endDatetime   = endDate + "T00:00:00";
+
+            const schedule = {
+                name: name,
+                description: description,
+                startDate: startDatetime,
+                endDate: endDatetime,
+                studyId: studyId ? parseInt(studyId) : null
+            };
+
+            fetch('/studyCalendar/addStudySchedule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(schedule)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response;
+                })
+                .then(() => {
+                    calendar.refetchEvents();
+
+                    if (currentClickedDate) {
+                        var url = '/studyCalendar/studySchedules?date=' + currentClickedDate;
+                        if (currentStudyId && currentStudyId !== 0) {
+                            url += '&studyId=' + currentStudyId;
+                        }
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                renderScheduleList(data);
+                            })
+                            .catch(error => {
+                                console.error("스케줄 리스트 갱신 오류:", error);
+                            });
+                    }
+
+                    const modalEl = document.getElementById('addScheduleModal');
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+                    document.getElementById('addScheduleForm').reset();
+                })
+                .catch(error => {
+                    console.error('스케줄 추가 오류:', error);
+                    alert('스케줄 추가 오류 발생');
+                });
+        }
+
+        function saveEdits() {
+            var scheduleId   = document.getElementById('editScheduleId').value;
+            var title        = document.getElementById('editScheduleTitle').value;
+            var description  = document.getElementById('editScheduleDescription').value;
+            var startDate    = document.getElementById('editScheduleStartDate').value;
+            var endDate      = document.getElementById('editScheduleEndDate').value;
+
+            var updatedSchedule = {
+                title: title,
+                description: description,
+                start: startDate + "T00:00:00",
+                end: endDate + "T00:00:00"
+            };
+
+            fetch('/studyCalendar/studySchedule/modify/' + scheduleId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedSchedule)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    currentSchedule = data;
+                    renderScheduleDetail(data);
+                    cancelEdit();
+                    calendar.refetchEvents();
+                    updateScheduleList();
+                })
+                .catch(error => {
+                    console.error('스케줄 수정 오류:', error);
+                    alert('스케줄 수정 중 오류 발생');
+                });
+        }
+
+        function updateScheduleList() {
+            let url = '/studyCalendar/studySchedules';
+            if (currentClickedDate) {
+                url += '?date=' + currentClickedDate;
+            } else {
+                const currentData = calendar.getCurrentData();
+                const startDateObj = currentData.dateProfile.activeRange.start;
+                const endDateObj = currentData.dateProfile.activeRange.end;
+                const formatDate = dateObj => {
+                    const year  = dateObj.getFullYear();
+                    const month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
+                    const day   = ('0' + dateObj.getDate()).slice(-2);
+                    return `${year}-${month}-${day}T00:00:00`;
+                };
+                const formattedStart = formatDate(startDateObj);
+                const formattedEnd   = formatDate(endDateObj);
+                url += '?start=' + formattedStart + '&end=' + formattedEnd;
+            }
+            if (currentStudyId && currentStudyId !== 0) {
+                url += '&studyId=' + currentStudyId;
+            }
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    renderScheduleList(data);
+                })
+                .catch(error => {
+                    console.error("스케줄 목록 갱신 오류:", error);
+                });
+        }
+
+        function deleteSchedule() {
+            if (currentSchedule && currentSchedule.id) {
+                if (!confirm("정말 삭제하시겠습니까?")) return;
+                fetch('/studyCalendar/studySchedule/' + currentSchedule.id, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            clearScheduleDetail();
+                            calendar.refetchEvents();
+                            alert("삭제되었습니다.");
+                            updateScheduleList();
+                        } else {
+                            throw new Error("삭제 실패");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('스케줄 삭제 오류:', error);
+                        alert("스케줄 삭제 중 오류 발생");
+                    });
+            } else {
+                alert("선택된 스케줄이 없습니다.");
+            }
+        }
+
+        function renderScheduleList(scheduleList) {
+            console.log(scheduleList);
+            clearScheduleDetail();
+            var container = document.getElementById('schedule-container');
+            container.innerHTML = "";
+
+            if (!currentClickedDate) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                scheduleList = scheduleList.filter(schedule => {
+                    const scheduleStart = new Date(schedule.start);
+                    return scheduleStart >= today;
+                });
+            }
+
+            scheduleList.forEach(function(schedule) {
+                var div = document.createElement("div");
+                div.className = "schedule-div";
+
+                div.onclick = function() {
+                    renderScheduleDetail(schedule);
+                    document.querySelectorAll('.schedule-div').forEach(function(item) {
+                        item.classList.remove('selected');
+                    });
+                    div.classList.add('selected');
+                };
+
+                var titleDiv = document.createElement("div");
+                titleDiv.className = "schedule-title-div";
+                titleDiv.textContent = schedule.title;
+                div.appendChild(titleDiv);
+
+                var dateDiv = document.createElement("div");
+                dateDiv.className = "schedule-date-div";
+                dateDiv.textContent = formatDate(schedule.start) + " ~ " + formatDate(schedule.end);
+                div.appendChild(dateDiv);
+
+                container.appendChild(div);
+            });
+        }
+
+        function formatDate(dateString) {
+            var date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        }
+
+        function renderScheduleDetail(schedule) {
+            currentSchedule = schedule;
+            document.getElementById('detailView').style.visibility = 'visible';
+            document.getElementById('studyNameField').textContent = schedule.studyName || '';
+            document.getElementById('scheduleTitleField').textContent = schedule.title || '';
+            document.getElementById('dateField').textContent =
+                (schedule.start ? schedule.start.substring(0,10) : '') + ' ~ ' +
+                (schedule.end ? schedule.end.substring(0,10) : '');
+            document.getElementById('descriptionField').innerHTML = schedule.description ?
+                schedule.description.replace(/\n/g, '<br/>') : '';
+
+            if (schedule.writer) {
+                document.getElementById('editButton').style.display = 'inline-block';
+                document.getElementById('deleteButton').style.display = 'inline-block';
+            } else {
+                document.getElementById('editButton').style.display = 'none';
+                document.getElementById('deleteButton').style.display = 'none';
+            }
+
+            currentMemoPage = 0;
+            isLoadingMemos = false;
+            lastMemoPageLoaded = false;
+
+            loadMemoList(schedule.id, currentMemoPage);
+        }
+
+        function switchToEditMode() {
+            document.getElementById('editScheduleTitle').value = currentSchedule ? (currentSchedule.title || '') : '';
+            document.getElementById('editScheduleDescription').value = currentSchedule ? (currentSchedule.description || '') : '';
+            document.getElementById('editScheduleStartDate').value = currentSchedule && currentSchedule.start ? currentSchedule.start.substring(0,10) : '';
+            document.getElementById('editScheduleEndDate').value = currentSchedule && currentSchedule.end ? currentSchedule.end.substring(0,10) : '';
+
+            if(currentSchedule && currentSchedule.id) {
+                document.getElementById('editScheduleId').value = currentSchedule.id;
+            }
+            document.getElementById('detailView').style.display = 'none';
+            document.getElementById('editView').style.display = 'block';
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('deleteButton').style.display = 'none';
+            document.getElementById('cancelEditButton').style.display = 'inline-block';
+            document.getElementById('saveEditButton').style.display = 'inline-block';
+        }
+
+        function cancelEdit() {
+            document.getElementById('editView').style.display = 'none';
+            document.getElementById('detailView').style.display = 'block';
+            if (currentSchedule && currentSchedule.writer) {
+                document.getElementById('editButton').style.display = 'inline-block';
+                document.getElementById('deleteButton').style.display = 'inline-block';
+            } else {
+                document.getElementById('editButton').style.display = 'none';
+                document.getElementById('deleteButton').style.display = 'none';
+            }
+            document.getElementById('cancelEditButton').style.display = 'none';
+            document.getElementById('saveEditButton').style.display = 'none';
+        }
+
+        function clearScheduleDetail() {
+            currentSchedule = null;
+            var studyNameField = document.getElementById('studyNameField');
+            if (studyNameField) studyNameField.textContent = "";
+
+            var scheduleTitleField = document.getElementById('scheduleTitleField');
+            if (scheduleTitleField) scheduleTitleField.textContent = "";
+
+            var dateField = document.getElementById('dateField');
+            if (dateField) dateField.textContent = "";
+
+            var descriptionField = document.getElementById('descriptionField');
+            if (descriptionField) descriptionField.innerHTML = "";
+
+            var editButton = document.getElementById('editButton');
+            if (editButton) editButton.style.display = 'none';
+
+            var deleteButton = document.getElementById('deleteButton');
+            if (deleteButton) deleteButton.style.display = 'none';
+
+            document.getElementById('detailView').style.visibility = 'hidden';
+            document.getElementById('memoListContainer').style.visibility = 'hidden';
+        }
+    </script>
+    <style>
+        #calendar {
+            width: 100%;
+            height: 860px;
+        }
+        .list-group-item {
+            transition: background-color 0.3s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+        .selected {
+            background-color: #007bff;
+            color: white;
+        }
+        .active-day {
+            background-color: #FFDDDD !important;
+        }
+        .schedule-div {
+            flex: 0 0 auto;
+            width: 180px;
+            height: 110px;
+            border-radius: 10px;
+            border: 0.1px solid rgba(0, 0, 0, 0.2);
+        }
+        .schedule-title-div {
+            width: 100%;
+            height: 80px;
+            border-top-left-radius: 10px;
+            border-top-right-radius:10px;
+            padding: 8px;
+        }
+        .schedule-date-div {
+            width: 100%;
+            height: 30px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius:10px;
+            padding: 5px;
+            padding-left: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .memo-list-group {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-radius: 10px;
+        }
+        .memo-list-group-item {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+        }
+        .edit-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 12px;
+            background-color: #eee;
+            border: none;
+            padding: 3px 6px;
+            cursor: pointer;
+        }
+        .edit-area {
+            width: 100%;
+            height: 60px;
+            box-sizing: border-box;
+            padding: 5px;
+            font-size: 14px;
+            resize: none;
+        }
+        .edit-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .edit-buttons button {
+            margin-left: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        .new-memo {
+            border: 1px dashed #ccc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .memo-input {
+            height: 150px;
+            flex-direction: column;
+            padding: 10px;
+        }
+        .memo-input textarea {
+            flex: 1;
+            width: 100%;
+            resize: none;
+            box-sizing: border-box;
+            padding: 5px;
+            font-size: 14px;
+        }
+        .memo-input .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .memo-input .btn-container button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        .memo-list-group-item:hover {
+            background-color: #f5f5f5;
+            cursor: default;
+        }
+
+        .memo-list-group-item:hover .edit-btn {
+            background-color: #f5f5f5 !important;
+        }
+
+        .memo-list-group-item .edit-btn:hover {
+            cursor: pointer;
+        }
+
+        .memo-list-group-item,
+        .memo-list-group-item .edit-btn {
+            transition: background-color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="content :: headerNav"></div>
+<div class="container" style="width: 1680px; max-width: none; height: 1250px;">
+    <div class="row justify-content-start" style="padding-top: 30px;">
+        <div class="col-md-2 d-flex flex-column" style="gap: 15px;">
+<!--            <div th:replace="content :: leftBar"></div>-->
+            <div style="width: 100%; height: 320px; box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px; border-radius: 10px; background: white; overflow-y: auto;" id="studyListContainer">
+                <ul class="list-group" id="studyList">
+                    <li class="list-group-item" onclick="filterCalendar(0, this)">전체 보기</li>
+                    <li class="list-group-item"
+                        th:each="study : ${studyPage.content}"
+                        th:text="${study.studyName}"
+                        th:onclick="'filterCalendar(' + ${study.id} + ', this)'">
+                        스터디 이름
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9" style="display: flex; flex-direction: column; gap: 30px; padding: 0; margin: 0 6px; height: 860px;">
+            <div class="" style="display: flex; flex-direction: row; justify-content: space-between; border: none;border-radius: 10px; width: 100%; min-height: 320px;">
+                <div class="schedule-list" style="display: flex; flex-direction: column; width: 480px; height: 100%; box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px; border-radius: 10px; background-color: white;">
+                    <div style="padding: 4px; padding-left: 10px; padding-bottom: 0px; border-bottom: 0.1px solid rgba(0, 0, 0, 0.2); font-size: 14px; font-weight: 600;">
+                        스케줄 리스트
+                    </div>
+                    <div id="schedule-container" class="schedule-container" style="width: 100%; display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, auto); gap: 8px; overflow-x: auto; height: 100%; padding: 8px; border-radius: 10px; padding-right: 20px; padding-left: 10px;">
+                    </div>
+                </div>
+                <div class="schedule-info" style="display: flex; flex-direction: column; width: 760px; height: 100%; background-color: white; box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px; border-radius: 10px;">
+                    <div class="p-2 border-bottom">
+                        <h6>스케줄 상세 </h6>
+                    </div>
+                    <div id="scheduleDetailView" style="display: flex; flex-direction: row; width: 100%; height: 100%;">
+                        <div id="detailView" style="visibility: hidden; flex: 6; padding: 10px; height: 100%;">
+                            <div style="width: 100%; height: 100%;">
+                                <div class="form-row" style="display: flex; flex-direction: row; margin-bottom: 8px;">
+                                    <div class="form-label" style="min-width: 90px; font-weight: 600;">스터디</div>
+                                    <div class="form-value" id="studyNameField"></div>
+                                </div>
+                                <div class="form-row" style="display: flex; flex-direction: row; margin-bottom: 8px;">
+                                    <div class="form-label" style="min-width: 90px; font-weight: 600;">스케줄</div>
+                                    <div class="form-value" id="scheduleTitleField"></div>
+                                </div>
+                                <div class="form-row" style="display: flex; flex-direction: row; margin-bottom: 8px;">
+                                    <div class="form-label" style="min-width: 90px; font-weight: 600;">기간</div>
+                                    <div class="form-value" id="dateField"></div>
+                                </div>
+                                <div class="form-row" style="display: flex; flex-direction: row; margin-bottom: 8px;">
+                                    <div class="form-label" style="min-width: 90px; font-weight: 600;">상세</div>
+                                    <div class="form-value" id="descriptionField" style="flex: 1; word-break: break-all; max-height: 65px; overflow-y: auto;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="editView" style="flex: 6; padding: 10px; height: 210px; display: none;  overflow-y: auto;">
+                            <form id="editScheduleForm">
+                                <div class="mb-3" style="width: 100%; height: 100%;">
+                                    <label for="editScheduleTitle" class="form-label">제목</label>
+                                    <input type="text" class="form-control" id="editScheduleTitle" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editScheduleDescription" class="form-label">내용</label>
+                                    <textarea class="form-control" id="editScheduleDescription" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editScheduleStartDate" class="form-label">시작일</label>
+                                    <input type="date" class="form-control" id="editScheduleStartDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editScheduleEndDate" class="form-label">종료일</label>
+                                    <input type="date" class="form-control" id="editScheduleEndDate" required>
+                                </div>
+                                <input type="hidden" id="editScheduleId">
+                            </form>
+                        </div>
+                        <div id="memoListContainer" style="flex: 4; height: 200px; padding: 10px; visibility: hidden;">
+                            <div id="memoListC" style="width: 100%; height: 100%; display: flex; flex-direction: column; overflow-y: auto; background-color: #f9f9f9;">
+                                <ul id="memoList" class="list-group memo-list-group">
+
+                                    <li class="list-group-item memo-list-group-item new-memo" id="newMemoBtn">
+                                        <span>+</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-2 border-top d-flex justify-content-end" id="actionButtons">
+                        <button type="button" class="btn btn-primary me-2" id="editButton" onclick="switchToEditMode()" style="display: none;">수정</button>
+                        <button type="button" class="btn btn-danger" id="deleteButton" onclick="deleteSchedule()" style="display: none;">삭제</button>
+                        <button type="button" class="btn btn-secondary me-2" id="cancelEditButton" style="display:none;" onclick="cancelEdit()">취소</button>
+                        <button type="button" class="btn btn-success" id="saveEditButton" style="display:none;" onclick="saveEdits()">저장</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="border: none; box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px; border-radius: 10px; width: 100%; min-height: 100%;">
+                <div id="calendar" style="padding: 12px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addScheduleModal" tabindex="-1" aria-labelledby="addScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addScheduleModalLabel">스케줄 추가</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="닫기"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addScheduleForm">
+                    <div class="mb-3">
+                        <label for="scheduleName" class="form-label">제목</label>
+                        <input type="text" class="form-control" id="scheduleName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="scheduleDescription" class="form-label">내용</label>
+                        <textarea class="form-control" id="scheduleDescription" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="scheduleStartDate" class="form-label">시작 날짜</label>
+                        <input type="date" class="form-control" id="scheduleStartDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="scheduleEndDate" class="form-label">종료 날짜</label>
+                        <input type="date" class="form-control" id="scheduleEndDate" required>
+                    </div>
+                    <input type="hidden" id="scheduleStudyId" value="">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" onclick="submitSchedule()">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStudyPageNumber = 1;
+    let isLoadingStudies = false;
+    let lastPageLoaded = false;
+
+    const studyListContainer = document.getElementById('studyListContainer');
+
+    studyListContainer.addEventListener("scroll", function() {
+        if (studyListContainer.scrollTop + studyListContainer.clientHeight >= studyListContainer.scrollHeight - 5) {
+            loadMoreStudies();
+        }
+    });
+
+    function loadMoreStudies() {
+        if (isLoadingStudies || lastPageLoaded) return;
+        isLoadingStudies = true;
+
+        const url = '/studyCalendar/studyList?page=' + currentStudyPageNumber + "&size=10";
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const studies = data.content;
+                const studyList = document.getElementById('studyList');
+
+                studies.forEach(function(study) {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item";
+                    li.setAttribute("onclick", "filterCalendar(" + study.id + ", this)");
+                    li.innerText = study.studyName;
+                    studyList.appendChild(li);
+                });
+
+                if(data.last) {
+                    lastPageLoaded = true;
+                }
+                currentStudyPageNumber++;
+                isLoadingStudies = false;
+            })
+            .catch(error => {
+                console.error("스터디 목록 로드 오류:", error);
+                isLoadingStudies = false;
+            });
+    }
+
+    function updateMemoView(li, memoText) {
+        li.className = "list-group-item memo-list-group-item";
+        li.innerHTML = `<span class="memo-text">${memoText}</span>`;
+        if(li.dataset.writer === "true") {
+            var editBtn = document.createElement("button");
+            editBtn.className = "edit-btn";
+            editBtn.style.backgroundColor = "white";
+            editBtn.innerText = "✎";
+            editBtn.addEventListener('click', function() {
+                enterEditMode(li);
+            });
+            li.appendChild(editBtn);
+        }
+    }
+
+    function enterEditMode(li) {
+        const originalText = li.querySelector('.memo-text').textContent;
+        const memoId = li.dataset.memoId;
+        li.className = 'list-group-item memo-input memo-list-group-item';
+        li.innerHTML = `
+            <textarea class="form-control edit-area">${originalText}</textarea>
+            <div class="edit-buttons mt-2">
+              <button class="update-save-btn btn btn-primary">저장</button>
+              <button class="update-cancel-btn btn btn-secondary">취소</button>
+              <button class="update-delete-btn btn btn-danger">삭제</button>
+            </div>
+        `;
+
+        li.querySelector('.update-save-btn').addEventListener('click', function() {
+            const newText = li.querySelector('.edit-area').value.trim();
+            if(newText) {
+                if(memoId) {
+                    updateMemo(memoId, newText, li);
+                } else {
+                    console.error("메모 ID가 없습니다. 수정 요청을 보낼 수 없습니다.");
+                    alert("메모 수정에 실패했습니다.");
+                }
+            } else {
+                alert('메모 내용을 입력해주세요.');
+            }
+        });
+
+        li.querySelector('.update-cancel-btn').addEventListener('click', function() {
+            updateMemoView(li, originalText);
+        });
+
+        li.querySelector('.update-delete-btn').addEventListener('click', function() {
+            if(confirm("삭제하시겠습니까?")) {
+                deleteMemo(memoId, li);
+            }
+        });
+    }
+
+    function deleteMemo(memoId, li) {
+        fetch('/studyCalendar/memo/delete/' + memoId, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('메모 삭제 요청 실패');
+                }
+                li.remove();
+            })
+            .catch(error => {
+                console.error("메모 삭제 오류:", error);
+                alert("메모 삭제에 실패했습니다.");
+            });
+    }
+
+    function updateMemo(memoId, newText, li) {
+        fetch('/studyCalendar/memo/modify/' + memoId, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ description: newText })
+        })
+            .then(response => {
+                if(!response.ok) {
+                    throw new Error('메모 수정 요청 실패');
+                }
+                return response.json();
+            })
+            .then(updatedMemo => {
+                updateMemoView(li, updatedMemo.description);
+            })
+            .catch(error => {
+                console.error("메모 수정 오류:", error);
+                alert("메모 수정에 실패했습니다.");
+            });
+    }
+
+    function createMemo() {
+        var li = document.createElement('li');
+        li.className = 'list-group-item memo-input memo-list-group-item';
+        li.innerHTML = `
+            <textarea class="form-control edit-area" placeholder="메모를 입력하세요."></textarea>
+            <div class="edit-buttons mt-2">
+              <button class="btn btn-primary save-btn">저장</button>
+              <button class="btn btn-secondary cancel-btn">취소</button>
+            </div>
+        `;
+
+        var memoList = document.getElementById('memoList');
+        memoList.insertBefore(li, document.getElementById('newMemoBtn'));
+
+        document.getElementById('newMemoBtn').style.display = 'none';
+
+        li.querySelector('.cancel-btn').addEventListener('click', function() {
+            memoList.removeChild(li);
+            document.getElementById('newMemoBtn').style.display = 'flex';
+        });
+
+        li.querySelector('.save-btn').addEventListener('click', function() {
+            var memoText = li.querySelector('.edit-area').value.trim();
+            if(memoText) {
+                fetch('/studyCalendar/' + currentSchedule.id + '/memo', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ description: memoText })
+                })
+                    .then(response => {
+                        if(!response.ok) {
+                            throw new Error('메모 추가 실패');
+                        }
+                        return response.json();
+                    })
+                    .then(newMemo => {
+                        var newMemoItem = createMemoItem(newMemo);
+                        var existingNewMemoBtn = document.getElementById('newMemoBtn');
+                        if(existingNewMemoBtn) {
+                            existingNewMemoBtn.parentNode.removeChild(existingNewMemoBtn);
+                        }
+                        memoList.appendChild(newMemoItem);
+
+                        var newMemoBtn = createNewMemoButton();
+                        memoList.appendChild(newMemoBtn);
+                    })
+                    .catch(error => {
+                        console.error("메모 추가 오류:", error);
+                        alert("메모 추가에 실패했습니다.");
+                    })
+                    .finally(() => {
+                        if(memoList.contains(li)) {
+                            memoList.removeChild(li);
+                            document.getElementById('newMemoBtn').style.display = 'flex';
+                        }
+                    });
+            } else {
+                alert('메모 내용을 입력해주세요.');
+            }
+        });
+    }
+
+    document.querySelectorAll('#memoList .memo-list-group-item').forEach(function(li) {
+        if (!li.classList.contains('new-memo')) {
+            li.querySelector('.edit-btn').addEventListener('click', function() {
+                enterEditMode(li);
+            });
+        }
+    });
+
+    var currentMemoPage = 0;
+    var isLoadingMemos = false;
+    var lastMemoPageLoaded = false;
+    document.getElementById('memoListC').addEventListener('scroll', function() {
+        var container = document.getElementById('memoListC');
+        if (container.scrollTop + container.clientHeight >= container.scrollHeight - 5) {
+            if (currentSchedule && currentSchedule.id) {
+                loadMemoList(currentSchedule.id, currentMemoPage);
+            }
+        }
+    });
+
+    function loadMemoList(scheduleId, page) {
+        if (isLoadingMemos || lastMemoPageLoaded) return;
+        isLoadingMemos = true;
+        document.getElementById('memoListContainer').style.visibility = 'visible';
+
+        var url = '/studyCalendar/' + scheduleId + '/memoList?page=' + page + '&size=10';
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                var memoListElem = document.getElementById('memoList');
+                if(page === 0) {
+                    memoListElem.innerHTML = '';
+                } else {
+                    var newMemoBtn = document.getElementById('newMemoBtn');
+                    if(newMemoBtn) {
+                        newMemoBtn.parentNode.removeChild(newMemoBtn);
+                    }
+                }
+
+                data.content.forEach(function(memo) {
+                    var li = createMemoItem(memo);
+                    memoListElem.appendChild(li);
+                });
+
+                var newMemoBtn = createNewMemoButton();
+                memoListElem.appendChild(newMemoBtn);
+
+                if(data.content.length < 10) {
+                    lastMemoPageLoaded = true;
+                } else {
+                    currentMemoPage++;
+                }
+            })
+            .catch(error => {
+                console.error("메모 로드 실패:", error);
+            })
+            .finally(() => {
+                isLoadingMemos = false;
+            });
+    }
+
+    function createNewMemoButton() {
+        var li = document.createElement("li");
+        li.className = "list-group-item memo-list-group-item new-memo";
+        li.id = "newMemoBtn";
+        li.innerHTML = '<span>+</span>';
+        li.addEventListener('click', function() {
+            createMemo();
+        });
+        return li;
+    }
+
+    function createMemoItem(memo) {
+        var li = document.createElement("li");
+        li.className = "list-group-item memo-list-group-item";
+        if(memo.id) {
+            li.dataset.memoId = memo.id;
+        }
+        li.dataset.writer = memo.writer ? "true" : "false";
+        li.innerHTML = `<span class="memo-text">${memo.description}</span>`;
+        if(memo.writer) {
+            var editBtn = document.createElement("button");
+            editBtn.className = "edit-btn";
+            editBtn.style.backgroundColor = "white";
+            editBtn.innerText = "✎";
+            editBtn.addEventListener('click', function() {
+                enterEditMode(li);
+            });
+            li.appendChild(editBtn);
+        }
+        return li;
+    }
+</script>
+</body>
+</html>

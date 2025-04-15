@@ -34,6 +34,8 @@ public class ChatService {
         Chat chat = Chat.create(user, chatRoom, message);
         Chat saveChat = chatRepository.save(chat);
 
+        chatRoom.updateLastChatTime();
+
         return new ChatDto(saveChat);
     }
 }

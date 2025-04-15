@@ -13,6 +13,7 @@ import song.teamo3.domain.chat.repository.ChatJpaRepository;
 import song.teamo3.domain.chat.repository.ChatRoomJpaRepository;
 import song.teamo3.domain.chat.repository.ChatRoomUserJpaRepository;
 import song.teamo3.domain.chat.service.ChatRoomService;
+import song.teamo3.domain.chat.service.ChatService;
 import song.teamo3.domain.comment.entity.Comment;
 import song.teamo3.domain.comment.repository.CommentJpaRepository;
 import song.teamo3.domain.project.entity.Project;
@@ -23,12 +24,17 @@ import song.teamo3.domain.study.entity.Study;
 import song.teamo3.domain.study.repository.StudyJpaRepository;
 import song.teamo3.domain.studyapplication.entity.StudyApplication;
 import song.teamo3.domain.studyapplication.repository.StudyApplicationJpaRepository;
+import song.teamo3.domain.studycalendar.entity.ScheduleMemo;
+import song.teamo3.domain.studycalendar.entity.StudySchedule;
+import song.teamo3.domain.studycalendar.repository.ScheduleMemoJpaRepository;
+import song.teamo3.domain.studycalendar.repository.StudyScheduleJpaRepository;
 import song.teamo3.domain.studymember.entity.StudyMember;
 import song.teamo3.domain.studymember.entity.StudyMemberRole;
 import song.teamo3.domain.studymember.repository.StudyMemberJpaRepository;
 import song.teamo3.domain.user.entity.User;
 import song.teamo3.domain.user.repository.UserJpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -46,6 +52,7 @@ public class InitConfig {
     @RequiredArgsConstructor
     private static class InitService {
         private final ChatRoomUserJpaRepository chatRoomUserJpaRepository;
+        private final ChatService chatService;
         @Value("${download.path}")
         private String downloadPath;
 
@@ -60,6 +67,8 @@ public class InitConfig {
         private final ChatRoomService chatRoomService;
         private final ChatRoomJpaRepository chatRoomRepository;
         private final ChatJpaRepository chatRepository;
+        private final StudyScheduleJpaRepository studyScheduleRepository;
+        private final ScheduleMemoJpaRepository scheduleMemoRepository;
 
         public void init() {
             User user1 = userRepository.save(User.create("1", passwordEncoder.encode("1"), "관리자"));
@@ -67,11 +76,11 @@ public class InitConfig {
             User user3 = userRepository.save(User.create("3", passwordEncoder.encode("3"), "라리밖"));
             User user4 = userRepository.save(User.create("4", passwordEncoder.encode("4"), "name 3"));
 
-            Study study1 = studyRepository.save(Study.create(user2, "액션 게임 제작 스터디원 모집합니다!", "<h4>게임 제작 스터디원 모집합니다!</h4><p>보스 토벌 액션 RPG를 개발하고 싶어요! 같이 참여해보세요!</p><ul><li>모집인원: 00명</li><li>스터디 일정: ~ 2100.01.01</li><li>참고사항: </li></ul>"));
-            Study study2 = studyRepository.save(Study.create(user3, "게임 제작 스터디 구해요~", "<h4>게임 제작 스터디 구해요!</h4><p>오픈월드 턴제 RPG를 개발하고 싶어요! 같이 참여해보세요!</p><ul><li>모집인원: 00명</li><li>스터디 일정: ~ 2100.01.01</li><li>참고사항: </li></ul>"));
+            Study study1 = studyRepository.save(Study.create(user2, "액션 게임 제작 스터디원 모집합니다!", "<h4>게임 제작 스터디원 모집합니다!</h4><p>보스 토벌 액션 RPG를 개발하고 싶어요! 같이 참여해보세요!</p><ul><li>모집인원: 00명</li><li>스터디 일정: ~ 2100.01.01</li><li>참고사항: </li></ul>", "액션 게임 제작 스터디"));
+            Study study2 = studyRepository.save(Study.create(user3, "게임 제작 스터디 구해요~", "<h4>게임 제작 스터디 구해요!</h4><p>오픈월드 턴제 RPG를 개발하고 싶어요! 같이 참여해보세요!</p><ul><li>모집인원: 00명</li><li>스터디 일정: ~ 2100.01.01</li><li>참고사항: </li></ul>", "오픈월드 게임 제작 스터디"));
 
-            for (int i = 0; i < 100; i++) {
-                Study study = studyRepository.save(Study.create(user2, "test" + i, "test" + i));
+            for (int i = 0; i < 30; i++) {
+                Study study = studyRepository.save(Study.create(user2, "조용한 스터디 " + i, "스터디 모집 " + i, "개인 스터디 " + i));
                 StudyMember studyMember = studyMemberRepository.save(StudyMember.create(user2, study, StudyMemberRole.ADMIN));
             }
 
@@ -98,22 +107,6 @@ public class InitConfig {
 
             Long chatRoom1Id = chatRoomService.createChatRoom(study1);
             ChatRoom chatRoom1 = chatRoomRepository.findChatRoomById(chatRoom1Id).get();
-            Chat chat1 = chatRepository.save(Chat.create(user2, chatRoom1, "test message1"));
-            Chat chat2 = chatRepository.save(Chat.create(user2, chatRoom1, "test message2"));
-            Chat chat3 = chatRepository.save(Chat.create(user2, chatRoom1, "test message3"));
-            Chat chat4 = chatRepository.save(Chat.create(user2, chatRoom1, "test message4"));
-            Chat chat5 = chatRepository.save(Chat.create(user2, chatRoom1, "test message5"));
-            Chat chat6 = chatRepository.save(Chat.create(user2, chatRoom1, "test message6"));
-            Chat chat7 = chatRepository.save(Chat.create(user2, chatRoom1, "test message7"));
-            Chat chat8 = chatRepository.save(Chat.create(user2, chatRoom1, "test message8"));
-            Chat chat9 = chatRepository.save(Chat.create(user2, chatRoom1, "test message9"));
-            Chat chat10 = chatRepository.save(Chat.create(user2, chatRoom1, "test message10"));
-            Chat chat11 = chatRepository.save(Chat.create(user2, chatRoom1, "test message11"));
-            Chat chat12 = chatRepository.save(Chat.create(user2, chatRoom1, "test message12"));
-            Chat chat13 = chatRepository.save(Chat.create(user2, chatRoom1, "test message13"));
-            Chat chat14 = chatRepository.save(Chat.create(user2, chatRoom1, "test message14"));
-            Chat chat15 = chatRepository.save(Chat.create(user2, chatRoom1, "test message15"));
-            Chat chat16 = chatRepository.save(Chat.create(user2, chatRoom1, "test message16"));
 
             for (int i = 0; i < 20; i++) {
                 Study study = studyRepository.findStudyById(i + 2L).get();
@@ -122,6 +115,34 @@ public class InitConfig {
                 ChatRoomUser cru = ChatRoomUser.create(scr, user2);
                 ChatRoomUser scru = chatRoomUserJpaRepository.save(cru);
             }
+
+            for (int i = 0; i < 20; i++) {
+                chatService.saveChat(user2, chatRoom1.getId(), "테스트 메시지 " + i);
+            }
+
+            createStudySchedule(study1, user2, 5, 0L, 0L);
+            createStudySchedule(study1, user2, 2, 1L, 1L);
+            createStudySchedule(study1, user2, 1, -1L, -1L);
+            createStudySchedule(study1, user2, 2, 3L, 5L);
+            createStudySchedule(study1, user2, 1, 40L, 41L);
+
+            createScheduleMemo(user2, 1L, 14);
+        }
+
+        private void createScheduleMemo(User user2, Long studyScheduleId, int count) {
+            for (int i = 0; i < count; i++) {
+                scheduleMemoRepository.save(ScheduleMemo.create(user2, studyScheduleRepository.findById(studyScheduleId).get(), "스케줄 메모 " + i));
+            }
+        }
+
+        private void createStudySchedule(Study study, User user, int count, Long startDate, Long endDate) {
+            for (int i = 0; i < count; i++) {
+                studyScheduleRepository.save(StudySchedule.create(study, user, "오프라인 회의" + i, "스터디 오프라인 회의 진행", getNow().plusDays(startDate), getNow().plusDays(endDate)));
+            }
+        }
+
+        private static LocalDateTime getNow() {
+            return LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         }
 
         private static Project createProject(User user, Study study, String title, String descrption, List<String> imgList, String url, String subTitle) {
