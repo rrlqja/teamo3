@@ -14,11 +14,13 @@ import java.util.Optional;
 public interface UserJpaRepository extends JpaRepository<User, Long> {
     @Query("select u " +
             " from User u " +
-            "where u.username = :username ")
+            "where u.username = :username " +
+            "  and u.deleteFlag = false")
     Optional<User> findUserByUsername(@Param("username") String username);
 
     @Query("select u " +
             " from User u " +
-            "where u.id in :ids")
+            "where u.id in :ids " +
+            "  and u.deleteFlag = false")
     List<User> findUsersByIdIn(@Param("ids") Collection<Long> ids);
 }

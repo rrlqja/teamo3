@@ -18,6 +18,20 @@ public class User {
     private String username;
     private String password;
     private String name;
+    private boolean deleteFlag;
+
+    public void modify(String username, String name) {
+        this.username = username;
+        this.name = name;
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    public void delete() {
+        this.deleteFlag = true;
+    }
 
     public static User create(String username, String password, String name) {
         return new User(username, password, name);
@@ -27,5 +41,6 @@ public class User {
         this.username = username;
         this.password = password;
         this.name = name;
+        this.deleteFlag = false;
     }
 }
