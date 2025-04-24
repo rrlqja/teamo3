@@ -7,6 +7,9 @@ spring:
     #    jdbc:mysql://localhost:3306/DB_NAME?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ENC(phW6d7YIsNErj+8Ub9vkAg==)
     password: ENC(ql2W2noMkt+b/il6+6aVv/PNmXs/2JE8)
+  jpa:
+    hibernate:
+      ddl-auto: update
 
 upload:
   path: ENC(0TUPFuaCY/FVw5tX0o2dpUrAP/S/3Y0vq6hOGNFXz18=)
