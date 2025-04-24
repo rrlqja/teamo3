@@ -55,6 +55,9 @@ public class FavoriteService {
         Optional<Favorite> optionalPostFavorite = favoriteRepository.findFavoriteByUserAndPost(user, study);
 
         if (optionalPostFavorite.isPresent()) {
+            if (optionalPostFavorite.get().isDeleteFlag()) {
+                return false;
+            }
             return true;
         }
 

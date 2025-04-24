@@ -48,10 +48,6 @@ public class StudyCalendarController {
     @GetMapping("/")
     public String getStudyCalendar(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                    Model model) {
-        if (userDetails == null) {
-            return "redirect:/user/login";
-        }
-
         Page<StudyPageDto> studyPage = studyService.getStudyByUser(userDetails.getUser(), PageRequest.of(0, 10));
         model.addAttribute("studyPage", studyPage);
 

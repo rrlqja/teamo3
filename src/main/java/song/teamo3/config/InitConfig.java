@@ -51,8 +51,6 @@ public class InitConfig {
     @Component
     @RequiredArgsConstructor
     private static class InitService {
-        private final ChatRoomUserJpaRepository chatRoomUserJpaRepository;
-        private final ChatService chatService;
         @Value("${download.path}")
         private String downloadPath;
 
@@ -69,76 +67,100 @@ public class InitConfig {
         private final ChatJpaRepository chatRepository;
         private final StudyScheduleJpaRepository studyScheduleRepository;
         private final ScheduleMemoJpaRepository scheduleMemoRepository;
+        private final ChatRoomUserJpaRepository chatRoomUserRepository;
+        private final ChatService chatService;
 
         public void init() {
-            User user1 = userRepository.save(User.create("1", passwordEncoder.encode("1"), "관리자"));
-            User user2 = userRepository.save(User.create("2", passwordEncoder.encode("2"), "포롬"));
-            User user3 = userRepository.save(User.create("3", passwordEncoder.encode("3"), "라리밖"));
-            User user4 = userRepository.save(User.create("4", passwordEncoder.encode("4"), "name 3"));
+            for (int i = 0; i < 20; i++) {
+                userRepository.save(User.create("id"+i, passwordEncoder.encode(String.valueOf(i)), "테스트 사용자 " + i));
+            }
+
+            User admin1 = userRepository.save(User.create("admin1", passwordEncoder.encode("1"), "관리자1"));
+            User admin2 = userRepository.save(User.create("admin2", passwordEncoder.encode("3"), "관리자2"));
+            User admin3 = userRepository.save(User.create("admin3", passwordEncoder.encode("3"), "관리자3"));
+
+            User user1 = userRepository.save(User.create("1", passwordEncoder.encode("1"), "공부하는 원숭이"));
+            User user2 = userRepository.save(User.create("2", passwordEncoder.encode("2"), "포롬소프트"));
+            User user3 = userRepository.save(User.create("3", passwordEncoder.encode("3"), "라리안 스튜디오"));
+            User user4 = userRepository.save(User.create("4", passwordEncoder.encode("4"), "유네소프트"));
+
+            for (int i = 0; i < 20; i++) {
+                Study study = studyRepository.save(Study.create(user1, "테스트 스터디 " + i, "테스트 스터디 모집글입니다.", "우당탕탕 스터디 " + i));
+                StudyMember studyMemberAdmin = studyMemberRepository.save(StudyMember.create(user1, study, StudyMemberRole.ADMIN));
+                StudyMember studyMemberMember = studyMemberRepository.save(StudyMember.create(userRepository.findById(i + 1L).get(), study, StudyMemberRole.MEMBER));
+            }
 
             Study study1 = studyRepository.save(Study.create(user2, "액션 게임 제작 스터디원 모집합니다!", "<h4>게임 제작 스터디원 모집합니다!</h4><p>보스 토벌 액션 RPG를 개발하고 싶어요! 같이 참여해보세요!</p><ul><li>모집인원: 00명</li><li>스터디 일정: ~ 2100.01.01</li><li>참고사항: </li></ul>", "액션 게임 제작 스터디"));
             Study study2 = studyRepository.save(Study.create(user3, "게임 제작 스터디 구해요~", "<h4>게임 제작 스터디 구해요!</h4><p>오픈월드 턴제 RPG를 개발하고 싶어요! 같이 참여해보세요!</p><ul><li>모집인원: 00명</li><li>스터디 일정: ~ 2100.01.01</li><li>참고사항: </li></ul>", "오픈월드 게임 제작 스터디"));
-
-            for (int i = 0; i < 30; i++) {
-                Study study = studyRepository.save(Study.create(user2, "조용한 스터디 " + i, "스터디 모집 " + i, "개인 스터디 " + i));
-                StudyMember studyMember = studyMemberRepository.save(StudyMember.create(user2, study, StudyMemberRole.ADMIN));
-            }
 
             StudyMember stMember1 = studyMemberRepository.save(StudyMember.create(user2, study1, StudyMemberRole.OWNER));
             StudyMember stMember2 = studyMemberRepository.save(StudyMember.create(user3, study2, StudyMemberRole.OWNER));
             StudyMember stMember3 = studyMemberRepository.save(StudyMember.create(user4, study2, StudyMemberRole.MEMBER));
 
+            for (int i = 0; i < 20; i++) {
+                User userI = userRepository.findById(i + 1L).get();
+                for (int j = 0; j < 20; j++) {
+                    Study studyJ = studyRepository.findById(j + 1L).get();
+                    studyApplicationRepository.save(StudyApplication.create(userI, studyJ, "테스트 신청서 " + (i + 1), "<p>테스트 가입 신청서입니다.</p><p>테스트 가입 신청서입니다.</p><p>테스트 가입 신청서입니다.</p>"));
+                }
+            }
+
             StudyApplication studyApplication1 = studyApplicationRepository.save(StudyApplication.create(user3, study1, "신청서 1", "<p>p1</p><p>p2</p><p>p3</p><p>p4</p><p>p5</p>"));
             StudyApplication studyApplication2 = studyApplicationRepository.save(StudyApplication.create(user4, study1, "신청서 2", "<p>p1</p><p>p2</p><p>p3</p><p>p4</p><p>p5</p><p>p6</p><p>p7</p><p>p8</p>"));
 
-            Comment comment1 = commentRepository.save(Comment.create(user2, study1, "많은 응원 부탁드립니다."));
-
-            Project project1 = projectRepository.save(createProject(user2, study1, "엘든링을 소개합니다!", "<p>게임 제작 스터디를 통해</p><p>엘든링이라는 액션 RPG 게임을 만들었습니다!</p><p>많은 관심 부탁드립니다!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "er1.gif\" width=\"854\" height=\"480\"></figure><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "er2.gif\" width=\"854\" height=\"480\"><p>&nbsp;</p></figure><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "er3.gif\" width=\"854\" height=\"480\"></figure>", List.of(downloadPath +"er.webp"), "https://namu.wiki/w/%EC%97%98%EB%93%A0%20%EB%A7%81", "subTitle"));
-            List<ProjectMember> projectMember1List = projectMemberRepository.saveAll(ProjectMember.create(List.of(user2), project1));
-
-            Project project2 = projectRepository.save(createProject(user3, study2, "발더스 게이트를 소개합니다!", "<p>게임 제작 스터디를 통해</p><p>발더스 게이트라는 오픈월드 턴제 RPG 게임을 만들었습니다!</p><p>많은 관심 부탁드립니다!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "bg1.jpg\" width=\"854\" height=\"480\"></figure><p>동료들을 모아 적들과 전투를 할 수 있어요!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "bg2.png\" width=\"854\" height=\"480\"><p>&nbsp;</p></figure><p>동료들과의 로맨스도 즐겨보세요!</p>", List.of(downloadPath + "bg.webp"), "https://namu.wiki/w/%EB%B0%9C%EB%8D%94%EC%8A%A4%20%EA%B2%8C%EC%9D%B4%ED%8A%B8%203", "subTitle"));
-            List<ProjectMember> projectMember2List = projectMemberRepository.saveAll(ProjectMember.create(List.of(user3, user4), project2));
-
-            Project project3 = projectRepository.save(createProject(user3, study2, "발더스 게이트를 소개합니다!", "<p>게임 제작 스터디를 통해</p><p>발더스 게이트라는 오픈월드 턴제 RPG 게임을 만들었습니다!</p><p>많은 관심 부탁드립니다!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "bg1.jpg\" width=\"854\" height=\"480\"></figure><p>동료들을 모아 적들과 전투를 할 수 있어요!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "bg2.png\" width=\"854\" height=\"480\"><p>&nbsp;</p></figure><p>동료들과의 로맨스도 즐겨보세요!</p>", List.of(downloadPath + "bg.webp"), "https://namu.wiki/w/%EB%B0%9C%EB%8D%94%EC%8A%A4%20%EA%B2%8C%EC%9D%B4%ED%8A%B8%203", "subTitle"));
-            List<ProjectMember> projectMember3List = projectMemberRepository.saveAll(ProjectMember.create(List.of(user3, user4), project3));
-
-//            Project project4 = projectRepository.save(createProject(user3, study2, "발더스 게이트를 소개합니다!", "<p>게임 제작 스터디를 통해</p><p>발더스 게이트라는 오픈월드 턴제 RPG 게임을 만들었습니다!</p><p>많은 관심 부탁드립니다!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "bg1.jpg\" width=\"854\" height=\"480\"></figure><p>동료들을 모아 적들과 전투를 할 수 있어요!</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "bg2.png\" width=\"854\" height=\"480\"><p>&nbsp;</p></figure><p>동료들과의 로맨스도 즐겨보세요!</p>", List.of(downloadPath + "Teamo.png"), "https://namu.wiki/w/%EB%B0%9C%EB%8D%94%EC%8A%A4%20%EA%B2%8C%EC%9D%B4%ED%8A%B8%203", "subTitle"));
-//            List<ProjectMember> projectMember4List = projectMemberRepository.saveAll(ProjectMember.create(List.of(user3, user4), project4));
-
-            Long chatRoom1Id = chatRoomService.createChatRoom(study1);
-            ChatRoom chatRoom1 = chatRoomRepository.findChatRoomById(chatRoom1Id).get();
-
             for (int i = 0; i < 20; i++) {
-                Study study = studyRepository.findStudyById(i + 2L).get();
-                ChatRoom chatRoom = ChatRoom.create(study);
-                ChatRoom scr = chatRoomRepository.save(chatRoom);
-                ChatRoomUser cru = ChatRoomUser.create(scr, user2);
-                ChatRoomUser scru = chatRoomUserJpaRepository.save(cru);
+                Study studyI = studyRepository.findById(i + 1L).get();
+                commentRepository.save(Comment.create(user2, studyI, "테스트 댓글입니다."));
+                for (int j = 0; j < 8; j++) {
+                    User userJ = userRepository.findById(j + 1L).get();
+                    commentRepository.save(Comment.create(userJ, studyI, "테스트 댓글입니다."));
+                }
+            }
+
+            for (int i = 0; i < 3; i++) {
+                Project projectI = projectRepository.save(createProject(user2, study1, "테스트 프로젝트", "<p>테스트 프로젝트입니다.</p><p>테스트 프로젝트입니다.</p><p>&nbsp;</p><figure class=\"image\"><img style=\"aspect-ratio:854/480;\" src=\"" + downloadPath + "proContent" + (i + 1) + ".jpg\" width=\"854\" height=\"480\">", List.of(downloadPath + "proThumb" + (i + 1) + ".jpg"), "https://www.google.co.kr/", "부제"));
+                List<ProjectMember> projectMember1List = projectMemberRepository.saveAll(ProjectMember.create(List.of(user2), projectI));
             }
 
             for (int i = 0; i < 20; i++) {
-                chatService.saveChat(user2, chatRoom1.getId(), "테스트 메시지 " + i);
+                Study studyI = studyRepository.findById(i + 1L).get();
+                Long chatRoomIId = chatRoomService.createChatRoom(studyI);
+
+                ChatRoom chatRoomI = chatRoomRepository.findById(chatRoomIId).get();
+                for (int j = 0; j < 10; j++) {
+                    chatService.saveChat(user1, chatRoomIId, "테스트 메시지입니다. " + j);
+                    chatService.saveChat(userRepository.findById(i + 1L).get(), chatRoomIId, "테스트 메시지입니다. " + j);
+                }
             }
 
-            createStudySchedule(study1, user2, 5, 0L, 0L);
-            createStudySchedule(study1, user2, 2, 1L, 1L);
-            createStudySchedule(study1, user2, 1, -1L, -1L);
-            createStudySchedule(study1, user2, 2, 3L, 5L);
-            createStudySchedule(study1, user2, 1, 40L, 41L);
+            for (int i = 0; i < 10; i++) {
+                Study studyI = studyRepository.findById(i + 1L).get();
+                createStudySchedule(studyI, user1, i, (long) i, (long) i);
 
-            createScheduleMemo(user2, 1L, 14);
+                if (i == 0) {
+                    createStudySchedule(studyI, user1, i, (long) i, (long) i + 3);
+                }
+
+                if (i == 5) {
+                    createStudySchedule(studyI, user1, i, -13L, -11L);
+                }
+
+                if (i == 9) {
+                    createStudySchedule(studyI, user1, i, i + 10L, i + 20L);
+                }
+
+                for (int j = 0; j < 3; j++) {
+                    createScheduleMemo(user1, (long) i + 1, j);
+                }
+            }
         }
 
-        private void createScheduleMemo(User user2, Long studyScheduleId, int count) {
-            for (int i = 0; i < count; i++) {
-                scheduleMemoRepository.save(ScheduleMemo.create(user2, studyScheduleRepository.findById(studyScheduleId).get(), "스케줄 메모 " + i));
-            }
+        private void createScheduleMemo(User user, Long studyScheduleId, int number) {
+            scheduleMemoRepository.save(ScheduleMemo.create(user, studyScheduleRepository.findById(studyScheduleId).get(), "스케줄 메모 " + number));
         }
 
-        private void createStudySchedule(Study study, User user, int count, Long startDate, Long endDate) {
-            for (int i = 0; i < count; i++) {
-                studyScheduleRepository.save(StudySchedule.create(study, user, "오프라인 회의" + i, "스터디 오프라인 회의 진행", getNow().plusDays(startDate), getNow().plusDays(endDate)));
-            }
+        private void createStudySchedule(Study study, User user, int number, Long startDate, Long endDate) {
+            studyScheduleRepository.save(StudySchedule.create(study, user, "오프라인 회의 " + number, "스터디 오프라인 회의 진행", getNow().plusDays(startDate), getNow().plusDays(endDate)));
         }
 
         private static LocalDateTime getNow() {

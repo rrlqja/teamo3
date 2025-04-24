@@ -103,8 +103,8 @@
                 </div>
             </div>
             <div class="flex-column" style="width: 100%;margin-bottom: 30px;min-width: 100%;min-height: 100px;display: flex;">
-                <div class="justify-content-between" style="min-width: 300px;display: flex;">
-                    <form class="form-inline d-flex justify-content-center" id="searchBoardForm" method="get" th:action>
+                <div class="justify-content-between" style="min-width: 300px;display: flex; flex-direction: column;">
+                    <form class="form-inline d-flex" id="searchBoardForm" method="get" th:action style="width: 100%; justify-content: space-between;">
                         <div style="min-height: 40px;width: 400px;display: flex;">
                             <select class="form-select" name="searchType" style="min-height: 100%;min-width: 100px;width: 100px;">
                                 <option value="TITLE" th:selected="${param.searchType == null or param.searchType[0] == 'TITLE'}">제목</option>

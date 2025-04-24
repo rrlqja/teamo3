@@ -37,7 +37,16 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.POST, "/team").authenticated()
+                        .requestMatchers("/chatroom/**").authenticated()
+                        .requestMatchers("/comment/**").authenticated()
+                        .requestMatchers("/favorite/**").authenticated()
+                        .requestMatchers("/post/**").authenticated()
+                        .requestMatchers("/user/userInfo/**", "/user/delete").authenticated()
+                        .requestMatchers("/project/create/**", "/project/modify/**", "/project/delete/**").authenticated()
+                        .requestMatchers("/study/create", "/study/modify/**", "/study/delete/**", "/study/apply/**", "/study/exit/**", "/study/*/applicationList", "/study/changeStatus/**", "/study/bumpUp/**", "/study/createChatRoom/**").authenticated()
+                        .requestMatchers("/studyApplication/**").authenticated()
+                        .requestMatchers("/studyCalendar/**").authenticated()
+                        .requestMatchers("/studyMember/**").authenticated()
                         .anyRequest().permitAll())
                 .formLogin(login -> login
                         .usernameParameter("username")

@@ -91,7 +91,9 @@
                         </span>
                     </div>
                     <div style="height: 50px; line-height: 40px; font-weight: 300; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        <span th:if="*{chatRoom.lastChat != null && chatRoom.lastChat != ''}" th:id="|lastChat_${chatRoom.id}|" th:text="${chatRoom.lastChatWriterName + ': ' + chatRoom.lastChat}">last chat</span>
+                          <span th:id="|lastChat_${chatRoom.id}|"
+                                th:text="${chatRoom.lastChat != null ? chatRoom.lastChatWriterName + ': ' + chatRoom.lastChat : ''}">
+                          </span>
                     </div>
                 </li>
             </ul>
@@ -118,7 +120,7 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function() {
         const urlParams = new URLSearchParams(window.location.search);
         const chatRoomId = urlParams.get('chatRoomId');
@@ -326,12 +328,13 @@
             });
     }
 
-    var currentUserName = '[[${#authentication.name}]]';
+    /*<![CDATA[*/
+    var currentUserName = /*[[${#authentication.principal.id}]]*/ '';
+    /*]]>*/
 
     function createMessageDiv(chat) {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('chat-message');
-
         if (Number(chat.writerId) === Number(currentUserName)) {
             messageDiv.classList.add('mine');
         }

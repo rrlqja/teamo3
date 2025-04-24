@@ -19,21 +19,21 @@
             <div th:replace="content :: leftBar"></div>
         </div>
         <div class="col-md-7" style="padding: 0px;margin-right: 6px;margin-left: 6px; height: 760px;">
-            <div class="card" style="border-bottom-style: none;box-shadow: 1px 2px 8px rgba(110,122,135,0.31);border-radius: 10px;width: 100%;min-height: 100%;">
+            <div class="card" style="box-shadow: rgba(0, 0, 0, 0.05) 0 6px 24px;border-radius: 10px;width: 100%;min-height: 100%; border: none;">
                 <div class="card-body" style="padding: 0px;">
-                    <h4 class="card-title" style="margin-bottom: 2px;font-size: 21px;font-weight: bold;border-bottom: 0.5px solid #b4bbc3;padding: 8px;">
-                        <a th:href="@{/study/studyList}" class="d-block text-decoration-none text-dark">
+                    <h4 class="card-title" style="margin-bottom: 2px;font-size: 18px;font-weight: 600;border-bottom: 0.5px solid #b4bbc3;padding: 12px;">
+                        <a th:href="@{/studyMember/}" class="d-block text-decoration-none text-dark">
                             가입한 스터디
                         </a>
                     </h4>
                     <div class="card-body" style="padding: 0px;">
                         <ul class="list-group list-group-flush" style="width: 100%;">
-                            <li class="list-group-item list-group-item-action" th:each="studyMember, stat : ${studyMemberPage}" th:if="${stat.index} <6" th:onclick="|location.href='@{/study/{studyId}(studyId=${studyMember.studyId})}'|" style="height: 60px;width: 100%;padding: 0px;">
+                            <li class="list-group-item list-group-item-action" th:each="studyMember, stat : ${studyMemberPage}" th:if="${stat.index} < 10" th:onclick="|location.href='@{/study/{studyId}(studyId=${studyMember.studyId})}'|" style="height: 60px;width: 100%;padding: 0px;">
                                 <div class="d-flex flex-column flex-lg-row" style="width: 100%;height: 100%;">
                                     <div style="margin: 0px;padding: 0px;min-width: 60px;min-height: 60px;width: 60px;">
                                         <img class="rounded img-fluid d-block fit-cover" style="height: 60px;min-width: 60px;padding: 8px;" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
                                     </div>
-                                    <div class="py-4 py-lg-0 px-lg-4" style="width: 100%;height: 100%;"><h6 style="height: 30px;margin: 0px;font-weight: bold; line-height:30px;" th:text="*{studyMember.studyTitle}">title</h6>
+                                    <div class="py-4 py-lg-0 px-lg-4" style="width: 100%;height: 100%;"><h6 style="height: 30px;margin: 0px;font-weight: 600; line-height:30px;" th:text="*{studyMember.studyTitle}">title</h6>
                                         <div style="height: 40px;width: 100%;display: flex; flex-direction: row; justfiy-content: start; gap: 5px;">
                                             <div style="height: 100%;min-width: 50px;"><p th:text="*{studyMember.studyWriterName}" style="width: 100%;height: 100%;font-size: 13px; line-height: 30px;" >writer</p></div>
                                             <div style="height: 100%;min-width: 50px;"><p th:text="*{studyMember.studyCreateDate}" style="width: 100%;height: 100%;font-size: 13px; line-height: 30px;" >create date</p></div>
@@ -45,10 +45,50 @@
                         </ul>
                     </div>
                 </div>
+                <div class="d-flex justify-content-center mt-3">
+                    <nav>
+                        <ul class="pagination">
+                            <li class="page-item" th:if="${studyMemberPage.number != 0}">
+                                <a class="page-link" aria-label="First"
+                                   th:href="@{/studyMember/(page=0, searchType=${searchType}, searchValue=${searchValue})}">
+                                    &laquo;
+                                </a>
+                            </li>
+                            <li class="page-item" th:if="${studyMemberPage.number != 0}">
+                                <a class="page-link" aria-label="Previous"
+                                   th:href="@{/studyMember/(page=${studyMemberPage.number - 1}, searchType=${searchType}, searchValue=${searchValue})}">
+                                    &lt;
+                                </a>
+                            </li>
+                            <th:block th:if="${studyMemberPage.totalElements != 0}"
+                                      th:each="i : ${#numbers.sequence((studyMemberPage.number >= 2) ? (studyMemberPage.number - 2) : 0, (studyMemberPage.totalPages > (studyMemberPage.number + 2)) ? (studyMemberPage.number + 2) : (studyMemberPage.totalPages - 1))}">
+                                <li class="page-item" th:classappend="${i == studyMemberPage.number} ? ' active'">
+                                    <a class="page-link"
+                                       th:href="@{/studyMember/(page=${i}, searchType=${searchType}, searchValue=${searchValue})}"
+                                       th:text="${i + 1}">
+                                        1
+                                    </a>
+                                </li>
+                            </th:block>
+                            <li class="page-item" th:if="${studyMemberPage.number < studyMemberPage.totalPages - 1}">
+                                <a class="page-link" aria-label="Next"
+                                   th:href="@{/studyMember/(page=${studyMemberPage.number + 1}, searchType=${searchType}, searchValue=${searchValue})}">
+                                    &gt;
+                                </a>
+                            </li>
+                            <li class="page-item" th:if="${studyMemberPage.number < studyMemberPage.totalPages - 1}">
+                                <a class="page-link" aria-label="Last"
+                                   th:href="@{/studyMember/(page=${studyMemberPage.totalPages - 1}, searchType=${searchType}, searchValue=${searchValue})}">
+                                    &raquo;
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
         </div>
         <div class="col-md-2" style="padding: 0px;">
-            <div th:replace="content :: rightBar"></div>
+            <div th:replace="content :: rightBar(noticeList = ${noticeList}, chatRoomList = ${chatRoomList})"></div>
         </div>
     </div>
 </div>

@@ -32,9 +32,6 @@ public class ChatRoomController {
     public String getChattingRoomList(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                       @PageableDefault(size = 10, page = 0) Pageable pageable,
                                       Model model) {
-        if (userDetails == null) {
-            return "redirect:/user/login";
-        }
         Page<ChatRoomPageDto> chatRoomPage = chatRoomService.getChatRoomPage(userDetails.getUser(), pageable);
 
         model.addAttribute("chatRoomPage", chatRoomPage);
@@ -52,8 +49,8 @@ public class ChatRoomController {
 
     @GetMapping("/{chatRoomId}/chatList")
     public ResponseEntity<ChatRoomDto> getChatList(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                         @PathVariable("chatRoomId") Long chatRoomId,
-                                                         @PageableDefault(size = 10, page = 0) Pageable pageable) {
+                                                   @PathVariable("chatRoomId") Long chatRoomId,
+                                                   @PageableDefault(size = 10, page = 0) Pageable pageable) {
         ChatRoomDto chatRoom = chatRoomService.getChatList(userDetails.getUser(), chatRoomId, pageable);
 
         return ResponseEntity.ok(chatRoom);

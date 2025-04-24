@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import song.teamo3.domain.chat.dto.ChatRoomListDto;
+import song.teamo3.domain.chat.service.ChatRoomService;
 import song.teamo3.domain.studymember.dto.StudyMemberPageDto;
 import song.teamo3.domain.studymember.service.StudyMemberService;
 import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
@@ -20,6 +22,7 @@ import song.teamo3.security.authentication.userdetails.UserDetailsImpl;
 @RequiredArgsConstructor
 public class StudyMemberController {
     private final StudyMemberService studyMemberService;
+    private final ChatRoomService chatRoomService;
 
     @GetMapping("/")
     public String getStudyList(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -29,6 +32,14 @@ public class StudyMemberController {
 
         model.addAttribute("studyMemberPage", studyMemberPage);
 
+        getModelData(userDetails, model);
+
         return "studymember/studyMemberList";
+    }
+
+    private void getModelData(UserDetailsImpl userDetails, Model model) {
+        model.addAttribute("noticeList", Page.empty());
+        Page<ChatRoomListDto> chatRoomList = chatRoomService.getChatRoomList(userDetails.getUser());
+        model.addAttribute("chatRoomList", chatRoomList);
     }
 }
