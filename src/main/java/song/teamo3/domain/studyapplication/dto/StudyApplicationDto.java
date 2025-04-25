@@ -20,6 +20,6 @@ public class StudyApplicationDto {
         this.description = studyApplication.getContent();
         this.createDate = studyApplication.getCreateDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
 
-        this.username = studyApplication.getWriter().getUsername();
+        this.username = studyApplication.getWriter().getName();
     }
 }

@@ -114,6 +114,10 @@ public class ProjectController {
 
         model.addAttribute("project", project);
 
+        model.addAttribute("noticeList", Page.empty());
+        Page<ChatRoomListDto> chatRoomList = chatRoomService.getChatRoomList(userDetails.getUser());
+        model.addAttribute("chatRoomList", chatRoomList);
+
         return "project/modifyProject";
     }
 

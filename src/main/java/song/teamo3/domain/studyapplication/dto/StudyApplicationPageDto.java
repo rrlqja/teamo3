@@ -21,7 +21,7 @@ public class StudyApplicationPageDto {
         this.description = studyApplication.getContent();
         this.status = studyApplication.getStatus().toString();
 
-        this.writerName = studyApplication.getWriter().getUsername();
+        this.writerName = studyApplication.getWriter().getName();
         this.createDate=studyApplication.getCreateDate().format(DateTimeFormatter.ofPattern("yy.MM.dd HH:mm"));
     }
 }

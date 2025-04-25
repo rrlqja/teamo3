@@ -13,6 +13,7 @@ spring:
 
 upload:
   path: ENC(0TUPFuaCY/FVw5tX0o2dpUrAP/S/3Y0vq6hOGNFXz18=)
+  url: ENC(2WMHR1abi7dAflO2WFkIWp87lp/xmilwnXBDpXgxsF1EjQUr9yg6H3jDoxHaCAVl)
 
 jasypt:
   encryptor:

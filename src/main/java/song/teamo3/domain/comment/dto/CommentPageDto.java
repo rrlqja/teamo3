@@ -16,7 +16,7 @@ public class CommentPageDto {
 
     public CommentPageDto(Comment comment) {
         this.id = comment.getId();
-        this.writerUsername = comment.getWriter().getUsername();
+        this.writerUsername = comment.getWriter().getName();
         this.writerName = comment.getWriter().getName();
         this.text = comment.isDeleteFlag() ? "삭제된 댓글입니다." : comment.getText();
         this.createDate = comment.getCreateDate().format(DateTimeFormatter.ofPattern("yy-MM-dd HH:mm:ss"));
