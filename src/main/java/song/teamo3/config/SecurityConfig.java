@@ -21,6 +21,7 @@ import song.teamo3.security.authentication.handler.LoginFailureHandler;
 import song.teamo3.security.authentication.handler.LoginSuccessHandler;
 import song.teamo3.security.authentication.userdetails.service.UserDetailsServiceImpl;
 import song.teamo3.security.filter.JwtFilter;
+import song.teamo3.security.filter.LogFilter;
 import song.teamo3.security.filter.UsernamePasswordLoginFilter;
 
 @Slf4j
@@ -66,6 +67,7 @@ public class SecurityConfig {
 //                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .addFilterBefore(new UsernamePasswordLoginFilter(authenticationManager(configuration), loginSuccessHandler(objectMapper), loginFailureHandler(objectMapper)), UsernamePasswordAuthenticationFilter.class)
 //                .addFilterBefore(new JwtFilter(userDetailsService), UsernamePasswordLoginFilter.class)
+                .addFilterBefore(new LogFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
 
         return http.build();
