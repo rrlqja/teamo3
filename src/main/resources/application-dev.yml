@@ -21,4 +21,5 @@ jasypt:
     password: ${JASYPT_ENCRYPTOR_PASSWORD}
 
 download:
-  path: ENC(2lGlh6YcZUd6G7BVL/zhyrlXgQ8mVlYl+xGhKE5sBdqUs3xUD4YCZzaPLJpqmZBJ)
+#  path: ENC(2lGlh6YcZUd6G7BVL/zhyrlXgQ8mVlYl+xGhKE5sBdqUs3xUD4YCZzaPLJpqmZBJ) # ec2
+  path: ENC(7Ei4ygdOu8Q7W2qXk3o7UJeDcFhKMXpgbfcX9q4ZS5gL2YdXZtNnNU8DiYUlm7aU+PLZ+Hs9HQk=) # lst ip
