@@ -22,4 +22,5 @@ jasypt:
 
 download:
 #  path: ENC(2lGlh6YcZUd6G7BVL/zhyrlXgQ8mVlYl+xGhKE5sBdqUs3xUD4YCZzaPLJpqmZBJ) # ec2
-  path: ENC(7Ei4ygdOu8Q7W2qXk3o7UJeDcFhKMXpgbfcX9q4ZS5gL2YdXZtNnNU8DiYUlm7aU+PLZ+Hs9HQk=) # lst ip
+#  path: ENC(7Ei4ygdOu8Q7W2qXk3o7UJeDcFhKMXpgbfcX9q4ZS5gL2YdXZtNnNU8DiYUlm7aU+PLZ+Hs9HQk=) # lst ip
+  path: ENC(Db0gxNIY5XuWUUW1hylmfbdgO7H1JtmjgiT+1TyMGPu0Uo9Upia7UtC34km56BMM) # domain
