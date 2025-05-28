@@ -33,7 +33,9 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/stomp").withSockJS();
+        registry.addEndpoint("/stomp")
+                .setAllowedOriginPatterns("https://tteamo.xyz")
+                .withSockJS();
     }
 
     @Override
